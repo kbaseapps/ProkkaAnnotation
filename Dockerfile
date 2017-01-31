@@ -1,0 +1,62 @@
+FROM kbase/kbase:sdkbase.latest
+MAINTAINER KBase Developer
+# -----------------------------------------
+
+# Insert apt-get instructions here to install
+# any required dependencies for your module.
+
+# RUN apt-get update
+RUN pip install coverage
+RUN apt-get update -qq && \
+    apt-get install -yq --no-install-recommends \
+                                                git \
+                                                less \
+                                                libdatetime-perl \
+                                                libxml-simple-perl \
+                                                libdigest-md5-perl \
+                                                bioperl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# clone prokka
+WORKDIR /kb
+RUN git clone https://github.com/tseemann/prokka.git && \
+    prokka/bin/prokka --setupdb
+
+# set links to /usr/bin
+ENV PATH $PATH:/kb/prokka/bin
+
+# update security libraries in the base image
+RUN pip install cffi --upgrade \
+    && pip install pyopenssl --upgrade \
+    && pip install ndg-httpsclient --upgrade \
+    && pip install pyasn1 --upgrade \
+    && pip install requests --upgrade \
+    && pip install 'requests[security]' --upgrade
+
+RUN mv /kb/prokka/binaries/linux/tbl2asn /kb/prokka/binaries/linux/tbl2asn.orig
+#RUN echo "#!/bin/bash" > /kb/prokka/binaries/linux/tbl2asn && \
+#    echo "/lib64/ld-linux-x86-64.so.2 /kb/prokka/binaries/linux/tbl2asn.orig \$@" >> /kb/prokka/binaries/linux/tbl2asn && \
+#    chmod 777 /kb/prokka/binaries/linux/tbl2asn
+RUN wget ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux.tbl2asn.gz
+RUN gunzip ./linux.tbl2asn.gz
+RUN chmod 777 ./linux.tbl2asn
+RUN mv ./linux.tbl2asn /kb/prokka/binaries/linux/tbl2asn
+
+WORKDIR /kb
+RUN git clone https://github.com/tseemann/barrnap
+ENV PATH $PATH:/kb/barrnap/bin
+
+# -----------------------------------------
+
+COPY ./ /kb/module
+RUN mkdir -p /kb/module/work
+RUN chmod -R a+rw /kb/module
+
+WORKDIR /kb/module
+
+RUN make all
+
+ENTRYPOINT [ "./scripts/entrypoint.sh" ]
+
+CMD [ ]
