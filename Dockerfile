@@ -47,6 +47,11 @@ WORKDIR /kb
 RUN git clone https://github.com/tseemann/barrnap
 ENV PATH $PATH:/kb/barrnap/bin
 
+RUN git clone git://github.com/chapmanb/bcbb.git && \
+    cd bcbb/gff && \
+    python setup.py build && \
+    sudo python setup.py install
+
 # -----------------------------------------
 
 COPY ./ /kb/module

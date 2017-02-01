@@ -84,8 +84,9 @@ class ProkkaAnnotationTest(unittest.TestCase):
         #
         # Check returned data with
         # self.assertEqual(ret[...], ...) or other unittest methods
-        assembly_test_file = "/kb/module/test/data/AP009048.fna"
-        assembly_temp_file = "/kb/module/work/tmp/AP009048.fna"
+        assembly_file_name = "small.fna"
+        assembly_test_file = os.path.join("/kb/module/test/data", assembly_file_name)
+        assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
         shutil.copy(assembly_test_file, assembly_temp_file)
         assembly_name = 'Assembly.1'
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'], token=self.getContext()['token'])
