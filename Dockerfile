@@ -20,7 +20,7 @@ RUN apt-get update -qq && \
 
 # clone prokka
 WORKDIR /kb
-RUN git clone https://github.com/tseemann/prokka.git && \
+RUN git clone -b "v1.11" https://github.com/tseemann/prokka && \
     prokka/bin/prokka --setupdb
 
 # set links to /usr/bin
@@ -34,20 +34,18 @@ RUN pip install cffi --upgrade \
     && pip install requests --upgrade \
     && pip install 'requests[security]' --upgrade
 
+# Update tbl2asn to recent version (25.3):
 RUN mv /kb/prokka/binaries/linux/tbl2asn /kb/prokka/binaries/linux/tbl2asn.orig
-#RUN echo "#!/bin/bash" > /kb/prokka/binaries/linux/tbl2asn && \
-#    echo "/lib64/ld-linux-x86-64.so.2 /kb/prokka/binaries/linux/tbl2asn.orig \$@" >> /kb/prokka/binaries/linux/tbl2asn && \
-#    chmod 777 /kb/prokka/binaries/linux/tbl2asn
 RUN wget ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux.tbl2asn.gz
 RUN gunzip ./linux.tbl2asn.gz
 RUN chmod 777 ./linux.tbl2asn
 RUN mv ./linux.tbl2asn /kb/prokka/binaries/linux/tbl2asn
 
 WORKDIR /kb
-RUN git clone https://github.com/tseemann/barrnap
+RUN git clone -b "0.7" https://github.com/tseemann/barrnap
 ENV PATH $PATH:/kb/barrnap/bin
 
-RUN git clone git://github.com/chapmanb/bcbb.git && \
+RUN git clone -b "bcbio-gff-v0.6.4" https://github.com/chapmanb/bcbb && \
     cd bcbb/gff && \
     python setup.py build && \
     sudo python setup.py install

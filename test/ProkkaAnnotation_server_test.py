@@ -94,7 +94,10 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                                     'workspace_name': self.getWsName(),
                                                     'assembly_name': assembly_name})
         genome_name = "Genome.1"
-        genome_ref = self.getImpl().annotate_contigs(self.getContext(),
-                                                     {'assembly_ref': assembly_ref,
-                                                      'output_workspace': self.getWsName(),
-                                                      'output_genome_name': genome_name})
+        result = self.getImpl().annotate_contigs(self.getContext(),
+                                                 {'assembly_ref': assembly_ref,
+                                                  'output_workspace': self.getWsName(),
+                                                  'output_genome_name': genome_name})[0]
+        rep = self.getWsClient().get_objects([{'ref': result['report_ref']}])[0]['data']
+        self.assertTrue('text_message' in rep)
+        print("Report:\n" + str(rep['text_message']))

@@ -1,0 +1,123 @@
+#
+# define display information
+#
+name: Annotate contigs with Prokka
+tooltip: |
+    Annotate contigs with Prokka annotation pipeline.
+screenshots: []
+
+icon: prokka.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            []
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    assembly_ref :
+        ui-name : |
+            Read library
+        short-hint : |
+            The libraries of Illumina reads to be assembled
+    output_genome_name :
+        ui-name : |
+            Output ContigSet
+        short-hint : |
+            The name under which the resulting ContigSet will be saved in the Narrative
+    kingdom :
+        ui-name : |
+            Kingdom
+        short-hint : |
+            Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria').
+    genus :
+        ui-name : |
+            X
+        short-hint : |
+             Genus name (triggers to use --usegenus).
+    gcode :
+        ui-name : |
+            Genetic code
+        short-hint : |
+             Genetic code / Translation table (default '0').
+    gram :
+        ui-name : |
+            Gram-type
+        short-hint : |
+            Gram: -/neg +/pos (default '').
+    metagenome :
+        ui-name : |
+            Metagenome
+        short-hint : |
+            Improve gene predictions for highly fragmented genomes (default OFF).
+    rawproduct :
+        ui-name : |
+            Raw product
+        short-hint : |
+            Do not clean up /product annotation (default OFF).
+    fast :
+        ui-name : |
+            Fast
+        short-hint : |
+            Fast mode - skip CDS /product searching (default OFF).
+    mincontiglen :
+        ui-name : |
+            Min.contig size
+        short-hint : |
+            Minimum contig size [NCBI needs 200] (default '1').
+    evalue :
+        ui-name : |
+            E-value
+        short-hint : |
+            Similarity e-value cut-off (default '1e-06').
+    rfam :
+        ui-name : |
+            Rfam
+        short-hint : |
+            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0').
+    norrna :
+        ui-name : |
+            No rRNA
+        short-hint : |
+            Don't run rRNA search (default OFF).
+    notrna :
+        ui-name : |
+            No tRNA
+        short-hint : |
+            Don't run tRNA search (default OFF).
+description : |
+    <p>
+    This is a KBase wrapper for the 
+    <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a> 
+    annotation pipeline.
+    </p>
+    
+    <p>
+    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 10 minutes on a quad-core computer, and scales well to 32 core SMP systems. It produces GFF3, GBK and SQN files that are ready for editing in Sequin and ultimately submitted to Genbank/DDJB/ENA.
+    </p>
+
+    <p>
+    As rRna predictor this installation currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
+    </p>
+
+    <p>Prokka version: 1.11</p>
+    <p>Barrnap version: 0.7</p>
+    
+publications :
+    -
+        display-text: |
+            Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014 Jul 15;30(14):2068-9.
+        link: https://www.ncbi.nlm.nih.gov/pubmed/24642063
+        pmid: 24642063
