@@ -75,16 +75,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from 'test'. # noqa
     def test_annotate_contigs(self):
-        # Prepare test objects in workspace if needed using
-        # self.getWsClient().save_objects({'workspace': self.getWsName(),
-        #                                  'objects': []})
-        #
-        # Run your method by
-        # ret = self.getImpl().your_method(self.getContext(), parameters...)
-        #
-        # Check returned data with
-        # self.assertEqual(ret[...], ...) or other unittest methods
-        assembly_file_name = "small.fna"
+        assembly_file_name = "small.fna"  #"AP009048.fna"
         assembly_test_file = os.path.join("/kb/module/test/data", assembly_file_name)
         assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
         shutil.copy(assembly_test_file, assembly_temp_file)
@@ -97,7 +88,20 @@ class ProkkaAnnotationTest(unittest.TestCase):
         result = self.getImpl().annotate_contigs(self.getContext(),
                                                  {'assembly_ref': assembly_ref,
                                                   'output_workspace': self.getWsName(),
-                                                  'output_genome_name': genome_name})[0]
+                                                  'output_genome_name': genome_name,
+                                                  'evalue': None,
+                                                  'fast': 0,
+                                                  'gcode': None,
+                                                  'genus': None,
+                                                  'gram': None,
+                                                  'kingdom': 'Bacteria',
+                                                  'metagenome': 0,
+                                                  'mincontiglen': 1,
+                                                  'norrna': 0,
+                                                  'notrna': 0,
+                                                  'rawproduct': 0,
+                                                  'rfam': 1
+                                                  })[0]
         rep = self.getWsClient().get_objects([{'ref': result['report_ref']}])[0]['data']
         self.assertTrue('text_message' in rep)
         print("Report:\n" + str(rep['text_message']))

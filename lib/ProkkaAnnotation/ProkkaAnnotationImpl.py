@@ -14,7 +14,7 @@ from pprint import pformat
 
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from GenomeAnnotationAPI.GenomeAnnotationAPIClient import GenomeAnnotationAPI
+from GenomeAnnotationAPI.GenomeAnnotationAPIServiceClient import GenomeAnnotationAPI
 from KBaseReport.KBaseReportClient import KBaseReport
 from biokbase.workspace.client import Workspace as workspaceService  # @UnresolvedImport @IgnorePep8
 #END_HEADER
@@ -55,6 +55,7 @@ class ProkkaAnnotation:
         #BEGIN_CONSTRUCTOR
         self.scratch = config['scratch']
         self.ws_url = config['workspace-url']
+        self.sw_url = config['service-wizard']
         #END_CONSTRUCTOR
         pass
 
@@ -104,13 +105,13 @@ class ProkkaAnnotation:
         prokka_cmd_list = ["perl", "/kb/prokka/bin/prokka", "--outdir", output_dir, "--prefix",
                           "mygenome", "--kingdom", kingdom]
         # --genus [X]       Genus name (triggers to use --usegenus)
-        if 'genus' in params:
+        if 'genus' in params and params['genus']:
             prokka_cmd_list.extend(['--genus', str(params['genus']), '--usegenus'])
         # --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
-        if 'gcode' in params:
+        if 'gcode' in params and params['gcode']:
             prokka_cmd_list.extend(['--gcode', str(params['gcode'])])
         # --gram [X]        Gram: -/neg +/pos (default '')
-        if 'gram' in params:
+        if 'gram' in params and params['gram']:
             prokka_cmd_list.extend(['--gram', str(params['gram'])])
         # --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
         if 'metagenome' in params and params['metagenome'] == 1:
@@ -122,10 +123,10 @@ class ProkkaAnnotation:
         if 'fast' in params and params['fast'] == 1:
             prokka_cmd_list.append("--fast")
         # --mincontiglen [N] Minimum contig size [NCBI needs 200] (default '1')
-        if 'mincontiglen' in params:
+        if 'mincontiglen' in params and params['mincontiglen']:
             prokka_cmd_list.extend(['--mincontiglen', str(params['mincontiglen'])])
         # --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
-        if 'evalue' in params:
+        if 'evalue' in params and params['evalue']:
             prokka_cmd_list.extend(['--evalue', str(params['evalue'])])
         # --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
         if 'rfam' in params and params['rfam'] == 1:
@@ -154,7 +155,7 @@ class ProkkaAnnotation:
         features = []
         non_hypothetical = 0
         genes_with_ec = 0
-        lengths = []
+        prot_lengths = []
         with open(gff_file, "r") as f1:
             for rec in GFF.parse(f1):
                 contig_id = new_ids_to_old[str(rec.id)]
@@ -168,6 +169,13 @@ class ProkkaAnnotation:
                     location = [[contig_id, start, strand, flen]]
                     qualifiers = ft.qualifiers
                     generated_id = self._get_qualifier_value(qualifiers.get('ID'))
+                    if not generated_id:
+                        # Skipping feature with no ID (mostly repeat regions)
+                        continue
+                    dna = cds_to_dna.get(generated_id)
+                    if not dna:
+                        # Skipping feature with no DNA (mostly repeat regions)
+                        continue
                     name = self._get_qualifier_value(qualifiers.get('Name'))
                     ec = self._get_qualifier_value(qualifiers.get('eC_number'))
                     gene = self._get_qualifier_value(qualifiers.get('gene'))
@@ -179,49 +187,58 @@ class ProkkaAnnotation:
                     if ec:
                         aliases.append(ec)
                         genes_with_ec += 1
-                    prot = cds_to_prot.get(generated_id)
-                    prot_len = len(prot)
-                    lengths.append(prot_len)
-                    dna = cds_to_dna.get(generated_id)
-                    dna_len = len(dna)
-                    cds_id = fid + "_CDS"
-                    mrna_id = fid + "_mRNA"
                     md5 = hashlib.md5(dna).hexdigest()
                     feature = {'id': fid, 'location': location, 'type': 'gene', 
                                'aliases': aliases, 'md5': md5, 'dna_sequence': dna,
-                               'dna_sequence_length': dna_len, 'protein_translation': prot,
-                               'protein_translation_length': prot_len,
-                               'cdss': [cds_id], 'mrnas': [mrna_id]}
+                               'dna_sequence_length': len(dna),
+                               }
                     if product:
                         feature['function'] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
+                    cds = None
+                    mrna = None
+                    prot = cds_to_prot.get(generated_id)
+                    if prot:
+                        cds_id = fid + "_CDS"
+                        mrna_id = fid + "_mRNA"
+                        prot_len = len(prot)
+                        prot_lengths.append(prot_len)
+                        feature['protein_translation'] = prot
+                        feature['protein_translation_length'] = prot_len
+                        feature['cdss'] = [cds_id]
+                        feature['mrnas'] = [mrna_id]
+                        cds = {'id': cds_id, 'location': location, 'md5': md5, 'parent_gene': fid, 
+                               'parent_mrna': mrna_id, 'function': (product if product else ''), 
+                               'ontology_terms': {}, 'protein_translation': prot, 
+                               'protein_translation_length': prot_len, 'aliases': aliases}
+                        mrna = {'id': mrna_id, 'location': location, 'md5': md5, 
+                                'parent_gene': fid, 'cds': cds_id}
                     features.append(feature)
-                    cds = {'id': cds_id, 'location': location, 'md5': md5, 'parent_gene': fid, 
-                           'parent_mrna': mrna_id, 'function': (product if product else ''), 
-                           'ontology_terms': {}, 'protein_translation': prot, 
-                           'protein_translation_length': prot_len, 'aliases': aliases}
-                    cdss.append(cds)
-                    mrna = {'id': mrna_id, 'location': location, 'md5': md5, 
-                            'parent_gene': fid, 'cds': cds_id}
-                    mrnas.append(mrna)
+                    if cds:
+                        cdss.append(cds)
+                    if mrna:
+                        mrnas.append(mrna)
         genome = {'id': 'Unknown', 'features': features, 'scientific_name': 'Unknown', 
                   'domain': 'Bacteria', 'genetic_code': 11, 'assembly_ref': assembly_ref,
                   'cdss': cdss, 'mrnas': mrnas, 'source': 'PROKKA annotation pipeline',
                   'gc_content': gc_content,'dna_size': dna_size,
                   'reference_annotation': 0}
-        ga = GenomeAnnotationAPI(os.environ['SDK_CALLBACK_URL'], token=ctx['token'])
+        prov = ctx.provenance()
+        ga = GenomeAnnotationAPI(self.sw_url, token=ctx['token'])
         info = ga.save_one_genome_v1({'workspace': output_workspace, 'name': output_genome_name,
-                                      'data': genome})['info']
+                                      'data': genome, 'provenance': prov})['info']
         genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
         
         # Prepare report
         report = ''
         report += 'Genome saved to: ' + output_workspace + '/' + output_genome_name + '\n'
         report += 'Number of genes predicted: ' + str(len(features)) + '\n'
+        report += 'Number of protein coding genes: ' + str(len(prot_lengths)) + '\n'
         report += 'Number of genes with non-hypothetical function: ' + str(non_hypothetical) + '\n'
         report += 'Number of genes with EC-number: ' + str(genes_with_ec) + '\n'
-        report += 'Average protein length: ' + str(int(sum(lengths) / float(len(lengths)))) + ' aa.\n'
+        report += 'Average protein length: ' + str(int(sum(prot_lengths) / 
+                                                       float(len(prot_lengths)))) + ' aa.\n'
         kbr = KBaseReport(os.environ['SDK_CALLBACK_URL'], token=ctx['token'])
         report_info = kbr.create_extended_report(
             {'message': report,
