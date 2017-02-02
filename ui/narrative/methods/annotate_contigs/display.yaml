@@ -29,14 +29,14 @@ suggestions:
 parameters :
     assembly_ref :
         ui-name : |
-            Read library
+            Assembly
         short-hint : |
-            The libraries of Illumina reads to be assembled
+            Assembly object with contigs
     output_genome_name :
         ui-name : |
-            Output ContigSet
+            Output Genome
         short-hint : |
-            The name under which the resulting ContigSet will be saved in the Narrative
+            The name under which the resulting Genome will be saved in the Narrative
     kingdom :
         ui-name : |
             Kingdom
@@ -105,7 +105,7 @@ description : |
     </p>
     
     <p>
-    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 10 minutes on a quad-core computer, and scales well to 32 core SMP systems. It produces GFF3, GBK and SQN files that are ready for editing in Sequin and ultimately submitted to Genbank/DDJB/ENA.
+    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 10 minutes.
     </p>
 
     <p>

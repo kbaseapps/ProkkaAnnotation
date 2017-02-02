@@ -35,7 +35,7 @@
         },
         {
             "id": "kingdom",
-            "optional": false,
+            "optional": true,
             "advanced": true,
             "allow_multiple": false,
             "default_values": ["Bacteria"],
@@ -82,7 +82,7 @@
         },
         {
             "id": "gram",
-            "optional": false,
+            "optional": true,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [""],
@@ -106,7 +106,7 @@
         },
         {
             "id": "metagenome",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
@@ -118,7 +118,7 @@
         },
         {
             "id": "rawproduct",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
@@ -130,7 +130,7 @@
         },
         {
             "id": "fast",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
@@ -161,7 +161,7 @@
         },
         {
             "id": "rfam",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
@@ -173,7 +173,7 @@
         },
         {
             "id": "norrna",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
@@ -185,7 +185,7 @@
         },
         {
             "id": "notrna",
-            "optional":false,
+            "optional":true,
             "advanced":true,
             "allow_multiple":false,
             "default_values":["0"],
