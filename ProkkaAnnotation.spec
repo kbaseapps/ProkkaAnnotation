@@ -25,16 +25,17 @@ module ProkkaAnnotation {
             output_workspace - output workspace name,
             output_genome_name - output object name,
         Optional parameters (correspond to PROKKA command line arguments):
+          --scientific_name Genome scientific name (default 'Unknown')
           --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
           --genus [X]       Genus name (triggers to use --usegenus)
-          --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
+          --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '11')
           --gram [X]        Gram: -/neg +/pos (default '')
           --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
           --rawproduct      Do not clean up /product annotation (default OFF)
           --fast            Fast mode - skip CDS /product searching (default OFF)
           --mincontiglen [N] Minimum contig size [NCBI needs 200] (default '1')
           --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
-          --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0')
+          --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default OFF)
           --norrna          Don't run rRNA search (default OFF)
           --notrna          Don't run tRNA search (default OFF)
     */
@@ -42,6 +43,7 @@ module ProkkaAnnotation {
         assembly_ref assembly_ref;
         string output_workspace;
         string output_genome_name;
+        string scientific_name;
         string kingdom;
         string genus;
         int gcode;

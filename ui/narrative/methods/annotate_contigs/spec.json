@@ -21,6 +21,14 @@
                 "valid_ws_types": ["KBaseGenomeAnnotations.Assembly"]
             }
         },
+        {  
+            "id": "scientific_name",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type" : "text" 
+        },
         {
             "id": "output_genome_name",
             "optional": false,
@@ -214,6 +222,10 @@
                 {
                     "input_parameter": "output_genome_name",
                     "target_property": "output_genome_name"
+                },
+                {
+                    "input_parameter": "scientific_name",
+                    "target_property": "scientific_name"
                 },
                 {
                     "input_parameter": "kingdom",

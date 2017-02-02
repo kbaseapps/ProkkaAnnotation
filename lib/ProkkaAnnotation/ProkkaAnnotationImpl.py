@@ -100,16 +100,19 @@ class ProkkaAnnotation:
             new_ids_to_old[new_id] = old_id
         SeqIO.write(records, renamed_fasta_file, "fasta")
         output_dir = "/kb/module/work/tmp/temp_" + str(uuid.uuid4())
+        scientific_name = params.get('scientific_name', 'Unknown')
         # --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
         kingdom = str(params.get('kingdom', "Bacteria"))
         prokka_cmd_list = ["perl", "/kb/prokka/bin/prokka", "--outdir", output_dir, "--prefix",
-                          "mygenome", "--kingdom", kingdom]
+                          "mygenome", "--kingdom", kingdom, "--cpus", '1']
         # --genus [X]       Genus name (triggers to use --usegenus)
         if 'genus' in params and params['genus']:
             prokka_cmd_list.extend(['--genus', str(params['genus']), '--usegenus'])
         # --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
+        gcode = 11
         if 'gcode' in params and params['gcode']:
-            prokka_cmd_list.extend(['--gcode', str(params['gcode'])])
+            gcode = params['gcode']
+        prokka_cmd_list.extend(['--gcode', str(gcode)])
         # --gram [X]        Gram: -/neg +/pos (default '')
         if 'gram' in params and params['gram']:
             prokka_cmd_list.extend(['--gram', str(params['gram'])])
@@ -138,6 +141,7 @@ class ProkkaAnnotation:
         if 'notrna' in params and params['notrna'] == 1:
             prokka_cmd_list.append("--notrna")
         prokka_cmd_list.append(renamed_fasta_file)
+        print(str(prokka_cmd_list))
         subprocess.Popen(prokka_cmd_list, cwd=self.scratch).wait()
         faa_file = output_dir + "/mygenome.faa"
         cds_to_prot = {}
@@ -219,11 +223,10 @@ class ProkkaAnnotation:
                         cdss.append(cds)
                     if mrna:
                         mrnas.append(mrna)
-        genome = {'id': 'Unknown', 'features': features, 'scientific_name': 'Unknown', 
-                  'domain': 'Bacteria', 'genetic_code': 11, 'assembly_ref': assembly_ref,
+        genome = {'id': 'Unknown', 'features': features, 'scientific_name': scientific_name,
+                  'domain': kingdom, 'genetic_code': gcode, 'assembly_ref': assembly_ref,
                   'cdss': cdss, 'mrnas': mrnas, 'source': 'PROKKA annotation pipeline',
-                  'gc_content': gc_content,'dna_size': dna_size,
-                  'reference_annotation': 0}
+                  'gc_content': gc_content,'dna_size': dna_size, 'reference_annotation': 0}
         prov = ctx.provenance()
         ga = GenomeAnnotationAPI(self.sw_url, token=ctx['token'])
         info = ga.save_one_genome_v1({'workspace': output_workspace, 'name': output_genome_name,

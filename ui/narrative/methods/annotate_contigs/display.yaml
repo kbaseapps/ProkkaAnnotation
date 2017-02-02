@@ -32,6 +32,11 @@ parameters :
             Assembly
         short-hint : |
             Assembly object with contigs
+    scientific_name :
+        ui-name : |
+            Scientific name
+        short-hint : |
+            Optional genome scientific name (default 'Unknown')
     output_genome_name :
         ui-name : |
             Output Genome
@@ -44,14 +49,14 @@ parameters :
             Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria').
     genus :
         ui-name : |
-            X
+            Genus
         short-hint : |
-             Genus name (triggers to use --usegenus).
+             Optional genus name (triggers to use genus-specific BLAST databases).
     gcode :
         ui-name : |
             Genetic code
         short-hint : |
-             Genetic code / Translation table (default '0').
+             Genetic code / Translation table (default '11').
     gram :
         ui-name : |
             Gram-type
@@ -76,7 +81,7 @@ parameters :
         ui-name : |
             Min.contig size
         short-hint : |
-            Minimum contig size [NCBI needs 200] (default '1').
+            Minimum contig size filter(default '1').
     evalue :
         ui-name : |
             E-value
@@ -86,7 +91,7 @@ parameters :
         ui-name : |
             Rfam
         short-hint : |
-            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default '0').
+            Enable searching for ncRNAs with Infernal+Rfam (SLOW!, default OFF).
     norrna :
         ui-name : |
             No rRNA
@@ -105,7 +110,7 @@ description : |
     </p>
     
     <p>
-    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 10 minutes.
+    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 20 minutes.
     </p>
 
     <p>
