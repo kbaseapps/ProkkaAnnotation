@@ -94,7 +94,6 @@ class ProkkaAnnotation:
                     ec_to_sso[ec] = sso_list
                 sso_list.append(sso['term_hash'][sso_id])
         print("EC found in SSO: " + str(len(ec_to_sso)))
-        print("EC with unique SSO: " + str(len([ec for ec in ec_to_sso if len(ec_to_sso[ec]) == 1])))
         sso_info = sso_ret['info']
         sso_ref = str(sso_info[6]) + '/' + str(sso_info[0]) + '/' + str(sso_info[4])
         with open('/kb/module/work/seed_so.json', 'w') as outfile:
@@ -136,7 +135,7 @@ class ProkkaAnnotation:
         prokka_cmd_list.extend(['--gcode', str(gcode)])
         # --gram [X]        Gram: -/neg +/pos (default '')
         if 'gram' in params and params['gram']:
-            prokka_cmd_list.extend(['--gram', str(params['gram'])])
+            raise ValueError("gram parameter is not supported in current Prokka installation")
         # --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
         if 'metagenome' in params and params['metagenome'] == 1:
             prokka_cmd_list.append("--metagenome")
@@ -162,7 +161,7 @@ class ProkkaAnnotation:
         if 'notrna' in params and params['notrna'] == 1:
             prokka_cmd_list.append("--notrna")
         prokka_cmd_list.append(renamed_fasta_file)
-        print(str(prokka_cmd_list))
+        print("Prokka command line: " + str(prokka_cmd_list))
         subprocess.Popen(prokka_cmd_list, cwd=self.scratch).wait()
         faa_file = output_dir + "/mygenome.faa"
         cds_to_prot = {}

@@ -51,17 +51,12 @@ parameters :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name (triggers to use genus-specific BLAST databases).
+             Optional genus name: Enterococcus|Escherichia|Staphylococcus (uses genus-specific BLAST database).
     gcode :
         ui-name : |
             Genetic code
         short-hint : |
              Genetic code / Translation table (default '11').
-    gram :
-        ui-name : |
-            Gram-type
-        short-hint : |
-            Gram: -/neg +/pos (default '').
     metagenome :
         ui-name : |
             Metagenome

@@ -29,7 +29,6 @@ module ProkkaAnnotation {
           --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
           --genus [X]       Genus name (triggers to use --usegenus)
           --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '11')
-          --gram [X]        Gram: -/neg +/pos (default '')
           --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
           --rawproduct      Do not clean up /product annotation (default OFF)
           --fast            Fast mode - skip CDS /product searching (default OFF)
@@ -47,7 +46,6 @@ module ProkkaAnnotation {
         string kingdom;
         string genus;
         int gcode;
-        string gram;
         boolean metagenome;
         boolean rawproduct;
         boolean fast;

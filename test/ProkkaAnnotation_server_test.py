@@ -92,15 +92,15 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                                   'evalue': None,
                                                   'fast': 0,
                                                   'gcode': None,
-                                                  'genus': None,
-                                                  'gram': None,
+                                                  'genus': '',
                                                   'kingdom': 'Bacteria',
                                                   'metagenome': 0,
                                                   'mincontiglen': 1,
                                                   'norrna': 0,
                                                   'notrna': 0,
                                                   'rawproduct': 0,
-                                                  'rfam': 1
+                                                  'rfam': 1,
+                                                  'scientific_name': 'Super : diper - name;'
                                                   })[0]
         rep = self.getWsClient().get_objects([{'ref': result['report_ref']}])[0]['data']
         self.assertTrue('text_message' in rep)

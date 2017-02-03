@@ -21,6 +21,7 @@ RUN apt-get update -qq && \
 # clone prokka
 WORKDIR /kb
 RUN git clone -b "v1.11" https://github.com/tseemann/prokka && \
+    wget https://github.com/tseemann/prokka/raw/master/db/genus/Escherichia -P /kb/prokka/db/genus/ && \
     prokka/bin/prokka --setupdb
 
 # set links to /usr/bin
