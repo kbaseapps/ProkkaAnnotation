@@ -5,6 +5,7 @@ import subprocess
 import uuid
 import shutil
 import hashlib
+import json
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -79,6 +80,26 @@ class ProkkaAnnotation:
         output_genome_name = self._get_input_value(params, 'output_genome_name')
         output_workspace = self._get_input_value(params, 'output_workspace')
         ws_client = workspaceService(self.ws_url, token=ctx['token'])
+        
+        sso_ret = ws_client.get_objects([{'ref': "KBaseOntology/seed_subsystem_ontology"}])[0]
+        sso = sso_ret['data']
+        ec_to_sso = {}
+        for sso_id in sso['term_hash']:
+            sso_name = sso['term_hash'][sso_id]['name']
+            if "(EC " in sso_name and sso_name.endswith(")"):
+                ec = sso_name[sso_name.index("(EC ") + 4 : -1].strip()
+                sso_list = ec_to_sso.get(ec, None)
+                if not sso_list:
+                    sso_list = []
+                    ec_to_sso[ec] = sso_list
+                sso_list.append(sso['term_hash'][sso_id])
+        print("EC found in SSO: " + str(len(ec_to_sso)))
+        print("EC with unique SSO: " + str(len([ec for ec in ec_to_sso if len(ec_to_sso[ec]) == 1])))
+        sso_info = sso_ret['info']
+        sso_ref = str(sso_info[6]) + '/' + str(sso_info[0]) + '/' + str(sso_info[4])
+        with open('/kb/module/work/seed_so.json', 'w') as outfile:
+            json.dump(sso, outfile, sort_keys = True, indent = 4)
+        
         assembly_info = ws_client.get_object_info_new({'objects': [{'ref': assembly_ref}],
                                                        'includeMetadata': 1})[0]
         assembly_meta = assembly_info[10]
@@ -159,6 +180,7 @@ class ProkkaAnnotation:
         features = []
         non_hypothetical = 0
         genes_with_ec = 0
+        genes_with_sso = 0
         prot_lengths = []
         with open(gff_file, "r") as f1:
             for rec in GFF.parse(f1):
@@ -200,6 +222,17 @@ class ProkkaAnnotation:
                         feature['function'] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
+                    if ec and ec in ec_to_sso:
+                        sso_list = ec_to_sso[ec]
+                        sso_terms = {}
+                        for sso_item in sso_list:
+                            sso_terms[sso_item['id']] = {'id': sso_item['id'],
+                                                         'evidence': [],
+                                                         'term_name': sso_item['name'],
+                                                         'ontology_ref': sso_ref,
+                                                         'term_lineage': []}
+                        feature['ontology_terms'] = {'SSO': sso_terms}
+                        genes_with_sso += 1
                     cds = None
                     mrna = None
                     prot = cds_to_prot.get(generated_id)
@@ -240,6 +273,7 @@ class ProkkaAnnotation:
         report += 'Number of protein coding genes: ' + str(len(prot_lengths)) + '\n'
         report += 'Number of genes with non-hypothetical function: ' + str(non_hypothetical) + '\n'
         report += 'Number of genes with EC-number: ' + str(genes_with_ec) + '\n'
+        report += 'Number of genes with Seed Subsystem Ontology: ' + str(genes_with_sso) + '\n'
         report += 'Average protein length: ' + str(int(sum(prot_lengths) / 
                                                        float(len(prot_lengths)))) + ' aa.\n'
         kbr = KBaseReport(os.environ['SDK_CALLBACK_URL'], token=ctx['token'])
