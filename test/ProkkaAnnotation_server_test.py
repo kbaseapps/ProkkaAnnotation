@@ -18,16 +18,26 @@ from biokbase.workspace.client import Workspace as workspaceService
 from ProkkaAnnotation.ProkkaAnnotationImpl import ProkkaAnnotation
 from ProkkaAnnotation.ProkkaAnnotationServer import MethodContext
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
+from ProkkaAnnotation.authclient import KBaseAuth as _KBaseAuth
+from AssemblySequenceAPI.AssemblySequenceAPIClient import AssemblySequenceAPI
 
 
 class ProkkaAnnotationTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        config_file = environ.get('KB_DEPLOYMENT_CONFIG', None)
+        cls.cfg = {}
+        config = ConfigParser()
+        config.read(config_file)
+        for nameval in config.items('ProkkaAnnotation'):
+            cls.cfg[nameval[0]] = nameval[1]
+        # Token validation
         token = environ.get('KB_AUTH_TOKEN', None)
-        user_id = requests.post(
-            'https://kbase.us/services/authorization/Sessions/Login',
-            data='token={}&fields=user_id'.format(token)).json()['user_id']
+        authServiceUrl = cls.cfg.get('auth-service-url',
+                "https://kbase.us/services/authorization/Sessions/Login")
+        auth_client = _KBaseAuth(authServiceUrl)
+        user_id = auth_client.get_user(token)
         # WARNING: don't call any logging methods on the context object,
         # it'll result in a NoneType error
         cls.ctx = MethodContext(None)
@@ -39,12 +49,6 @@ class ProkkaAnnotationTest(unittest.TestCase):
                              'method_params': []
                              }],
                         'authenticated': 1})
-        config_file = environ.get('KB_DEPLOYMENT_CONFIG', None)
-        cls.cfg = {}
-        config = ConfigParser()
-        config.read(config_file)
-        for nameval in config.items('ProkkaAnnotation'):
-            cls.cfg[nameval[0]] = nameval[1]
         cls.wsURL = cls.cfg['workspace-url']
         cls.wsClient = workspaceService(cls.wsURL, token=token)
         cls.serviceImpl = ProkkaAnnotation(cls.cfg)
@@ -105,3 +109,16 @@ class ProkkaAnnotationTest(unittest.TestCase):
         rep = self.getWsClient().get_objects([{'ref': result['report_ref']}])[0]['data']
         self.assertTrue('text_message' in rep)
         print("Report:\n" + str(rep['text_message']))
+        genome_ref = self.getWsName() + "/" + genome_name
+        genome = self.getWsClient().get_objects([{'ref': genome_ref}])[0]['data']
+        features_to_work = {}
+        for feature in genome['features']:
+            features_to_work[feature['id']] = feature['location']
+        aseq = AssemblySequenceAPI(os.environ['SDK_CALLBACK_URL'], token=self.getContext()['token'])
+        dna_sequences = aseq.get_dna_sequences({'requested_features': features_to_work, 
+                                                'assembly_ref': genome['assembly_ref']})['dna_sequences']
+        bad_dnas = 0
+        for feature in genome['features']:
+            if feature['dna_sequence'] != dna_sequences[feature['id']]:
+                bad_dnas += 1
+        self.assertEqual(bad_dnas, 0)
