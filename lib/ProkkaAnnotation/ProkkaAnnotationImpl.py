@@ -186,7 +186,7 @@ class ProkkaAnnotation:
                 contig_id = new_ids_to_old[str(rec.id)]
                 for ft in rec.features:
                     loc = ft.location
-                    min_pos = int(loc.start)
+                    min_pos = int(loc.start) + 1
                     max_pos = int(loc.end)
                     strand = '+' if loc.strand == 1 else '-'
                     flen = max_pos - min_pos + 1
