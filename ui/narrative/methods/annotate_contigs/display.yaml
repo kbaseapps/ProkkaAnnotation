@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate contigs with Prokka
+name: Annotate Assembly with Prokka
 tooltip: |
-    Annotate contigs with Prokka annotation pipeline.
+    Annotate Assembly with Prokka annotation pipeline.
 screenshots: []
 
 icon: prokka.png
