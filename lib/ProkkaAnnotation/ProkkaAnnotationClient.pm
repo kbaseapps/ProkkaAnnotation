@@ -126,9 +126,24 @@ AnnotateContigsParams is a reference to a hash where the following keys are defi
 	assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
 	output_workspace has a value which is a string
 	output_genome_name has a value which is a string
+	scientific_name has a value which is a string
+	kingdom has a value which is a string
+	genus has a value which is a string
+	gcode has a value which is an int
+	metagenome has a value which is a ProkkaAnnotation.boolean
+	rawproduct has a value which is a ProkkaAnnotation.boolean
+	fast has a value which is a ProkkaAnnotation.boolean
+	mincontiglen has a value which is an int
+	evalue has a value which is a string
+	rfam has a value which is a ProkkaAnnotation.boolean
+	norrna has a value which is a ProkkaAnnotation.boolean
+	notrna has a value which is a ProkkaAnnotation.boolean
 assembly_ref is a string
+boolean is an int
 AnnotateContigsOutput is a reference to a hash where the following keys are defined:
 	output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
+	report_name has a value which is a string
+	report_ref has a value which is a string
 genome_ref is a string
 
 </pre>
@@ -143,9 +158,24 @@ AnnotateContigsParams is a reference to a hash where the following keys are defi
 	assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
 	output_workspace has a value which is a string
 	output_genome_name has a value which is a string
+	scientific_name has a value which is a string
+	kingdom has a value which is a string
+	genus has a value which is a string
+	gcode has a value which is an int
+	metagenome has a value which is a ProkkaAnnotation.boolean
+	rawproduct has a value which is a ProkkaAnnotation.boolean
+	fast has a value which is a ProkkaAnnotation.boolean
+	mincontiglen has a value which is an int
+	evalue has a value which is a string
+	rfam has a value which is a ProkkaAnnotation.boolean
+	norrna has a value which is a ProkkaAnnotation.boolean
+	notrna has a value which is a ProkkaAnnotation.boolean
 assembly_ref is a string
+boolean is an int
 AnnotateContigsOutput is a reference to a hash where the following keys are defined:
 	output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
+	report_name has a value which is a string
+	report_ref has a value which is a string
 genome_ref is a string
 
 
@@ -294,6 +324,37 @@ sub _validate_version {
 
 
 
+=head2 boolean
+
+=over 4
+
+
+
+=item Description
+
+A boolean. 0 = false, anything else = true.
+
+
+=item Definition
+
+=begin html
+
+<pre>
+an int
+</pre>
+
+=end html
+
+=begin text
+
+an int
+
+=end text
+
+=back
+
+
+
 =head2 assembly_ref
 
 =over 4
@@ -364,6 +425,27 @@ a string
 
 
 
+=item Description
+
+Required parameters:
+    assembly_ref - reference to Assembly object,
+    output_workspace - output workspace name,
+    output_genome_name - output object name,
+Optional parameters (correspond to PROKKA command line arguments):
+  --scientific_name Genome scientific name (default 'Unknown')
+  --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria')
+  --genus [X]       Genus name (triggers to use --usegenus)
+  --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '11')
+  --metagenome      Improve gene predictions for highly fragmented genomes (default OFF)
+  --rawproduct      Do not clean up /product annotation (default OFF)
+  --fast            Fast mode - skip CDS /product searching (default OFF)
+  --mincontiglen [N] Minimum contig size [NCBI needs 200] (default '1')
+  --evalue [n.n]    Similarity e-value cut-off (default '1e-06')
+  --rfam            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default OFF)
+  --norrna          Don't run rRNA search (default OFF)
+  --notrna          Don't run tRNA search (default OFF)
+
+
 =item Definition
 
 =begin html
@@ -373,6 +455,18 @@ a reference to a hash where the following keys are defined:
 assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
 output_workspace has a value which is a string
 output_genome_name has a value which is a string
+scientific_name has a value which is a string
+kingdom has a value which is a string
+genus has a value which is a string
+gcode has a value which is an int
+metagenome has a value which is a ProkkaAnnotation.boolean
+rawproduct has a value which is a ProkkaAnnotation.boolean
+fast has a value which is a ProkkaAnnotation.boolean
+mincontiglen has a value which is an int
+evalue has a value which is a string
+rfam has a value which is a ProkkaAnnotation.boolean
+norrna has a value which is a ProkkaAnnotation.boolean
+notrna has a value which is a ProkkaAnnotation.boolean
 
 </pre>
 
@@ -384,6 +478,18 @@ a reference to a hash where the following keys are defined:
 assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
 output_workspace has a value which is a string
 output_genome_name has a value which is a string
+scientific_name has a value which is a string
+kingdom has a value which is a string
+genus has a value which is a string
+gcode has a value which is an int
+metagenome has a value which is a ProkkaAnnotation.boolean
+rawproduct has a value which is a ProkkaAnnotation.boolean
+fast has a value which is a ProkkaAnnotation.boolean
+mincontiglen has a value which is an int
+evalue has a value which is a string
+rfam has a value which is a ProkkaAnnotation.boolean
+norrna has a value which is a ProkkaAnnotation.boolean
+notrna has a value which is a ProkkaAnnotation.boolean
 
 
 =end text
@@ -405,6 +511,8 @@ output_genome_name has a value which is a string
 <pre>
 a reference to a hash where the following keys are defined:
 output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
+report_name has a value which is a string
+report_ref has a value which is a string
 
 </pre>
 
@@ -414,6 +522,8 @@ output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
 
 a reference to a hash where the following keys are defined:
 output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
+report_name has a value which is a string
+report_ref has a value which is a string
 
 
 =end text

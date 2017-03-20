@@ -35,14 +35,43 @@ class ProkkaAnnotation(object):
 
     def annotate_contigs(self, params, context=None):
         """
-        :param params: instance of type "AnnotateContigsParams" -> structure:
-           parameter "assembly_ref" of type "assembly_ref" (Reference to an
-           Assembly object in the workspace @id ws
+        :param params: instance of type "AnnotateContigsParams" (Required
+           parameters: assembly_ref - reference to Assembly object,
+           output_workspace - output workspace name, output_genome_name -
+           output object name, Optional parameters (correspond to PROKKA
+           command line arguments): --scientific_name Genome scientific name
+           (default 'Unknown') --kingdom [X]     Annotation mode:
+           Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria') --genus
+           [X]       Genus name (triggers to use --usegenus) --gcode [N]     
+           Genetic code / Translation table (set if --kingdom is set)
+           (default '11') --metagenome      Improve gene predictions for
+           highly fragmented genomes (default OFF) --rawproduct      Do not
+           clean up /product annotation (default OFF) --fast            Fast
+           mode - skip CDS /product searching (default OFF) --mincontiglen
+           [N] Minimum contig size [NCBI needs 200] (default '1') --evalue
+           [n.n]    Similarity e-value cut-off (default '1e-06') --rfam      
+           Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default
+           OFF) --norrna          Don't run rRNA search (default OFF)
+           --notrna          Don't run tRNA search (default OFF)) ->
+           structure: parameter "assembly_ref" of type "assembly_ref"
+           (Reference to an Assembly object in the workspace @id ws
            KBaseGenomeAnnotations.Assembly), parameter "output_workspace" of
-           String, parameter "output_genome_name" of String
+           String, parameter "output_genome_name" of String, parameter
+           "scientific_name" of String, parameter "kingdom" of String,
+           parameter "genus" of String, parameter "gcode" of Long, parameter
+           "metagenome" of type "boolean" (A boolean. 0 = false, anything
+           else = true.), parameter "rawproduct" of type "boolean" (A
+           boolean. 0 = false, anything else = true.), parameter "fast" of
+           type "boolean" (A boolean. 0 = false, anything else = true.),
+           parameter "mincontiglen" of Long, parameter "evalue" of String,
+           parameter "rfam" of type "boolean" (A boolean. 0 = false, anything
+           else = true.), parameter "norrna" of type "boolean" (A boolean. 0
+           = false, anything else = true.), parameter "notrna" of type
+           "boolean" (A boolean. 0 = false, anything else = true.)
         :returns: instance of type "AnnotateContigsOutput" -> structure:
            parameter "output_genome_ref" of type "genome_ref" (Reference to
-           an Genome object in the workspace @id ws KBaseGenomes.Genome)
+           an Genome object in the workspace @id ws KBaseGenomes.Genome),
+           parameter "report_name" of String, parameter "report_ref" of String
         """
         return self._client.call_method(
             'ProkkaAnnotation.annotate_contigs',

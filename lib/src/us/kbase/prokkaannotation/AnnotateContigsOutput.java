@@ -19,12 +19,18 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Generated("com.googlecode.jsonschema2pojo")
 @JsonPropertyOrder({
-    "output_genome_ref"
+    "output_genome_ref",
+    "report_name",
+    "report_ref"
 })
 public class AnnotateContigsOutput {
 
     @JsonProperty("output_genome_ref")
     private String outputGenomeRef;
+    @JsonProperty("report_name")
+    private String reportName;
+    @JsonProperty("report_ref")
+    private String reportRef;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     @JsonProperty("output_genome_ref")
@@ -42,6 +48,36 @@ public class AnnotateContigsOutput {
         return this;
     }
 
+    @JsonProperty("report_name")
+    public String getReportName() {
+        return reportName;
+    }
+
+    @JsonProperty("report_name")
+    public void setReportName(String reportName) {
+        this.reportName = reportName;
+    }
+
+    public AnnotateContigsOutput withReportName(String reportName) {
+        this.reportName = reportName;
+        return this;
+    }
+
+    @JsonProperty("report_ref")
+    public String getReportRef() {
+        return reportRef;
+    }
+
+    @JsonProperty("report_ref")
+    public void setReportRef(String reportRef) {
+        this.reportRef = reportRef;
+    }
+
+    public AnnotateContigsOutput withReportRef(String reportRef) {
+        this.reportRef = reportRef;
+        return this;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -54,7 +90,7 @@ public class AnnotateContigsOutput {
 
     @Override
     public String toString() {
-        return ((((("AnnotateContigsOutput"+" [outputGenomeRef=")+ outputGenomeRef)+", additionalProperties=")+ additionalProperties)+"]");
+        return ((((((((("AnnotateContigsOutput"+" [outputGenomeRef=")+ outputGenomeRef)+", reportName=")+ reportName)+", reportRef=")+ reportRef)+", additionalProperties=")+ additionalProperties)+"]");
     }
 
 }
