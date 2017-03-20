@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate Contigs with Prokka
+name: Annotate with Prokka
 tooltip: |
-    Annotate Contigs with Prokka annotation pipeline
+    Annotate an Assembly with Prokka annotation pipeline
 screenshots: []
 
 icon: prokka.png
@@ -46,12 +46,12 @@ parameters :
         ui-name : |
             Kingdom
         short-hint : |
-            Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria').
+            Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
     genus :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name: Enterococcus|Escherichia|Staphylococcus (uses genus-specific BLAST database).
+             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database).
     gcode :
         ui-name : |
             Genetic code
@@ -109,7 +109,7 @@ description : |
     </p>
 
     <p>
-    For rRna prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
+    For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
     </p>
 
     <p>Prokka version: 1.11</p>
