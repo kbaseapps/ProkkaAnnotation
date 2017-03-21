@@ -19,7 +19,7 @@ suggestions:
             []
     methods:
         related:
-            [annotate_contigset, annotate_domains_in_a_genome, annotate_plant_transcripts, reannotate_microbial_genome]
+            []
         next:
             []
 
