@@ -31,27 +31,27 @@ parameters :
         ui-name : |
             Assembly
         short-hint : |
-            Assembly object with contigs
+            Assembly object (set of contigs)
     scientific_name :
         ui-name : |
             Scientific name
         short-hint : |
-            Optional genome scientific name (default 'Unknown')
+            Optional scientific name of organism (default 'Unknown')
     output_genome_name :
         ui-name : |
-            Output Genome
+            Output genome
         short-hint : |
             The name under which the resulting Genome will be saved in the Narrative
     kingdom :
         ui-name : |
             Kingdom
         short-hint : |
-            Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria').
+            Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
     genus :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name: Enterococcus|Escherichia|Staphylococcus (uses genus-specific BLAST database).
+             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database).
     gcode :
         ui-name : |
             Genetic code
@@ -81,7 +81,7 @@ parameters :
         ui-name : |
             E-value
         short-hint : |
-            Similarity e-value cut-off (default '1e-06').
+            Similarity e-value cutoff (default '1e-06').
     rfam :
         ui-name : |
             Rfam
@@ -105,11 +105,11 @@ description : |
     </p>
     
     <p>
-    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4 Mbp genome can be fully annotated in less than 20 minutes.
+    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4Mbp genome can be fully annotated in less than 20 minutes.
     </p>
 
     <p>
-    As rRna predictor this installation currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
+    For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
     </p>
 
     <p>Prokka version: 1.11</p>
