@@ -46,17 +46,17 @@ parameters :
         ui-name : |
             Kingdom
         short-hint : |
-            Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
+            Annotation mode: Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
     genus :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database).
+             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database)(Default 'Genus')
     gcode :
         ui-name : |
             Genetic code
         short-hint : |
-             Genetic code / Translation table (default '11').
+             Genetic code / Translation table (set if --kingdom is set) (default '0')
     metagenome :
         ui-name : |
             Metagenome
@@ -76,7 +76,7 @@ parameters :
         ui-name : |
             Min.contig size
         short-hint : |
-            Minimum contig size filter(default '1').
+            Minimum contig size [NCBI needs 200] (default '1')
     evalue :
         ui-name : |
             E-value
