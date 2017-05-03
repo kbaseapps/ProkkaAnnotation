@@ -42,7 +42,7 @@ RUN pip install cffi --upgrade \
 #    mv ./linux.tbl2asn /kb/prokka/binaries/linux/tbl2asn
 
 WORKDIR /kb
-RUN git clone -b "0.7" https://github.com/tseemann/barrnap
+RUN git clone -b "0.8" https://github.com/tseemann/barrnap
 ENV PATH $PATH:/kb/barrnap/bin
 
 RUN git clone -b "bcbio-gff-v0.6.4" https://github.com/chapmanb/bcbb && \
