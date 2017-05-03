@@ -95,7 +95,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                                   'output_genome_name': genome_name,
                                                   'evalue': None,
                                                   'fast': 0,
-                                                  'gcode': None,
+                                                  'gcode': 0,
                                                   'genus': 'genus',
                                                   'kingdom': 'Bacteria',
                                                   'metagenome': 0,
