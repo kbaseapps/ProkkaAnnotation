@@ -20,8 +20,7 @@ RUN apt-get update -qq && \
 
 # clone prokka
 WORKDIR /kb
-RUN git clone -b "v1.11" https://github.com/tseemann/prokka && \
-    wget https://github.com/tseemann/prokka/raw/master/db/genus/Escherichia -P /kb/prokka/db/genus/ && \
+RUN git clone -b "v1.12" https://github.com/tseemann/prokka && \
     prokka/bin/prokka --setupdb
 
 # set links to /usr/bin
@@ -36,14 +35,14 @@ RUN pip install cffi --upgrade \
     && pip install 'requests[security]' --upgrade
 
 # Update tbl2asn to recent version (25.3):
-RUN mv /kb/prokka/binaries/linux/tbl2asn /kb/prokka/binaries/linux/tbl2asn.orig
-RUN wget ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux.tbl2asn.gz
-RUN gunzip ./linux.tbl2asn.gz
-RUN chmod 777 ./linux.tbl2asn
-RUN mv ./linux.tbl2asn /kb/prokka/binaries/linux/tbl2asn
+#RUN mv /kb/prokka/binaries/linux/tbl2asn /kb/prokka/binaries/linux/tbl2asn.orig && \
+#    wget ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux.tbl2asn.gz && \
+#    gunzip ./linux.tbl2asn.gz && \
+#    chmod 777 ./linux.tbl2asn && \
+#    mv ./linux.tbl2asn /kb/prokka/binaries/linux/tbl2asn
 
 WORKDIR /kb
-RUN git clone -b "0.7" https://github.com/tseemann/barrnap
+RUN git clone -b "0.8" https://github.com/tseemann/barrnap
 ENV PATH $PATH:/kb/barrnap/bin
 
 RUN git clone -b "bcbio-gff-v0.6.4" https://github.com/chapmanb/bcbb && \

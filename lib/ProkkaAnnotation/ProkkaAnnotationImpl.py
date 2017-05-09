@@ -158,7 +158,7 @@ class ProkkaAnnotation:
         if 'genus' in params and params['genus']:
             prokka_cmd_list.extend(['--genus', str(params['genus']), '--usegenus'])
         # --gcode [N]       Genetic code / Translation table (set if --kingdom is set) (default '0')
-        gcode = 11
+        gcode = 0
         if 'gcode' in params and params['gcode']:
             gcode = params['gcode']
         prokka_cmd_list.extend(['--gcode', str(gcode)])
