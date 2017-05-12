@@ -112,8 +112,8 @@ description : |
     For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
     </p>
 
-    <p>Prokka version: 1.11</p>
-    <p>Barrnap version: 0.7</p>
+    <p>Prokka version: 1.12</p>
+    <p>Barrnap version: 0.8</p>
     
 publications :
     -
