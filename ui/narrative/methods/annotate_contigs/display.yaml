@@ -51,7 +51,7 @@ parameters :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database)(Default 'Genus')
+             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database) (default 'do not use genus-specific database')
     gcode :
         ui-name : |
             Genetic code

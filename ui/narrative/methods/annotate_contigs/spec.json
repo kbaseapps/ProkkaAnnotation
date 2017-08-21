@@ -43,7 +43,7 @@
         },
         {
             "id": "kingdom",
-            "optional": true,
+            "optional": false,
             "advanced": true,
             "allow_multiple": false,
             "default_values": ["Bacteria"],
@@ -56,7 +56,7 @@
                 },
                 {
                   "value": "Archaea",
-                  "display": "Archaea cell"
+                  "display": "Archaea"
                 },
                 {
                   "value": "Mitochondria",
@@ -80,7 +80,7 @@
             "options": [
                 {
                  "value": "",
-                 "display": "Genus"
+                 "display": "Do not use genus-specific database"
                 },
                 {
                   "value": "Enterococcus",
