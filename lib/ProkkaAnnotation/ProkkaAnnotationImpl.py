@@ -133,8 +133,13 @@ class ProkkaAnnotation:
         assembly_meta = assembly_info[10]
         gc_content = float(assembly_meta.get("GC content"))
         dna_size = int(assembly_meta.get("Size"))
-        n_contigs = int(assembly_meta.get("N Contigs"))
-        if n_contigs > 30000:
+        n_contigs = 0
+        if 'N Contigs' in assembly_meta:
+            n_contigs = int(assembly_meta.get("N Contigs"))
+        else:
+            contig = ws_client.get_objects([{'ref': assembly_ref}])[0]
+            n_contigs = len(contig['data']['contigs'])
+        if n_contigs >= 30000:
             print "Hmmm.  There are over 30,000 contigs in this Assembly. "
             print "It looks like you are trying to run Prokka on a metagenome or non-prokayritoc data set."
             print "If this is a metagenome data set we recommend using an App like MaxBin to first bin the contigs into genome-like bins."

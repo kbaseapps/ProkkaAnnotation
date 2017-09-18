@@ -131,7 +131,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         assembly_file_name = "bogus.fna"  #"AP009048.fna"
         assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
         with open(assembly_temp_file, 'w') as f:
-            for i in range(1,100000):
+            for i in range(1,30002):
                 f.write('> contig_%d\n' % i)
                 f.write('AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC\n')
 
