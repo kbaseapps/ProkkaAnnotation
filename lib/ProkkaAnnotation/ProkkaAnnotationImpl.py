@@ -140,12 +140,12 @@ class ProkkaAnnotation:
             contig = ws_client.get_objects([{'ref': assembly_ref}])[0]
             n_contigs = len(contig['data']['contigs'])
         if n_contigs >= 30000:
-            print "Hmmm.  There are over 30,000 contigs in this Assembly. "
-            print "It looks like you are trying to run Prokka on a metagenome or non-prokayritoc data set."
-            print "If this is a metagenome data set we recommend using an App like MaxBin to first bin the contigs into genome-like bins."
-            print "These bins can then be individually annotated as a single genome using Prokka."
-            print "If this data comes from a Eukaryotic sample, KBase does not currently have an annotation app designed for Eukaryotes."
-            print "Alternatively, you can try reducing the number of contigs using a filter app."
+            print("Hmmm.  There are over 30,000 contigs in this Assembly. ")
+            print("It looks like you are trying to run Prokka on a metagenome or non-prokayritoc data set.")
+            print("If this is a metagenome data set we recommend using an App like MaxBin to first bin the contigs into genome-like bins.")
+            print("These bins can then be individually annotated as a single genome using Prokka.")
+            print("If this data comes from a Eukaryotic sample, KBase does not currently have an annotation app designed for Eukaryotes.")
+            print("Alternatively, you can try reducing the number of contigs using a filter app.")
             raise ValueError('Too many contigs for Prokka.  See logs for details and suggestios')
 
         au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'], token=ctx['token'])
