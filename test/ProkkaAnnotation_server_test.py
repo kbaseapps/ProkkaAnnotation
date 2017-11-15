@@ -122,3 +122,41 @@ class ProkkaAnnotationTest(unittest.TestCase):
             if feature['dna_sequence'] != dna_sequences[feature['id']]:
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
+
+    def test_annotate_contigs_too_big(self):
+        """
+        simulate a metagenome contig file
+        """
+        # Create a fake assembly with lots of contigs
+        assembly_file_name = "bogus.fna"  #"AP009048.fna"
+        assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
+        with open(assembly_temp_file, 'w') as f:
+            for i in range(1,30002):
+                f.write('> contig_%d\n' % i)
+                f.write('AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC\n')
+
+        assembly_name = 'Assembly.2'
+        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'], token=self.getContext()['token'])
+        assembly_ref = au.save_assembly_from_fasta({'file': {'path': assembly_temp_file}, 
+                                                    'workspace_name': self.getWsName(),
+                                                    'assembly_name': assembly_name})
+        genome_name = "Genome.1"
+        # This should fail with an error
+        with self.assertRaises(ValueError):
+            result = self.getImpl().annotate_contigs(self.getContext(),
+                                                     {'assembly_ref': assembly_ref,
+                                                      'output_workspace': self.getWsName(),
+                                                      'output_genome_name': genome_name,
+                                                      'evalue': None,
+                                                      'fast': 0,
+                                                      'gcode': 0,
+                                                      'genus': 'genus',
+                                                      'kingdom': 'Bacteria',
+                                                      'metagenome': 0,
+                                                      'mincontiglen': 1,
+                                                      'norrna': 0,
+                                                      'notrna': 0,
+                                                      'rawproduct': 0,
+                                                      'rfam': 1,
+                                                      'scientific_name': 'Super : diper - name;'
+                                                      })
