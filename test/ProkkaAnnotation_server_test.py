@@ -20,6 +20,7 @@ from ProkkaAnnotation.ProkkaAnnotationServer import MethodContext
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from ProkkaAnnotation.authclient import KBaseAuth as _KBaseAuth
 from AssemblySequenceAPI.AssemblySequenceAPIClient import AssemblySequenceAPI
+from GenomeAnnotationAPI.GenomeAnnotationAPIClient import GenomeAnnotationAPI
 
 
 class ProkkaAnnotationTest(unittest.TestCase):
@@ -84,13 +85,28 @@ class ProkkaAnnotationTest(unittest.TestCase):
         assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
         shutil.copy(assembly_test_file, assembly_temp_file)
         assembly_name = 'Assembly.1'
-        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'], token=self.getContext()['token'])
+        au = AssemblyUtil(os.environ['SDK_CALLBACK_URL'])
         assembly_ref = au.save_assembly_from_fasta({'file': {'path': assembly_temp_file}, 
                                                     'workspace_name': self.getWsName(),
                                                     'assembly_name': assembly_name})
+        # Add a genome to the WS to test ref_paths
         genome_name = "Genome.1"
+        genome = {'id': 'Unknown', 'features': [],
+                  'scientific_name': "",
+                  'domain': "", 'genetic_code': 0,
+                  'assembly_ref': assembly_ref,
+                  'cdss': [], 'mrnas': [],
+                  'source': 'Magic!',
+                  'gc_content': 0, 'dna_size': 0,
+                  'reference_annotation': 0}
+        prov = self.getContext().provenance()
+        ga = GenomeAnnotationAPI(os.environ['SDK_CALLBACK_URL'])
+        info = ga.save_one_genome_v1(
+            {'workspace': self.getWsName(), 'name': genome_name,
+             'data': genome, 'provenance': prov})['info']
+        genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
         result = self.getImpl().annotate_contigs(self.getContext(),
-                                                 {'assembly_ref': assembly_ref,
+                                                 {'assembly_ref': "{};{}".format(genome_ref, assembly_ref),
                                                   'output_workspace': self.getWsName(),
                                                   'output_genome_name': genome_name,
                                                   'evalue': None,
