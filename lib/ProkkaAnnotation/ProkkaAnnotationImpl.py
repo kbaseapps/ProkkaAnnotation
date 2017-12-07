@@ -249,8 +249,10 @@ class ProkkaAnnotation:
                     ec = self._get_qualifier_value(qualifiers.get('eC_number'))
                     gene = self._get_qualifier_value(qualifiers.get('gene'))
                     product = self._get_qualifier_value(qualifiers.get('product'))
-                    fid = name if name else generated_id
+                    fid = generated_id
                     aliases = []
+                    if name:
+                        aliases.append(name)
                     if gene:
                         aliases.append(gene)
                     if ec:
