@@ -27,7 +27,8 @@ RUN git clone -b "v1.12" https://github.com/tseemann/prokka && \
 ENV PATH $PATH:/kb/prokka/bin
 
 # update security libraries in the base image
-RUN pip install cffi --upgrade \
+RUN pip install setuptools --upgrade\
+    && pip install cffi --upgrade \
     && pip install pyopenssl --upgrade \
     && pip install ndg-httpsclient --upgrade \
     && pip install pyasn1 --upgrade \
