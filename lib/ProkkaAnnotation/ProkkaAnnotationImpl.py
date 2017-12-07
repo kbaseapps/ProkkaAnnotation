@@ -3,19 +3,15 @@
 import os
 import subprocess
 import uuid
-import shutil
 import hashlib
 import json
 from Bio import SeqIO
-from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import generic_protein
 from BCBio import GFF
 from pprint import pformat
 
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from GenomeAnnotationAPI.GenomeAnnotationAPIServiceClient import GenomeAnnotationAPI
 from KBaseReport.KBaseReportClient import KBaseReport
 from biokbase.workspace.client import Workspace as workspaceService  # @UnresolvedImport @IgnorePep8
 #END_HEADER
@@ -57,6 +53,7 @@ class ProkkaAnnotation:
         self.scratch = config['scratch']
         self.ws_url = config['workspace-url']
         self.sw_url = config['service-wizard']
+        self.gfu = GenomeFileUtil(os.environ['SDK_CALLBACK_URL'])
         #END_CONSTRUCTOR
         pass
 
@@ -304,9 +301,11 @@ class ProkkaAnnotation:
                   'cdss': cdss, 'mrnas': mrnas, 'source': 'PROKKA annotation pipeline',
                   'gc_content': gc_content,'dna_size': dna_size, 'reference_annotation': 0}
         prov = ctx.provenance()
-        ga = GenomeAnnotationAPI(self.sw_url, token=ctx['token'])
-        info = ga.save_one_genome_v1({'workspace': output_workspace, 'name': output_genome_name,
-                                      'data': genome, 'provenance': prov})['info']
+        gfu = GenomeFileUtil(self.sw_url, token=ctx['token'])
+        info = gfu.save_one_genome({'workspace': output_workspace,
+                                    'name': output_genome_name,
+                                    'data': genome,
+                                    'provenance': prov})['info']
         genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
         
         # Prepare report
