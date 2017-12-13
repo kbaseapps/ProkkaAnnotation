@@ -301,11 +301,10 @@ class ProkkaAnnotation:
                   'cdss': cdss, 'mrnas': mrnas, 'source': 'PROKKA annotation pipeline',
                   'gc_content': gc_content,'dna_size': dna_size, 'reference_annotation': 0}
         prov = ctx.provenance()
-        gfu = GenomeFileUtil(self.sw_url, token=ctx['token'])
-        info = gfu.save_one_genome({'workspace': output_workspace,
-                                    'name': output_genome_name,
-                                    'data': genome,
-                                    'provenance': prov})['info']
+        info = self.gfu.save_one_genome({'workspace': output_workspace,
+                                         'name': output_genome_name,
+                                         'data': genome,
+                                         'provenance': prov})['info']
         genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
         
         # Prepare report
