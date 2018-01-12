@@ -20,7 +20,7 @@ from ProkkaAnnotation.ProkkaAnnotationServer import MethodContext
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from ProkkaAnnotation.authclient import KBaseAuth as _KBaseAuth
 from AssemblySequenceAPI.AssemblySequenceAPIClient import AssemblySequenceAPI
-from GenomeAnnotationAPI.GenomeAnnotationAPIClient import GenomeAnnotationAPI
+from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 
 
 class ProkkaAnnotationTest(unittest.TestCase):
@@ -100,8 +100,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
                   'gc_content': 0, 'dna_size': 0,
                   'reference_annotation': 0}
         prov = self.getContext().provenance()
-        ga = GenomeAnnotationAPI(os.environ['SDK_CALLBACK_URL'])
-        info = ga.save_one_genome_v1(
+        gfu = GenomeFileUtil(os.environ['SDK_CALLBACK_URL'])
+        info = gfu.save_one_genome(
             {'workspace': self.getWsName(), 'name': genome_name,
              'data': genome, 'provenance': prov})['info']
         genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
