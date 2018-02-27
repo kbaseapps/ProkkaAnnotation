@@ -105,8 +105,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
             {'workspace': self.getWsName(), 'name': genome_name,
              'data': genome, 'provenance': prov})['info']
         genome_ref = str(info[6]) + '/' + str(info[0]) + '/' + str(info[4])
-        result = self.getImpl().annotate_contigs(self.getContext(),
-                                                 {'assembly_ref': "{};{}".format(genome_ref, assembly_ref),
+        result = self.getImpl().annotate(self.getContext(),
+                                                 {'object_ref': "{};{}".format(genome_ref, assembly_ref),
                                                   'output_workspace': self.getWsName(),
                                                   'output_genome_name': genome_name,
                                                   'evalue': None,
@@ -159,8 +159,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
         genome_name = "Genome.1"
         # This should fail with an error
         with self.assertRaises(ValueError):
-            result = self.getImpl().annotate_contigs(self.getContext(),
-                                                     {'assembly_ref': assembly_ref,
+            result = self.getImpl().annotate(self.getContext(),
+                                                     {'object_ref': assembly_ref,
                                                       'output_workspace': self.getWsName(),
                                                       'output_genome_name': genome_name,
                                                       'evalue': None,

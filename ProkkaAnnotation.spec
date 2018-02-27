@@ -3,15 +3,15 @@ A KBase module: ProkkaAnnotation
 */
 
 module ProkkaAnnotation {
-
-    /* A boolean. 0 = false, anything else = true. */
+   /* A boolean. 0 = false, anything else = true. */
     typedef int boolean;
 
     /*
-        Reference to an Assembly object in the workspace
+        Reference to an Assembly or Genome object in the workspace
         @id ws KBaseGenomeAnnotations.Assembly
+        @id ws KBaseGenomes.Genome
     */
-    typedef string assembly_ref;
+    typedef string data_obj_ref;
 
     /*
         Reference to an Genome object in the workspace
@@ -21,7 +21,7 @@ module ProkkaAnnotation {
 
     /*
         Required parameters:
-            assembly_ref - reference to Assembly object,
+            object_ref - reference to Assembly or Genome object,
             output_workspace - output workspace name,
             output_genome_name - output object name,
         Optional parameters (correspond to PROKKA command line arguments):
@@ -39,7 +39,7 @@ module ProkkaAnnotation {
           --notrna          Don't run tRNA search (default OFF)
     */
     typedef structure {
-        assembly_ref assembly_ref;
+        data_obj_ref object_ref;
         string output_workspace;
         string output_genome_name;
         string scientific_name;
@@ -54,13 +54,13 @@ module ProkkaAnnotation {
         boolean rfam;
         boolean norrna;
         boolean notrna;
-    } AnnotateContigsParams;
+    } AnnotateParams;
 
     typedef structure {
         genome_ref output_genome_ref;
         string report_name;
         string report_ref;
-    } AnnotateContigsOutput;
+    } AnnotateOutput;
 
-    funcdef annotate_contigs(AnnotateContigsParams params) returns (AnnotateContigsOutput) authentication required;
+    funcdef annotate(AnnotateParams params) returns (AnnotateOutput) authentication required;
 };

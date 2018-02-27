@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: Annotate Assembly with Prokka v1.12
+name: Annotate Assembly and ReAnnotate Genomes with Prokka v1.12
 tooltip: |
     Annotate Assembly with Prokka annotation pipeline.
 screenshots: []
@@ -27,11 +27,11 @@ suggestions:
 # Configure the display and description of parameters
 #
 parameters :
-    assembly_ref :
+    object_ref :
         ui-name : |
-            Assembly
+            Assembly or Genome
         short-hint : |
-            Assembly object (set of contigs)
+            Assembly object (set of dna contigs) or Genome object (set of features with Ontology and Function to reannotate)
     scientific_name :
         ui-name : |
             Scientific name
