@@ -43,25 +43,31 @@ class ProkkaAnnotation:
     #BEGIN_CLASS_HEADER
 
     def _get_input_value(self, params, key):
-        """
+        """Get value of key after checking for its existence
 
-        :param params:
-        :param key:
-        :return:
+        :param params: Params dictionary haystack
+        :param key: Key to search in Params
+        :return: Parameter Value
+        :raises ValueError: raises an exception if the key doesn't exist
         """
         if not key in params:
             raise ValueError('Parameter ' + key + ' should be set in input parameters')
         return params[key]
 
     def _get_qualifier_value(self, qualifier):
-        """
+        """Get first qualifier from the list of qualifiers
 
-        :param qualifier:
-        :return:
+        :param qualifier: list contents of the qualifier from BCBio GFF Tools
+        :return: first element in the list
         """
         return qualifier[0] if (qualifier and len(qualifier) > 0) else None
 
     def download_seed_data(self):
+        """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
+        the create a table from ec numbers to sso (ec_to_sso)
+
+        :return: None
+        """
         # Download Seed Reference Data
         sso_ret = self.ws_client.get_objects([{'ref': 'KBaseOntology/seed_subsystem_ontology'}])[0]
         sso = sso_ret['data']
@@ -82,13 +88,13 @@ class ProkkaAnnotation:
         self.sso_ref = sso_ref
 
     def inspect_assembly(self, assembly_meta, assembly_ref):
-        """
+        """Check to see if assembly has too many contigs and might not be a metagenome or
+        non prokaryotic dataset
 
-        :param assembly_meta:
-        :param assembly_ref:
-        :return:
+        :param assembly_meta: information about the assembly reference
+        :param assembly_ref: the assembly reference number
+        :return: a tuple containing gc_content and dna_size
         """
-
         gc_content = float(assembly_meta.get('GC content'))
         dna_size = int(assembly_meta.get('Size'))
         n_contigs = 0
@@ -113,11 +119,13 @@ class ProkkaAnnotation:
         assembly_info = namedtuple('assembly_info', 'gc_content dna_size')
         return assembly_info(gc_content, dna_size)
 
-    def create_renamed_assembly(self, assembly_fasta_filepath):
-        """
+    @staticmethod
+    def create_renamed_assembly(assembly_fasta_filepath):
+        """Rename records to be in the format of contig_N and output a new fasta file
 
         :param assembly_fasta_filepath:
-        :return:
+        :return: The path to the fasta file with renamed contigs the number of contigs,
+        the mapping from old ids to new ids, and the contigs as SeqRecords
         """
         records = []
         new_ids_to_old = {}
@@ -139,7 +147,8 @@ class ProkkaAnnotation:
         return renamed_assembly(renamed_assembly_fasta_filepath, contig_counter, new_ids_to_old,
                                 records)
 
-    def retrieve_prokka_results(self, output_dir):
+    @staticmethod
+    def retrieve_prokka_results(output_dir):
         """
 
         :param output_dir:
@@ -468,7 +477,7 @@ class ProkkaAnnotation:
                 new_function = new_annotations[fid].get('function', '')
                 new_ontology = new_annotations[fid].get('ontology_terms', None)
 
-                if new_function is not '' and new_function is not 'hypothetical_protein':
+                if new_function is not '' and new_function is not 'hypothetical protein':
                     genome_data['data']['features'][i]['function'] = new_function
                     stats['new_functions'] += 1
 
@@ -641,13 +650,6 @@ class ProkkaAnnotation:
         else:
             raise Exception('Unsupported type' + object_type)
         #END annotate
-
-        # At some point might do deeper type checking...
-        if not isinstance(returnVal, dict):
-            raise ValueError('Method annotate return value ' +
-                             'returnVal is not type dict as required.')
-        # return the results
-        return [returnVal]
 
     def status(self, ctx):
         #BEGIN_STATUS
