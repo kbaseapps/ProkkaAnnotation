@@ -78,6 +78,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
+
     def test_reannotate_genome(self):
         """
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.
