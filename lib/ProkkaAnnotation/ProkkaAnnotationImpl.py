@@ -36,7 +36,7 @@ class ProkkaAnnotation:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.0.5"
+    VERSION = "1.0.6"
     GIT_URL = "https://github.com/bio-boris/ProkkaAnnotation.git"
     GIT_COMMIT_HASH = "8c6463159e9effb84f719f124e9d82685cb70c9f"
 
@@ -606,12 +606,12 @@ class ProkkaAnnotation:
         self.ws_url = config["workspace-url"]
         self.callback_url = os.environ["SDK_CALLBACK_URL"]
 
+        self.ws_client = workspaceService(self.ws_url)
         self.gfu = GenomeFileUtil(self.callback_url)
         self.au = AssemblyUtil(self.callback_url)
         self.kbr = KBaseReport(self.callback_url)
         self.dfu = DataFileUtil(self.callback_url)
 
-        self.ws_client = None
         self.sso_ref = None
         self.ctx = None
         self.ec_to_sso = {}
@@ -664,14 +664,13 @@ class ProkkaAnnotation:
         # return variables are: returnVal
         #BEGIN annotate
         print("Input parameters: " + pformat(params))
+        self.ctx = ctx
         self.output_workspace = params["output_workspace"]
         object_ref = self._get_input_value(params, "object_ref")
-        self.ws_client = workspaceService(self.ws_url, token=ctx["token"])
-        self.ctx = ctx
-        self.download_seed_data()
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                            "includeMetadata": 1})[0]
         object_type = object_info[2]
+        self.download_seed_data()
 
         if "KBaseGenomeAnnotations.Assembly" in object_type:
             return [self.annotate_assembly(params, object_info)]
