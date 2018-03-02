@@ -22,13 +22,13 @@ from DataFileUtil.DataFileUtilClient import DataFileUtil
 
 
 class ProkkaAnnotation:
-    """
+    '''
     Module Name:
     ProkkaAnnotation
 
     Module Description:
     A KBase module: ProkkaAnnotation
-    """
+    '''
 
     ######## WARNING FOR GEVENT USERS ####### noqa
     # Since asynchronous IO can lead to methods - even the same method -
@@ -36,9 +36,9 @@ class ProkkaAnnotation:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "1.0.6"
+    VERSION = "0.1.0"
     GIT_URL = "https://github.com/bio-boris/ProkkaAnnotation.git"
-    GIT_COMMIT_HASH = "8c6463159e9effb84f719f124e9d82685cb70c9f"
+    GIT_COMMIT_HASH = "8d1d5cadab1f7a7c34ad5653a745f02316669296"
 
     #BEGIN_CLASS_HEADER
 
@@ -598,7 +598,7 @@ class ProkkaAnnotation:
 
     #END_CLASS_HEADER
 
-    # config contains contents of config file in a hash or None if it couldn"t
+    # config contains contents of config file in a hash or None if it couldn't
     # be found
     def __init__(self, config):
         #BEGIN_CONSTRUCTOR
@@ -619,6 +619,7 @@ class ProkkaAnnotation:
         #END_CONSTRUCTOR
         pass
 
+
     def annotate(self, ctx, params):
         """
         :param params: instance of type "AnnotateParams" (Required
@@ -626,19 +627,19 @@ class ProkkaAnnotation:
            output_workspace - output workspace name, output_genome_name -
            output object name, Optional parameters (correspond to PROKKA
            command line arguments): --scientific_name Genome scientific name
-           (default "Unknown") --kingdom [X]     Annotation mode:
-           Archaea|Bacteria|Mitochondria|Viruses (default "Bacteria") --genus
-           [X]       Genus name (triggers to use --usegenus) --gcode [N]
+           (default 'Unknown') --kingdom [X]     Annotation mode:
+           Archaea|Bacteria|Mitochondria|Viruses (default 'Bacteria') --genus
+           [X]       Genus name (triggers to use --usegenus) --gcode [N]     
            Genetic code / Translation table (set if --kingdom is set)
-           (default "11") --metagenome      Improve gene predictions for
+           (default '11') --metagenome      Improve gene predictions for
            highly fragmented genomes (default OFF) --rawproduct      Do not
            clean up /product annotation (default OFF) --fast            Fast
            mode - skip CDS /product searching (default OFF) --mincontiglen
-           [N] Minimum contig size [NCBI needs 200] (default "1") --evalue
-           [n.n]    Similarity e-value cut-off (default "1e-06") --rfam
+           [N] Minimum contig size [NCBI needs 200] (default '1') --evalue
+           [n.n]    Similarity e-value cut-off (default '1e-06') --rfam      
            Enable searching for ncRNAs with Infernal+Rfam (SLOW!) (default
-           OFF) --norrna          Don"t run rRNA search (default OFF)
-           --notrna          Don"t run tRNA search (default OFF)) ->
+           OFF) --norrna          Don't run rRNA search (default OFF)
+           --notrna          Don't run tRNA search (default OFF)) ->
            structure: parameter "object_ref" of type "data_obj_ref"
            (Reference to an Assembly or Genome object in the workspace @id ws
            KBaseGenomeAnnotations.Assembly @id ws KBaseGenomes.Genome),
@@ -680,6 +681,12 @@ class ProkkaAnnotation:
             raise Exception("Unsupported type" + object_type)
         #END annotate
 
+        # At some point might do deeper type checking...
+        if not isinstance(returnVal, dict):
+            raise ValueError('Method annotate return value ' +
+                             'returnVal is not type dict as required.')
+        # return the results
+        return [returnVal]
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {"state": "OK",

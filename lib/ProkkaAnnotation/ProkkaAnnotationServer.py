@@ -333,10 +333,10 @@ class Application(object):
         self.serverlog.set_log_level(6)
         self.rpc_service = JSONRPCServiceCustom()
         self.method_authentication = dict()
-        self.rpc_service.add(impl_ProkkaAnnotation.annotate_contigs,
-                             name='ProkkaAnnotation.annotate_contigs',
+        self.rpc_service.add(impl_ProkkaAnnotation.annotate,
+                             name='ProkkaAnnotation.annotate',
                              types=[dict])
-        self.method_authentication['ProkkaAnnotation.annotate_contigs'] = 'required'  # noqa
+        self.method_authentication['ProkkaAnnotation.annotate'] = 'required'  # noqa
         self.rpc_service.add(impl_ProkkaAnnotation.status,
                              name='ProkkaAnnotation.status',
                              types=[dict])
