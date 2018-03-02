@@ -7,7 +7,7 @@
     "categories": ["active", "annotation"],
     "widgets": {
         "input": "kbaseNarrativeMethodInput",
-        "output": "no-display"
+        "output": "kbaseGenomeView"
     },
     "parameters": [
         {

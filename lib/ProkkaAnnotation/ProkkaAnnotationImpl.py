@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
-import subprocess
+
 import uuid
 import hashlib
 import json
@@ -10,14 +10,14 @@ from Bio.SeqRecord import SeqRecord
 from BCBio import GFF
 from pprint import pformat,pprint
 from subprocess import check_output, CalledProcessError
-import sys
+from collections import namedtuple
 
 from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
 from KBaseReport.KBaseReportClient import KBaseReport
 from biokbase.workspace.client import Workspace as workspaceService  # @UnresolvedImport @IgnorePep8
 from DataFileUtil.DataFileUtilClient import DataFileUtil
-from collections import namedtuple,defaultdict
+
 #END_HEADER
 
 
@@ -158,8 +158,10 @@ class ProkkaAnnotation:
         """
         output_dir = "/kb/module/work/tmp/temp_" + str(uuid.uuid4())
 
-        kingdom = str(params.get("kingdom", "Bacteria"))
-        # --kingdom [X]     Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default "Bacteria")
+        # --kingdom [X]  Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default "Bacteria")
+        kingdom = "Bacteria"
+        if "kingdom" in params and params["kingdom"]:
+            kingdom = params["kingdom"]
 
         prokka_cmd_list = ["perl", "/kb/prokka/bin/prokka", "--outdir", output_dir, "--prefix",
                            "mygenome", "--kingdom", kingdom]
@@ -413,17 +415,19 @@ class ProkkaAnnotation:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
+        import sys
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
             current_ontology = feature.get("ontology_terms", None)
             new_function = ""
             new_ontology = dict()
+
             if fid in new_annotations:
                 new_function = new_annotations[fid].get("function", "")
                 new_ontology = new_annotations[fid].get("ontology_terms", None)
 
-                if new_function is not "" and new_function is not "hypothetical protein":
+                if new_function and "hypothetical protein" not in new_function:
                     genome_data["data"]["features"][i]["function"] = new_function
                     stats["new_functions"] += 1
 
@@ -435,6 +439,7 @@ class ProkkaAnnotation:
                         genome_data["data"]["features"][i]["ontology_terms"]["SSO"][key] = \
                             new_ontology[key]
                         stats["new_ontologies"] += 1
+                sys.stdout.flush()
 
             func_r.write(json.dumps([fid, current_function, new_function]) + "\n")
             onto_r.write(json.dumps([fid, current_ontology, new_ontology]) + "\n")
@@ -547,29 +552,22 @@ class ProkkaAnnotation:
                                                        cds_to_prot=prokka_results.cds_to_dna,
                                                        new_ids_to_old=renamed_assembly.new_ids_to_old)
 
+        # Force defaults for optional parameters that may be set to None
         scientific_name = 'Unknown'
         if 'scientific_name' in params and params['scientific_name']:
             scientific_name = params['scientific_name']
+        domain = "Bacteria"
+        if 'kingdom' in params and params['kingdom']:
+            domain = params['kingdom']
+        gcode = 0
+        if 'gcode' in params and params['gcode']:
+            gcode = params['gcode']
 
         genome = {"id": "Unknown",
                   "features": annotated_assembly.features,
                   "scientific_name": scientific_name,
-                  "domain": str(params.get("kingdom", "Bacteria")),
-                  "genetic_code": params.get("gcode", 0),
-                  "assembly_ref": assembly_ref,
-                  "cdss": annotated_assembly.cdss,
-                  "mrnas": annotated_assembly.mrnas,
-                  "source": "PROKKA annotation pipeline",
-                  "gc_content": assembly_info.gc_content,
-                  "dna_size": assembly_info.dna_size,
-                  "reference_annotation": 0}
-
-
-        genome = {"id": "Unknown",
-                  "features": annotated_assembly.features,
-                  "scientific_name": params.get("scientific_name", "Unknown"),
-                  "domain": str(params.get("kingdom", "Bacteria")),
-                  "genetic_code": params.get("gcode", 0),
+                  "domain": domain,
+                  "genetic_code": gcode,
                   "assembly_ref": assembly_ref,
                   "cdss": annotated_assembly.cdss,
                   "mrnas": annotated_assembly.mrnas,
@@ -606,13 +604,16 @@ class ProkkaAnnotation:
         #BEGIN_CONSTRUCTOR
         self.scratch = config["scratch"]
         self.ws_url = config["workspace-url"]
-        self.gfu = GenomeFileUtil(os.environ["SDK_CALLBACK_URL"])
+        self.callback_url = os.environ["SDK_CALLBACK_URL"]
+
+        self.gfu = GenomeFileUtil(self.callback_url)
+        self.au = AssemblyUtil(self.callback_url)
+        self.kbr = KBaseReport(self.callback_url)
+        self.dfu = DataFileUtil(self.callback_url)
+
         self.ws_client = None
         self.sso_ref = None
-        self.au = None
         self.ctx = None
-        self.kbr = None
-        self.dfu = None
         self.ec_to_sso = {}
         self.output_workspace = None
         #END_CONSTRUCTOR
@@ -667,14 +668,9 @@ class ProkkaAnnotation:
         object_ref = self._get_input_value(params, "object_ref")
         self.ws_client = workspaceService(self.ws_url, token=ctx["token"])
         self.ctx = ctx
-        pprint((os.environ["SDK_CALLBACK_URL"], ctx["token"]))
-        self.au = AssemblyUtil(os.environ["SDK_CALLBACK_URL"], token=ctx["token"])
-        self.kbr = KBaseReport(os.environ["SDK_CALLBACK_URL"], token=ctx["token"])
-        self.dfu = DataFileUtil(os.environ["SDK_CALLBACK_URL"])
         self.download_seed_data()
-
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
-                                                          "includeMetadata": 1})[0]
+                                                           "includeMetadata": 1})[0]
         object_type = object_info[2]
 
         if "KBaseGenomeAnnotations.Assembly" in object_type:

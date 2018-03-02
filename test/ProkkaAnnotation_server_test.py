@@ -78,7 +78,6 @@ class ProkkaAnnotationTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
-
     def test_reannotate_genome(self):
         """
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.
@@ -86,52 +85,30 @@ class ProkkaAnnotationTest(unittest.TestCase):
         This test might break if Prokka decides that there is a better function name for this feature.
         :return:
         """
-        genome = "RHODO.json"
-        genome_test_file = os.path.join("/kb/module/test/data/", genome)
-        genome_name = "RhodoBacter2.4"
         gfu = GenomeFileUtil(os.environ["SDK_CALLBACK_URL"])
+
+        genome_test_file = os.path.join("/kb/module/test/data/", "RHODO.json")
+        genome_test_feature1_file = os.path.join("/kb/module/test/data/", "rsp_0986.json")
+        genome_test_feature2_file = os.path.join("/kb/module/test/data/", "rsp_1428.json")
+        genome_name = "RhodoBacter2.4"
+
 
         with open(genome_test_file, "r") as f:
             genome = json.load(f)
 
-        target_feature = {
-            "aliases": [
-                "InterPro:IPR006083",
-                "RSP_0986",
-                "GeneID:3720741",
-                "InterPro:IPR003593",
-                "GI:77464567",
-                "YP_354071.1"
-            ],
-            "cdss": [
-                "YP_354071.1"
-            ],
-            "dna_sequence": "ATGACGCCCGAGACGCTGGCGCAGGAGATCCGGGCGGCGGCGGAGGGGCGGGGGCGGTTCATTGTGGCTCTCGCCGGTCCGCCCGGGGCGGGCAAGTCCACGCTGGGCGAGGCGCTGGTGGCAGGCCTCGGCCCCGGCGCCCGGCTGGTGCCGATGGACGGGTTCCATTTCGACGACCGCGTGCTGGCCCGGCGCGGCCTTTCCAACCGCAAGGGCGCGCCCGAGACCTTCGACATCTGGGGCTTCCTCGCCCTGATGGAGCGGCTCAGGGCAGGCGGCGAGGTCGCGATCCCGGTCTTCGACCGCAGCATGGAGCTCGCGCGCGCCGCGGCCGATGTGGTGACGGACCAGGACCGGATCCTCGTGGTCGAGGGCAACTACCTGCTTCTCGACGAAGAGCCCTGGCGGCGGTTGCGGGGCTTCTTCGATCTCACGCTCTTCCTCGACGTGCCGGAGGCCGAGCTCGAGCGGCGGCTTCTGGCGCGATGGGCGGCGCGGCCCGGCGGTGCCGAGTGGGTGGCCTCGAACGACATGCCCAACGTGCGCCGCGTGCTGCAGAGGTCGGCCCCCGCCGACCGCATCCTGCGCTGGCCCTAG",
-            "dna_sequence_length": 597,
-            "function": "fructokinase",
-            "id": "RSP_0986",
-            "location": [
-                [
-                    "NC_007493",
-                    2745681,
-                    "-",
-                    597
-                ]
-            ],
-            "md5": "cf8eb9a81073de238e78559787434aa2",
-            "mrnas": [
-                "mRNA_2615"
-            ],
-            "protein_translation": "MTPETLAQEIRAAAEGRGRFIVALAGPPGAGKSTLGEALVAGLGPGARLVPMDGFHFDDRVLARRGLSNRKGAPETFDIWGFLALMERLRAGGEVAIPVFDRSMELARAAADVVTDQDRILVVEGNYLLLDEEPWRRLRGFFDLTLFLDVPEAELERRLLARWAARPGGAEWVASNDMPNVRRVLQRSAPADRILRWP",
-            "protein_translation_length": 198,
-            "type": "gene"
-        }
+        # New function found by prokka
+        with open(genome_test_feature1_file, "r") as f:
+            target_feature_rsp_0986 = json.load(f)
 
-        genome['features'] = [target_feature]
+        # Hypothetical Protein as determined by prokka
+        with open(genome_test_feature2_file, "r") as f:
+            target_feature_rsp_1428 = json.load(f)
+
+        genome["features"] = [target_feature_rsp_0986, target_feature_rsp_1428]
 
         info = gfu.save_one_genome(
             {"workspace": self.getWsName(), "name": genome_name,
-             "data": genome })["info"]
+             "data": genome})["info"]
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
@@ -156,12 +133,20 @@ class ProkkaAnnotationTest(unittest.TestCase):
         genome_ref = self.getWsName() + "/" + genome_name
         re_annotated_genome = self.getWsClient().get_objects([{"ref": genome_ref}])[0]["data"]
 
-        old_feature = genome['features'][0]
-        new_feature = re_annotated_genome['features'][0]
+        old_feature = genome["features"][0]
+        new_feature = re_annotated_genome["features"][0]
 
-        self.assertNotEquals(old_feature,new_feature)
-        self.assertEqual(old_feature['function'], 'fructokinase')
-        self.assertEqual(new_feature['function'], 'Pantothenate kinase')
+        # TEST NEW PROTEIN FUNCTION
+        self.assertNotEquals(old_feature, new_feature)
+        self.assertEqual(old_feature["function"], "fructokinase")
+        self.assertEqual(new_feature["function"], "Pantothenate kinase")
+
+        old_feature = genome["features"][1]
+        new_feature = re_annotated_genome["features"][1]
+
+        # TEST HYPOTHETICAL PROTEIN
+        self.assertEqual(old_feature["function"], "putative Pre (Mob) type recombination enzyme")
+        self.assertEqual(old_feature["function"], new_feature["function"])
 
     # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
     def test_annotate_contigs(self):
