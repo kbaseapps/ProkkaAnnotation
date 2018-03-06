@@ -81,20 +81,19 @@ sub new
     # We create an auth token, passing through the arguments that we were (hopefully) given.
 
     {
-	my $token = Bio::KBase::AuthToken->new(@args);
-	
-	if (!$token->error_message)
-	{
-	    $self->{token} = $token->token;
-	    $self->{client}->{token} = $token->token;
+	my %arg_hash2 = @args;
+	if (exists $arg_hash2{"token"}) {
+	    $self->{token} = $arg_hash2{"token"};
+	} elsif (exists $arg_hash2{"user_id"}) {
+	    my $token = Bio::KBase::AuthToken->new(@args);
+	    if (!$token->error_message) {
+	        $self->{token} = $token->token;
+	    }
 	}
-        else
-        {
-	    #
-	    # All methods in this module require authentication. In this case, if we
-	    # don't have a token, we can't continue.
-	    #
-	    die "Authentication failed: " . $token->error_message;
+	
+	if (exists $self->{token})
+	{
+	    $self->{client}->{token} = $self->{token};
 	}
     }
 
@@ -109,9 +108,9 @@ sub new
 
 
 
-=head2 annotate_contigs
+=head2 annotate
 
-  $return = $obj->annotate_contigs($params)
+  $return = $obj->annotate($params)
 
 =over 4
 
@@ -120,10 +119,10 @@ sub new
 =begin html
 
 <pre>
-$params is a ProkkaAnnotation.AnnotateContigsParams
-$return is a ProkkaAnnotation.AnnotateContigsOutput
-AnnotateContigsParams is a reference to a hash where the following keys are defined:
-	assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
+$params is a ProkkaAnnotation.AnnotateParams
+$return is a ProkkaAnnotation.AnnotateOutput
+AnnotateParams is a reference to a hash where the following keys are defined:
+	object_ref has a value which is a ProkkaAnnotation.data_obj_ref
 	output_workspace has a value which is a string
 	output_genome_name has a value which is a string
 	scientific_name has a value which is a string
@@ -138,9 +137,9 @@ AnnotateContigsParams is a reference to a hash where the following keys are defi
 	rfam has a value which is a ProkkaAnnotation.boolean
 	norrna has a value which is a ProkkaAnnotation.boolean
 	notrna has a value which is a ProkkaAnnotation.boolean
-assembly_ref is a string
+data_obj_ref is a string
 boolean is an int
-AnnotateContigsOutput is a reference to a hash where the following keys are defined:
+AnnotateOutput is a reference to a hash where the following keys are defined:
 	output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -152,10 +151,10 @@ genome_ref is a string
 
 =begin text
 
-$params is a ProkkaAnnotation.AnnotateContigsParams
-$return is a ProkkaAnnotation.AnnotateContigsOutput
-AnnotateContigsParams is a reference to a hash where the following keys are defined:
-	assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
+$params is a ProkkaAnnotation.AnnotateParams
+$return is a ProkkaAnnotation.AnnotateOutput
+AnnotateParams is a reference to a hash where the following keys are defined:
+	object_ref has a value which is a ProkkaAnnotation.data_obj_ref
 	output_workspace has a value which is a string
 	output_genome_name has a value which is a string
 	scientific_name has a value which is a string
@@ -170,9 +169,9 @@ AnnotateContigsParams is a reference to a hash where the following keys are defi
 	rfam has a value which is a ProkkaAnnotation.boolean
 	norrna has a value which is a ProkkaAnnotation.boolean
 	notrna has a value which is a ProkkaAnnotation.boolean
-assembly_ref is a string
+data_obj_ref is a string
 boolean is an int
-AnnotateContigsOutput is a reference to a hash where the following keys are defined:
+AnnotateOutput is a reference to a hash where the following keys are defined:
 	output_genome_ref has a value which is a ProkkaAnnotation.genome_ref
 	report_name has a value which is a string
 	report_ref has a value which is a string
@@ -189,7 +188,7 @@ genome_ref is a string
 
 =cut
 
- sub annotate_contigs
+ sub annotate
 {
     my($self, @args) = @_;
 
@@ -198,7 +197,7 @@ genome_ref is a string
     if ((my $n = @args) != 1)
     {
 	Bio::KBase::Exceptions::ArgumentValidationError->throw(error =>
-							       "Invalid argument count for function annotate_contigs (received $n, expecting 1)");
+							       "Invalid argument count for function annotate (received $n, expecting 1)");
     }
     {
 	my($params) = @args;
@@ -206,31 +205,31 @@ genome_ref is a string
 	my @_bad_arguments;
         (ref($params) eq 'HASH') or push(@_bad_arguments, "Invalid type for argument 1 \"params\" (value was \"$params\")");
         if (@_bad_arguments) {
-	    my $msg = "Invalid arguments passed to annotate_contigs:\n" . join("", map { "\t$_\n" } @_bad_arguments);
+	    my $msg = "Invalid arguments passed to annotate:\n" . join("", map { "\t$_\n" } @_bad_arguments);
 	    Bio::KBase::Exceptions::ArgumentValidationError->throw(error => $msg,
-								   method_name => 'annotate_contigs');
+								   method_name => 'annotate');
 	}
     }
 
     my $url = $self->{url};
     my $result = $self->{client}->call($url, $self->{headers}, {
-	    method => "ProkkaAnnotation.annotate_contigs",
+	    method => "ProkkaAnnotation.annotate",
 	    params => \@args,
     });
     if ($result) {
 	if ($result->is_error) {
 	    Bio::KBase::Exceptions::JSONRPC->throw(error => $result->error_message,
 					       code => $result->content->{error}->{code},
-					       method_name => 'annotate_contigs',
+					       method_name => 'annotate',
 					       data => $result->content->{error}->{error} # JSON::RPC::ReturnObject only supports JSONRPC 1.1 or 1.O
 					      );
 	} else {
 	    return wantarray ? @{$result->result} : $result->result->[0];
 	}
     } else {
-        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method annotate_contigs",
+        Bio::KBase::Exceptions::HTTP->throw(error => "Error invoking method annotate",
 					    status_line => $self->{client}->status_line,
-					    method_name => 'annotate_contigs',
+					    method_name => 'annotate',
 				       );
     }
 }
@@ -278,16 +277,16 @@ sub version {
             Bio::KBase::Exceptions::JSONRPC->throw(
                 error => $result->error_message,
                 code => $result->content->{code},
-                method_name => 'annotate_contigs',
+                method_name => 'annotate',
             );
         } else {
             return wantarray ? @{$result->result} : $result->result->[0];
         }
     } else {
         Bio::KBase::Exceptions::HTTP->throw(
-            error => "Error invoking method annotate_contigs",
+            error => "Error invoking method annotate",
             status_line => $self->{client}->status_line,
-            method_name => 'annotate_contigs',
+            method_name => 'annotate',
         );
     }
 }
@@ -355,7 +354,7 @@ an int
 
 
 
-=head2 assembly_ref
+=head2 data_obj_ref
 
 =over 4
 
@@ -363,8 +362,9 @@ an int
 
 =item Description
 
-Reference to an Assembly object in the workspace
+Reference to an Assembly or Genome object in the workspace
 @id ws KBaseGenomeAnnotations.Assembly
+@id ws KBaseGenomes.Genome
 
 
 =item Definition
@@ -419,7 +419,7 @@ a string
 
 
 
-=head2 AnnotateContigsParams
+=head2 AnnotateParams
 
 =over 4
 
@@ -428,7 +428,7 @@ a string
 =item Description
 
 Required parameters:
-    assembly_ref - reference to Assembly object,
+    object_ref - reference to Assembly or Genome object,
     output_workspace - output workspace name,
     output_genome_name - output object name,
 Optional parameters (correspond to PROKKA command line arguments):
@@ -452,7 +452,7 @@ Optional parameters (correspond to PROKKA command line arguments):
 
 <pre>
 a reference to a hash where the following keys are defined:
-assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
+object_ref has a value which is a ProkkaAnnotation.data_obj_ref
 output_workspace has a value which is a string
 output_genome_name has a value which is a string
 scientific_name has a value which is a string
@@ -475,7 +475,7 @@ notrna has a value which is a ProkkaAnnotation.boolean
 =begin text
 
 a reference to a hash where the following keys are defined:
-assembly_ref has a value which is a ProkkaAnnotation.assembly_ref
+object_ref has a value which is a ProkkaAnnotation.data_obj_ref
 output_workspace has a value which is a string
 output_genome_name has a value which is a string
 scientific_name has a value which is a string
@@ -498,7 +498,7 @@ notrna has a value which is a ProkkaAnnotation.boolean
 
 
 
-=head2 AnnotateContigsOutput
+=head2 AnnotateOutput
 
 =over 4
 

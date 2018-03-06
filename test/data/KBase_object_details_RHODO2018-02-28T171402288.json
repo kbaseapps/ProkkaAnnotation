@@ -1,0 +1,94 @@
+{
+  "metadata" : [
+    [
+      4,
+      "RHODO",
+      "KBaseGenomes.Genome-8.3",
+      "2018-02-16T17:59:53+0000",
+      1,
+      "bsadkhin",
+      12972,
+      "bsadkhin:narrative_1518803186599",
+      "d96555397e6dea06ab7b238bc01a3029",
+      15085646,
+      {
+        "Domain" : "Bacteria",
+        "GC content" : "0.6878941606703661",
+        "Genetic code" : "11",
+        "Name" : "Rhodobacter sphaeroides 2.4.1",
+        "Number contigs" : "7",
+        "Number features" : "4474",
+        "Size" : "4602977",
+        "Source" : "Genbank",
+        "Source ID" : "NC_007493 (6 more accessions)",
+        "Taxonomy" : "cellular organisms; Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Rhodobacter; Rhodobacter sphaeroides"
+      }
+    ]
+  ],
+  "provenance" : [
+    {
+      "copy_source_inaccessible" : null,
+      "created" : "2017-02-03T01:02:44+0000",
+      "creator" : "msneddon",
+      "extracted_ids" : null,
+      "info" : [
+        4,
+        "RHODO",
+        "KBaseGenomes.Genome-8.3",
+        "2018-02-16T17:59:53+0000",
+        1,
+        "bsadkhin",
+        12972,
+        "bsadkhin:narrative_1518803186599",
+        "d96555397e6dea06ab7b238bc01a3029",
+        15085646,
+        {
+          "Domain" : "Bacteria",
+          "GC content" : "0.6878941606703661",
+          "Genetic code" : "11",
+          "Name" : "Rhodobacter sphaeroides 2.4.1",
+          "Number contigs" : "7",
+          "Number features" : "4474",
+          "Size" : "4602977",
+          "Source" : "Genbank",
+          "Source ID" : "NC_007493 (6 more accessions)",
+          "Taxonomy" : "cellular organisms; Bacteria; Proteobacteria; Alphaproteobacteria; Rhodobacterales; Rhodobacteraceae; Rhodobacter; Rhodobacter sphaeroides"
+        }
+      ],
+      "provenance" : [
+        {
+          "custom" : { },
+          "external_data" : [ ],
+          "input_ws_objects" : [ ],
+          "method" : "genbank_to_genome",
+          "method_params" : [
+            {
+              "file" : {
+                "shock_id" : "c1f70780-8106-4457-923a-6225b7f4f348"
+              },
+              "genome_name" : "Rhodobacter_sphaeroides_2.4.1",
+              "workspace_name" : "KBaseExampleData"
+            }
+          ],
+          "resolved_ws_objects" : [ ],
+          "service" : "GenomeFileUtil",
+          "subactions" : [ ]
+        },
+        {
+          "custom" : { },
+          "description" : "features from upload from Genbank",
+          "external_data" : [ ],
+          "input_ws_objects" : [ ],
+          "resolved_ws_objects" : [ ],
+          "script" : "/kb/module/lib/GenomeFileUtil/core/GenbankUploaderScript.py",
+          "script_ver" : "0.1",
+          "subactions" : [ ]
+        }
+      ],
+      "refs" : [
+        "79/4/1",
+        "1292/511825/1"
+      ]
+    }
+  ]
+}

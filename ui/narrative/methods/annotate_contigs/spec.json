@@ -1,33 +1,33 @@
 {
     "ver": "0.0.1",
     "authors": [
-        "rsutormin"
+        "rsutormin", "bsadkhin"
     ],
     "contact": "help@kbase.us",
     "categories": ["active", "annotation"],
     "widgets": {
-        "input": null,
+        "input": "kbaseNarrativeMethodInput",
         "output": "kbaseGenomeView"
     },
-    "parameters": [ 
+    "parameters": [
         {
-            "id": "assembly_ref",
+            "id": "object_ref",
             "optional": false,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly"]
+                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome"]
             }
         },
-        {  
+        {
             "id": "scientific_name",
             "optional": true,
             "advanced": false,
             "allow_multiple": false,
             "default_values": [ "" ],
-            "field_type" : "text" 
+            "field_type" : "text"
         },
         {
             "id": "output_genome_name",
@@ -69,7 +69,7 @@
               ]
             }
         },
-        {  
+        {
             "id": "genus",
             "optional": true,
             "advanced": true,
@@ -97,7 +97,7 @@
               ]
             }
         },
-        {  
+        {
             "id": "gcode",
             "optional": true,
             "advanced": true,
@@ -144,7 +144,7 @@
                 "unchecked_value": 0
             }
         },
-        {  
+        {
             "id": "mincontiglen",
             "optional": true,
             "advanced": true,
@@ -155,13 +155,13 @@
                 "validate_as": "int"
             }
         },
-        {  
+        {
             "id": "evalue",
             "optional": true,
             "advanced": true,
             "allow_multiple": false,
             "default_values": [ "" ],
-            "field_type" : "text" 
+            "field_type" : "text"
         },
         {
             "id": "rfam",
@@ -204,15 +204,15 @@
         "service-mapping": {
             "url": "",
             "name": "ProkkaAnnotation",
-            "method": "annotate_contigs",
+            "method": "annotate",
             "input_mapping": [
                 {
                     "narrative_system_variable": "workspace",
                     "target_property": "output_workspace"
                 },
                 {
-                    "input_parameter": "assembly_ref",
-                    "target_property": "assembly_ref",
+                    "input_parameter": "object_ref",
+                    "target_property": "object_ref",
                     "target_type_transform": "ref"
                 },
                 {
@@ -278,7 +278,7 @@
                     "target_property": "report_ref"
                 },
                 {
-                    "constant_value": "5",
+                    "constant_value": "16",
                     "target_property": "report_window_line_height"
                 },
                 {
@@ -287,7 +287,11 @@
                 },
                 {
                     "narrative_system_variable": "workspace",
-                    "target_property": "ws"
+                    "target_property": "wsName"
+                },
+                 {
+                    "input_parameter": "output_genome_name",
+                    "target_property": "id"
                 }
             ]
         }

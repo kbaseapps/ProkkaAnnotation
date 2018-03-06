@@ -163,19 +163,19 @@ public class ProkkaAnnotationClient {
     }
 
     /**
-     * <p>Original spec-file function name: annotate_contigs</p>
+     * <p>Original spec-file function name: annotate</p>
      * <pre>
      * </pre>
-     * @param   params   instance of type {@link us.kbase.prokkaannotation.AnnotateContigsParams AnnotateContigsParams}
-     * @return   instance of type {@link us.kbase.prokkaannotation.AnnotateContigsOutput AnnotateContigsOutput}
+     * @param   params   instance of type {@link us.kbase.prokkaannotation.AnnotateParams AnnotateParams}
+     * @return   instance of type {@link us.kbase.prokkaannotation.AnnotateOutput AnnotateOutput}
      * @throws IOException if an IO exception occurs
      * @throws JsonClientException if a JSON RPC exception occurs
      */
-    public AnnotateContigsOutput annotateContigs(AnnotateContigsParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
+    public AnnotateOutput annotate(AnnotateParams params, RpcContext... jsonRpcContext) throws IOException, JsonClientException {
         List<Object> args = new ArrayList<Object>();
         args.add(params);
-        TypeReference<List<AnnotateContigsOutput>> retType = new TypeReference<List<AnnotateContigsOutput>>() {};
-        List<AnnotateContigsOutput> res = caller.jsonrpcCall("ProkkaAnnotation.annotate_contigs", args, retType, true, true, jsonRpcContext, this.serviceVersion);
+        TypeReference<List<AnnotateOutput>> retType = new TypeReference<List<AnnotateOutput>>() {};
+        List<AnnotateOutput> res = caller.jsonrpcCall("ProkkaAnnotation.annotate", args, retType, true, true, jsonRpcContext, this.serviceVersion);
         return res.get(0);
     }
 
