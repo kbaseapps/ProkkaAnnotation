@@ -54,6 +54,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         cls.wsClient = workspaceService(cls.wsURL, token=token)
         cls.serviceImpl = ProkkaAnnotation(cls.cfg)
 
+
     @classmethod
     def tearDownClass(cls):
         if hasattr(cls, "wsName"):
@@ -78,6 +79,44 @@ class ProkkaAnnotationTest(unittest.TestCase):
     def getContext(self):
         return self.__class__.ctx
 
+    def getBogusAssembly(self):
+        # Create a fake assembly with lots of contigs
+
+        assembly_file_name = "bogus.fna"  #"AP009048.fna"
+        assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
+        with open(assembly_temp_file, "w") as f:
+            for i in range(1,30002):
+                f.write("> contig_%d\n" % i)
+                f.write("AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC\n")
+
+        assembly_name = "Assembly.2"
+        au = AssemblyUtil(os.environ["SDK_CALLBACK_URL"], token=self.getContext()["token"])
+        assembly_ref = au.save_assembly_from_fasta({"file": {"path": assembly_temp_file},
+                                                    "workspace_name": self.getWsName(),
+                                                    "assembly_name": assembly_name})
+        self.assembly_ref = assembly_ref
+        return assembly_ref
+
+
+
+    def test_validation_integration(self):
+        """
+        This test does some basic validation tests of the required parameters.
+        :return:
+        """
+        with self.assertRaises(KeyError):
+            self.getImpl().annotate(self.getContext(), {})
+        with self.assertRaises(KeyError):
+            self.getImpl().annotate(self.getContext(), {'object_workspace': '0'})
+        with self.assertRaises(KeyError):
+            self.getImpl().annotate(self.getContext(), {'object_workspace': '0', 'object_ref' : 0})
+        with self.assertRaises(KeyError):
+            self.getImpl().annotate(self.getContext(), {'object_workspace': '0', 'object_ref': 0,
+                                                        'output_genome_name': 0})
+
+
+
+
     def test_reannotate_genome(self):
         """
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.
@@ -92,9 +131,12 @@ class ProkkaAnnotationTest(unittest.TestCase):
         genome_test_feature2_file = os.path.join("/kb/module/test/data/", "rsp_1428.json")
         genome_name = "RhodoBacter2.4"
 
+        assembly_ref = self.getBogusAssembly()
+
 
         with open(genome_test_file, "r") as f:
             genome = json.load(f)
+            genome['assembly_ref'] = assembly_ref
 
         # New function found by prokka
         with open(genome_test_feature1_file, "r") as f:
@@ -156,7 +198,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         shutil.copy(assembly_test_file, assembly_temp_file)
         assembly_name = "Assembly.1"
         au = AssemblyUtil(os.environ["SDK_CALLBACK_URL"])
-        assembly_ref = au.save_assembly_from_fasta({"file": {"path": assembly_temp_file}, 
+        assembly_ref = au.save_assembly_from_fasta({"file": {"path": assembly_temp_file},
                                                     "workspace_name": self.getWsName(),
                                                     "assembly_name": assembly_name})
         # Add a genome to the WS to test ref_paths
@@ -213,19 +255,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         """
         simulate a metagenome contig file
         """
-        # Create a fake assembly with lots of contigs
-        assembly_file_name = "bogus.fna"  #"AP009048.fna"
-        assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
-        with open(assembly_temp_file, "w") as f:
-            for i in range(1,30002):
-                f.write("> contig_%d\n" % i)
-                f.write("AGCTTTTCATTCTGACTGCAACGGGCAATATGTCTCTGTGTGGATTAAAAAAAGAGTGTCTGATAGCAGC\n")
-
-        assembly_name = "Assembly.2"
-        au = AssemblyUtil(os.environ["SDK_CALLBACK_URL"], token=self.getContext()["token"])
-        assembly_ref = au.save_assembly_from_fasta({"file": {"path": assembly_temp_file}, 
-                                                    "workspace_name": self.getWsName(),
-                                                    "assembly_name": assembly_name})
+        assembly_ref = self.getBogusAssembly()
         genome_name = "Genome.1"
         # This should fail with an error
         with self.assertRaises(ValueError):
