@@ -27,3 +27,4 @@ install:
 
 script:
   - kb-sdk validate
+  - flake8 .
