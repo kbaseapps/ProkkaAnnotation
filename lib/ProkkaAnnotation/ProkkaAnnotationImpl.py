@@ -385,11 +385,14 @@ class ProkkaAnnotation:
                                                  "features_" + str(uuid.uuid4()) + ".fasta")
         with open(fasta_for_prokka_filepath, "w") as f:
             for item in genome_data["data"]["features"]:
-                if "id" not in item and "dna_sequence" not in item:
-                    print("COMPLAINING ABOUT THIS BAD SEQUENCE")
+                if "id" not in item or "dna_sequence" not in item:
+                    print("This feature does not have a valid dna sequence.")
                 else:
                     f.write(">" + item["id"] + "\n" + item["dna_sequence"] + "\n")
         print("Finished printing to" + fasta_for_prokka_filepath)
+        if os.stat(fasta_for_prokka_filepath).st_size==0:
+            raise Exception("Empty fasta")
+
         return fasta_for_prokka_filepath
 
     def annotate_genome_with_new_annotations(self, **annotation_args):
@@ -439,7 +442,8 @@ class ProkkaAnnotation:
                         genome_data["data"]["features"][i]["ontology_terms"]["SSO"][key] = \
                             new_ontology[key]
                         stats["new_ontologies"] += 1
-                sys.stdout.flush()
+                        print("Key Type  for " + str(key) + " = " + str(type(new_ontology[key])))
+                        print(new_ontology[key])
 
             func_r.write(json.dumps([fid, current_function, new_function]) + "\n")
             onto_r.write(json.dumps([fid, current_ontology, new_ontology]) + "\n")
