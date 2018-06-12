@@ -151,8 +151,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
         genome_ref = self.getWsName() + "/" + genome_name
         re_annotated_genome = self.getWsClient().get_objects([{"ref": genome_ref}])[0]["data"]
 
-
-    def Xtest_reannotate_genome(self):
+    @unittest.skip("Skip CI test")
+    def test_reannotate_genome(self):
         """
         DOESN"T WORK ON CI WITH THIS DATASET, ONLY WITH APPDEV, THIS TEST IS COMMENTED OUT
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.

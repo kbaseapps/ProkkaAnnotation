@@ -124,7 +124,7 @@ class ProkkaUtils:
         """Rename records to be in the format of contig_N and output a new fasta file
 
         :param assembly_fasta_filepath:
-        :return: The path to the fasta file with renamed contigs the number of contigs,
+        :return: A tuple with The path to the fasta file with renamed contigs the number of contigs,
         the mapping from old ids to new ids, and the contigs as SeqRecords
         """
         records = []
@@ -152,7 +152,7 @@ class ProkkaUtils:
 
         :param params: Prokka parameters
         :param subject_fasta_filepath: The contigs or genes to run prokka against
-        :return: The  directory with all of the prokka output files
+        :return: The directory with all of the prokka output files
         """
         output_dir = "/kb/module/work/tmp/temp_" + str(uuid.uuid4())
 
@@ -213,7 +213,7 @@ class ProkkaUtils:
         """ Gather up the relevant prokka results, load the records from the results files
 
         :param output_dir:
-        :return: Sequences from the .faa .ffn files and the gff_filepath
+        :return: A tuple containing Sequences from the .faa .ffn files and the gff_filepath
         """
         faa_file = output_dir + "/mygenome.faa"
         cds_to_prot = {}
@@ -232,10 +232,11 @@ class ProkkaUtils:
 
     def parse_prokka_results(self, **prokka_parse_parameters):
         """ Go through the prokka results from the input contigs and then
-        create the features, mrnas and cdss components of the KbaseGenome.Genome object
+        create the features, mrnas and cdss components of the KbaseGenome.Genome object for
+        genome annotation only.
 
         :param prokka_parse_parameters: gff_filepath, mappings
-        :return: Genome:features Genome:cdss  Genome:mrnas report_message of genes discovered
+        :return: A tuple with Genome:features Genome:cdss  Genome:mrnas report_message of genes discovered
         """
         gff_filepath = prokka_parse_parameters["gff_filepath"]
         cds_to_dna = prokka_parse_parameters["cds_to_dna"]
@@ -421,7 +422,7 @@ class ProkkaUtils:
 
     def make_annotation_evidence(self):
         """
-
+        Create a dict for the evidence field for the genome
         :param sso_ref: Reference to the annotation library set
         :return: Ontology_event to be appended to the list of genome ontology events
         """
@@ -437,6 +438,11 @@ class ProkkaUtils:
         }
 
     def create_genome_ontology_fields(self, genome_data):
+        """
+        Create ontology event fields for a genome object
+        :param genome_data:  A genome object's data filed
+        :return: a named tuple containg the modified genome object and a new ontology event index
+        """
         # Make sure ontologies_events exist
         sso_event = self.make_sso_ontology_event()
         ontology_event_index = 0
@@ -452,6 +458,12 @@ class ProkkaUtils:
 
     @staticmethod
     def old_genome_ontologies(feature, new_ontology):
+        """
+        Update the feature's ontologies for an old genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :return: The feature with the ontology updated, in the old style
+        """
         if "ontology_terms" not in feature:
             feature["ontology_terms"] = {"SSO": {}}
         if "SSO" not in feature["ontology_terms"]:
@@ -462,6 +474,13 @@ class ProkkaUtils:
 
     @staticmethod
     def new_genome_ontologies(feature, new_ontology, ontology_event_index):
+        """
+        Update the feature's ontologies for a new genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :param ontology_event_index: Ontology index to update the feature with
+        :return: the updated feature
+        """
         if "ontology_terms" not in feature:
             feature["ontology_terms"] = {"SSO": {}}
         if "SSO" not in feature["ontology_terms"]:
@@ -477,11 +496,10 @@ class ProkkaUtils:
 
     def annotate_genome_with_new_annotations(self, **annotation_args):
         """
-
-        :param annotation_args: genome_data, new_annotations from prokka, and the output_genome_name
-        :type
-        :return:
-        """
+        Annotate the genome with new annotations for  Genome ReAnnotation
+        :param annotation_args:  genome_data from the genome obj, new_annotations from prokka, and the output_genome_name
+        :return: A tuple containg the genome_ref, filepaths for the function and ontology summary, and stats about the annotations
+          """
         genome_data = annotation_args["genome_data"]
         new_annotations = annotation_args["new_annotations"]
 
@@ -495,10 +513,10 @@ class ProkkaUtils:
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
 
-        function_report_filepath = os.path.join(self.scratch, "ontology_report")
-        ontology_report_filepath = os.path.join(self.scratch, "function_report")
-        onto_r = open(function_report_filepath, "w")
-        func_r = open(ontology_report_filepath, "w")
+        function_summary_fp = os.path.join(self.scratch, "ontology_report")
+        ontology_summary_fp = os.path.join(self.scratch, "function_report")
+        onto_r = open(function_summary_fp, "w")
+        func_r = open(ontology_summary_fp, "w")
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
@@ -548,9 +566,9 @@ class ProkkaUtils:
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
         annotated_genome = namedtuple("annotated_genome",
-                                      "genome_ref function_report_filepath ontology_report_filepath stats")
+                                      "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
-        return annotated_genome(genome_ref, function_report_filepath, ontology_report_filepath,
+        return annotated_genome(genome_ref, function_summary_fp, ontology_summary_fp,
                                 stats)
 
     def upload_file(self, filepath, message="Annotation report generated by kb_prokka"):
@@ -576,8 +594,8 @@ class ProkkaUtils:
         genome_ref = genome.genome_ref
         stats = genome.stats
 
-        file_links = [self.upload_file(genome.ontology_report_filepath),
-                      self.upload_file(genome.function_report_filepath)]
+        file_links = [self.upload_file(genome.ontology_summary_filepath),
+                      self.upload_file(genome.function_summary_filepath)]
 
         report_message = ("Genome Ref:{0}\n"
                           "Number of features sent into prokka:{1}\n"
