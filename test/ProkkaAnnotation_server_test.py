@@ -226,7 +226,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         self.assertEqual(old_feature["function"], new_feature["function"])
 
     # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
-    def Xtest_annotate_contigs(self):
+    def test_annotate_contigs(self):
         assembly_file_name = "small.fna"  # "AP009048.fna"
         assembly_test_file = os.path.join("/kb/module/test/data/", assembly_file_name)
         assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
@@ -287,7 +287,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
 
-    def Xtest_annotate_contigs_too_big(self):
+    def test_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
         """
