@@ -202,6 +202,7 @@ class ProkkaUtils:
         prokka_cmd_list.append(subject_fasta_filepath)
         print("Prokka command line: " + str(prokka_cmd_list))
 
+        #tbl2asn or some other non essential prokka binary will fail, so supress that
         try:
             check_output(prokka_cmd_list, cwd=self.scratch)
         except CalledProcessError as e:

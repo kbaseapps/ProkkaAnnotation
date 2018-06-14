@@ -109,29 +109,35 @@ class ProkkaAnnotationTest(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.getImpl().annotate(self.getContext(), {})
         with self.assertRaises(KeyError):
-            self.getImpl().annotate(self.getContext(), {'object_workspace': '0'})
+            self.getImpl().annotate(self.getContext(), {"object_workspace": "0"})
         with self.assertRaises(Exception):
-            self.getImpl().annotate(self.getContext(), {'object_workspace': '0', 'object_ref': 0})
+            self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0})
         with self.assertRaises(Exception):
-            self.getImpl().annotate(self.getContext(), {'object_workspace': '0', 'object_ref': 0,
-                                                        'output_genome_name': 0})
+            self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0,
+                                                        "output_genome_name": 0})
 
-    def test_reannotate_genome(self):
+
+    def test_reannotate_genome_official(self):
+        """
+        This test takes about 25 minutes to run. It uploads the rhodobacter_gff, runs prokka genome reannotation
+        and then checks to see if a specific feature has been updated correctly
+        :return:
+        """
         gfu = GenomeFileUtil(os.environ["SDK_CALLBACK_URL"])
 
         genome_test_file = os.path.join("/kb/module/test/data/", "rhodobacter_genomic.gbff")
         genome_test_file_scratch = os.path.join("/kb/module/work/tmp", "rhodobacter_genomic.gbff")
         copyfile(genome_test_file, genome_test_file_scratch)
 
-        genome_ref = gfu.genbank_to_genome({'file': {'path': genome_test_file_scratch},
-                                            'workspace_name': self.getWsName(),
-                                            'genome_name': "rhodobacter_genomic.gbff",
-                                            'generate_ids_if_needed': 1})['genome_ref']
-        #33281/2/1
+        genome_ref_original = gfu.genbank_to_genome({"file": {"path": genome_test_file_scratch},
+                                                     "workspace_name": self.getWsName(),
+                                                     "genome_name": "rhodobacter_genomic.gbff",
+                                                     "generate_ids_if_needed": 1})["genome_ref"]
+
         genome_name = "Rhodoannotated_by_prokka"
         print("ABOUT TO ANNOTATE GENOME")
         result = self.getImpl().annotate(self.getContext(),
-                                         {"object_ref": genome_ref,
+                                         {"object_ref": genome_ref_original,
                                           "output_workspace": self.getWsName(),
                                           "output_genome_name": genome_name,
                                           "evalue": None,
@@ -148,8 +154,32 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                           "scientific_name": "RhodoBacter"
                                           })[0]
 
-        genome_ref = self.getWsName() + "/" + genome_name
-        re_annotated_genome = self.getWsClient().get_objects([{"ref": genome_ref}])[0]["data"]
+        genome_ref_new = self.getWsName() + "/" + genome_name
+
+        un_annotated_genome = self.getWsClient().get_objects([{"ref": genome_ref_original}])[0][
+            "data"]
+        re_annotated_genome = self.getWsClient().get_objects([{"ref": genome_ref_new}])[0]["data"]
+
+        scratch = "/kb/module/work/tmp/"
+        with open(scratch + "OUTPUT_GENOME_BEFORE.txt", "w+") as outfile:
+            json.dump(un_annotated_genome, outfile)
+        with open(scratch + "OUTPUT_GENOME_AFTER.txt", "w+") as outfile:
+            json.dump(un_annotated_genome, outfile)
+
+        for feature in un_annotated_genome["features"]:
+            if feature["id"] == "RSP_1441":
+                old_function = feature["functions"]
+                self.assertEquals(old_function, ["regulatory protein, GntR family"])
+                break
+
+
+        for feature in re_annotated_genome["features"]:
+            if feature["id"] == "RSP_1441":
+                new_function = feature["functions"]
+                self.assertEquals(new_function, ["N-acetylglucosamine repressor"])
+                break
+
+
 
     @unittest.skip("Skip CI test")
     def test_reannotate_genome(self):
@@ -171,7 +201,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
 
         with open(genome_test_file, "r") as f:
             genome = json.load(f)
-            genome['assembly_ref'] = assembly_ref
+            genome["assembly_ref"] = assembly_ref
 
         # New function found by prokka
         with open(genome_test_feature1_file, "r") as f:
@@ -287,7 +317,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
 
-    def test_annotate_contigs_too_big(self):
+   def test_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
         """
