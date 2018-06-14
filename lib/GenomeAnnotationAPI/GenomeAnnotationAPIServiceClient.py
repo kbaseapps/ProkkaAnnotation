@@ -504,18 +504,26 @@ class GenomeAnnotationAPI(object):
         """
         A reasonably simple wrapper on get_objects2, but with Genome specific
         filters instead of arbitrary get subdata included paths.
-        :param params: instance of type "GetGenomeParamsV1" -> structure:
-           parameter "genomes" of list of type "GenomeSelectorV1" ->
-           structure: parameter "ref" of String, parameter
+        :param params: instance of type "GetGenomeParamsV1" (downgrade -
+           optional, defaults to true. Convert new genome features into a
+           back-compatible representation.) -> structure: parameter "genomes"
+           of list of type "GenomeSelectorV1" (ref - genome refference
+           feature array - optional, which array the
+           included_feature_position_index refer to. defaults to "features".
+           included_feature_position_index - optional, only include features
+           at the specified indices ref_path_to_genome - optional, a
+           reference path to the genome.) -> structure: parameter "ref" of
+           String, parameter "feature_array" of String, parameter
            "included_feature_position_index" of list of Long, parameter
            "ref_path_to_genome" of list of String, parameter
            "included_fields" of list of String, parameter
-           "included_feature_fields" of list of String, parameter
-           "ignore_errors" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1)), parameter "no_data" of type "boolean" (A
-           boolean - 0 for false, 1 for true. @range (0, 1)), parameter
-           "no_metadata" of type "boolean" (A boolean - 0 for false, 1 for
-           true. @range (0, 1))
+           "included_feature_fields" of list of String, parameter "downgrade"
+           of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
+           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
+           parameter "no_metadata" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data
@@ -869,6 +877,7 @@ class GenomeAnnotationAPI(object):
 
     def save_one_genome_v1(self, params, context=None):
         """
+        @deprecated: GenomeFileUtil.save_one_genome
         :param params: instance of type "SaveOneGenomeParamsV1" -> structure:
            parameter "workspace" of String, parameter "name" of String,
            parameter "data" of type "Genome" (Genome object holds much of the
