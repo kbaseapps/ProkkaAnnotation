@@ -565,7 +565,6 @@ class ProkkaUtils:
                                          "provenance": self.ctx.provenance()})["info"]
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
-
         annotated_genome = namedtuple("annotated_genome",
                                       "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
@@ -697,14 +696,14 @@ class ProkkaUtils:
                   "dna_size": assembly_info.dna_size,
                   "reference_annotation": 0}
 
-        info = self.gfu.save_one_genome({"workspace": output_workspace,
+        info = self.gfu.save_one_genome({"workspace": self.output_workspace,
                                          "name": output_genome_name,
                                          "data": genome,
                                          "provenance": self.ctx.provenance()})["info"]
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        report_message = "Genome saved to: " + output_workspace + "/" + \
+        report_message = "Genome saved to: " + self.output_workspace + "/" + \
                          output_genome_name + "\n" + annotated_assembly.report_message
 
         report_info = self.kbr.create_extended_report(
