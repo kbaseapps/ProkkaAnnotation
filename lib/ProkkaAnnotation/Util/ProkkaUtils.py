@@ -697,7 +697,7 @@ class ProkkaUtils:
                   "dna_size": assembly_info.dna_size,
                   "reference_annotation": 0}
 
-        info = self.gfu.save_one_genome_v1({"workspace": output_workspace,
+        info = self.gfu.save_one_genome({"workspace": output_workspace,
                                          "name": output_genome_name,
                                          "data": genome,
                                          "provenance": self.ctx.provenance()})["info"]
