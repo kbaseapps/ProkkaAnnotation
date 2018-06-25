@@ -711,7 +711,7 @@ class ProkkaUtils:
             {"message": report_message,
              "objects_created": [{"ref": genome_ref, "description": "Annotated genome"}],
              "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": output_workspace
+             "workspace_name": self.output_workspace
              })
 
         return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
