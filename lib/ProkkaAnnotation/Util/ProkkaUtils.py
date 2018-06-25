@@ -697,7 +697,7 @@ class ProkkaUtils:
                   "dna_size": assembly_info.dna_size,
                   "reference_annotation": 0}
 
-        info = self.gfu.save_one_genome({"workspace": output_workspace,
+        info = self.gfu.save_one_genome_v1({"workspace": output_workspace,
                                          "name": output_genome_name,
                                          "data": genome,
                                          "provenance": self.ctx.provenance()})["info"]
@@ -711,8 +711,10 @@ class ProkkaUtils:
             {"message": report_message,
              "objects_created": [{"ref": genome_ref, "description": "Annotated genome"}],
              "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": output_workspace
+             "workspace_name": self.output_workspace
              })
+
+
 
         return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
                 "report_ref": report_info["ref"]}
