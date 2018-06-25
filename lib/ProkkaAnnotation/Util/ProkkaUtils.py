@@ -714,7 +714,5 @@ class ProkkaUtils:
              "workspace_name": self.output_workspace
              })
 
-
-
         return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
                 "report_ref": report_info["ref"]}
