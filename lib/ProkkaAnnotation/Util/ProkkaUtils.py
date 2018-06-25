@@ -652,7 +652,7 @@ class ProkkaUtils:
         :return: Report with newly annotated assembly as a genome, and stats about it
         """
         self.download_seed_data()
-        self.output_workspace = params["output_workspace"]
+        output_workspace = params["output_workspace"]
 
         assembly_ref = self._get_input_value(params, "object_ref")
         output_genome_name = self._get_input_value(params, "output_genome_name")
@@ -696,21 +696,21 @@ class ProkkaUtils:
                   "dna_size": assembly_info.dna_size,
                   "reference_annotation": 0}
 
-        info = self.gfu.save_one_genome({"workspace": self.output_workspace,
+        info = self.gfu.save_one_genome({"workspace": output_workspace,
                                          "name": output_genome_name,
                                          "data": genome,
                                          "provenance": self.ctx.provenance()})["info"]
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        report_message = "Genome saved to: " + self.output_workspace + "/" + \
+        report_message = "Genome saved to: " + output_workspace + "/" + \
                          output_genome_name + "\n" + annotated_assembly.report_message
 
         report_info = self.kbr.create_extended_report(
             {"message": report_message,
              "objects_created": [{"ref": genome_ref, "description": "Annotated genome"}],
              "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": self.output_workspace
+             "workspace_name": output_workspace
              })
 
         return {"output_genome_ref": genome_ref, "report_name": report_info["name"],

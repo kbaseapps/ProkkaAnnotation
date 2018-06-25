@@ -116,7 +116,6 @@ class ProkkaAnnotationTest(unittest.TestCase):
             self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0,
                                                         "output_genome_name": 0})
 
-
     def test_reannotate_genome_official(self):
         """
         This test takes about 25 minutes to run. It uploads the rhodobacter_gff, runs prokka genome reannotation
@@ -172,14 +171,11 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 self.assertEquals(old_function, ["regulatory protein, GntR family"])
                 break
 
-
         for feature in re_annotated_genome["features"]:
             if feature["id"] == "RSP_1441":
                 new_function = feature["functions"]
                 self.assertEquals(new_function, ["N-acetylglucosamine repressor"])
                 break
-
-
 
     @unittest.skip("Skip CI test")
     def test_reannotate_genome(self):
@@ -257,6 +253,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
 
     # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
     def test_annotate_contigs(self):
+
         assembly_file_name = "small.fna"  # "AP009048.fna"
         assembly_test_file = os.path.join("/kb/module/test/data/", assembly_file_name)
         assembly_temp_file = os.path.join("/kb/module/work/tmp", assembly_file_name)
@@ -317,7 +314,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
 
-   def test_annotate_contigs_too_big(self):
+    def test_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
         """
