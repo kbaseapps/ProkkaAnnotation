@@ -669,7 +669,7 @@ class ProkkaUtils:
         # Parse Results
         annotated_assembly = self.parse_prokka_results(gff_filepath=prokka_results.gff_filepath,
                                                        cds_to_dna=prokka_results.cds_to_dna,
-                                                       cds_to_prot=prokka_results.cds_to_dna,
+                                                       cds_to_prot=prokka_results.cds_to_prot,
                                                        new_ids_to_old=renamed_assembly.new_ids_to_old)
 
         # Force defaults for optional parameters that may be set to None
