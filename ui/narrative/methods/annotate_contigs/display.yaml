@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate Assembly and ReAnnotate Genomes with Prokka v1.12
+name: Annotate Assembly and Re-annotate Genomes with Prokka(v1.12)
 tooltip: |
-    Annotate Assembly with Prokka annotation pipeline.
+    Annotate Assembly and Re-annotate Genomes with Prokka annotation pipeline.
 screenshots: []
 
 icon: prokka.png
@@ -111,9 +111,14 @@ description : |
     <p>
     For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
     </p>
+    
+    <p>
+    See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
+    </p>
 
     <p>Prokka version: 1.12</p>
     <p>Barrnap version: 0.8</p>
+    
     
 publications :
     -
