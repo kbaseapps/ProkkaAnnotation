@@ -487,13 +487,15 @@ class ProkkaUtils:
         if "SSO" not in feature["ontology_terms"]:
             feature["ontology_terms"]["SSO"] = {}
 
-        for key in new_ontology.keys():
-            id = new_ontology[key]["id"]
+        for key in new_ontology["SSO"].keys():
+            id = new_ontology["SSO"][key]["id"]
             if id in feature["ontology_terms"]["SSO"]:
                 feature["ontology_terms"]["SSO"][id].append(ontology_event_index)
             else:
                 feature["ontology_terms"]["SSO"][id] = [ontology_event_index]
         return feature
+
+
 
     def annotate_genome_with_new_annotations(self, **annotation_args):
         """
