@@ -554,7 +554,7 @@ class ProkkaUtils:
                         # Add to ontologies Present
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
-                            name = new_ontology[key]["name"]
+                            name = new_ontology[key].get("name", "Unknown")
                             ontologies_present[oid] = name
 
                     else:
