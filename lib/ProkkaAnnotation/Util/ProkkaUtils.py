@@ -487,8 +487,8 @@ class ProkkaUtils:
         if "SSO" not in feature["ontology_terms"]:
             feature["ontology_terms"]["SSO"] = {}
 
-        for key in new_ontology["SSO"].keys():
-            id = new_ontology["SSO"][key]["id"]
+        for key in new_ontology.keys():
+            id = new_ontology[key]["id"]
             if id in feature["ontology_terms"]["SSO"]:
                 feature["ontology_terms"]["SSO"][id].append(ontology_event_index)
             else:
@@ -523,6 +523,7 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
+        ontologies_present = {};
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
@@ -546,11 +547,20 @@ class ProkkaUtils:
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
+                        # New style
                         genome_data["data"]["features"][i] = self. \
                             new_genome_ontologies(feature, new_ontology, ontology_event_index)
+
+                        # Add to ontologies Present
+                        for key in new_ontology.keys():
+                            oid = new_ontology[key]["id"]
+                            name = new_ontology[key]["name"]
+                            ontologies_present[oid] = name
+
                     else:
                         genome_data["data"]["features"][i] = self. \
                             old_genome_ontologies(feature, new_ontology)
+
             if current_function:
                 func_r.write(json.dumps([fid, [current_function], [new_function]]) + "\n")
             else:
@@ -560,6 +570,14 @@ class ProkkaUtils:
 
         func_r.close()
         onto_r.close()
+
+        if ontologies_present:
+            if "ontologies_present" in genome_data["data"]:
+                for key, value in ontologies_present.items():
+                    genome_data["data"]["ontologies_present"][key] = value
+
+            else:
+                genome_data["data"]["ontologies_present"] = ontologies_present
 
         info = self.gfu.save_one_genome({"workspace": self.output_workspace,
                                          "name": annotation_args["output_genome_name"],
