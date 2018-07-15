@@ -523,7 +523,7 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
-        ontologies_present = {};
+        ontologies_present = {"SSO": {}}
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
@@ -555,7 +555,7 @@ class ProkkaUtils:
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
                             name = new_ontology[key].get("name", "Unknown")
-                            ontologies_present[oid] = name
+                            ontologies_present["SSO"][oid] = name
 
                     else:
                         genome_data["data"]["features"][i] = self. \
@@ -573,8 +573,11 @@ class ProkkaUtils:
 
         if ontologies_present:
             if "ontologies_present" in genome_data["data"]:
-                for key, value in ontologies_present.items():
-                    genome_data["data"]["ontologies_present"][key] = value
+                if "SSO" in genome_data["data"]["ontologies_present"]:
+                    for key, value in ontologies_present["SSO"].items():
+                        genome_data["data"]["ontologies_present"]["SSO"][key] = value
+                else:
+                    genome_data["data"]["ontologies_present"] = ontologies_present["SSO"]
 
             else:
                 genome_data["data"]["ontologies_present"] = ontologies_present
