@@ -495,6 +495,8 @@ class ProkkaUtils:
                 feature["ontology_terms"]["SSO"][id] = [ontology_event_index]
         return feature
 
+
+
     def annotate_genome_with_new_annotations(self, **annotation_args):
         """
         Annotate the genome with new annotations for  Genome ReAnnotation
@@ -521,6 +523,7 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
+        ontologies_present = {"SSO": {}}
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
@@ -544,11 +547,20 @@ class ProkkaUtils:
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
+                        # New style
                         genome_data["data"]["features"][i] = self. \
                             new_genome_ontologies(feature, new_ontology, ontology_event_index)
+
+                        # Add to ontologies Present
+                        for key in new_ontology.keys():
+                            oid = new_ontology[key]["id"]
+                            name = new_ontology[key].get("name", "Unknown")
+                            ontologies_present["SSO"][oid] = name
+
                     else:
                         genome_data["data"]["features"][i] = self. \
                             old_genome_ontologies(feature, new_ontology)
+
             if current_function:
                 func_r.write(json.dumps([fid, [current_function], [new_function]]) + "\n")
             else:
@@ -558,6 +570,17 @@ class ProkkaUtils:
 
         func_r.close()
         onto_r.close()
+
+        if ontologies_present:
+            if "ontologies_present" in genome_data["data"]:
+                if "SSO" in genome_data["data"]["ontologies_present"]:
+                    for key, value in ontologies_present["SSO"].items():
+                        genome_data["data"]["ontologies_present"]["SSO"][key] = value
+                else:
+                    genome_data["data"]["ontologies_present"] = ontologies_present["SSO"]
+
+            else:
+                genome_data["data"]["ontologies_present"] = ontologies_present
 
         info = self.gfu.save_one_genome({"workspace": self.output_workspace,
                                          "name": annotation_args["output_genome_name"],
