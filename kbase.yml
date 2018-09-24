@@ -8,9 +8,7 @@ service-language:
     python
 
 module-version:
-    2.0.3
+    2.0.4
 
 owners:
     [rsutormin, umaganapathyswork, jmc, scanon, bsadkhin]
-
-

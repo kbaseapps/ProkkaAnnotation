@@ -99,11 +99,11 @@ parameters :
             Don't run tRNA search (default is to run tRNAs).
 description : |
     <p>
-    This is a KBase wrapper for the 
-    <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a> 
+    This is a KBase wrapper for the
+    <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a>
     annotation pipeline.
     </p>
-    
+
     <p>
     Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4Mbp genome can be fully annotated in less than 20 minutes.
     </p>
@@ -111,18 +111,18 @@ description : |
     <p>
     For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
     </p>
-    
+
     <p>
     See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
     </p>
 
     <p>Prokka version: 1.12</p>
     <p>Barrnap version: 0.8</p>
-    
-    
+
+
 publications :
     -
+        pmid : 24642063
         display-text: |
-            Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014 Jul 15;30(14):2068-9.
+            Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014;30: 2068–2069. doi:10.1093/bioinformatics/btu153
         link: https://www.ncbi.nlm.nih.gov/pubmed/24642063
-        pmid: 24642063
