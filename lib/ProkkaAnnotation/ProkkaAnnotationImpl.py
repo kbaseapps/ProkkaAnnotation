@@ -3,7 +3,7 @@
 import os
 from pprint import pformat
 from ProkkaAnnotation.Util.ProkkaUtils import ProkkaUtils
-from Workspace.WorkspaceClient import Workspace as workspaceService
+from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 #END_HEADER
 
@@ -23,9 +23,9 @@ class ProkkaAnnotation:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "0.1.0"
-    GIT_URL = "https://github.com/bio-boris/ProkkaAnnotation.git"
-    GIT_COMMIT_HASH = "faf3ff2ba692cf84681c52e444737b877de8bef4"
+    VERSION = "2.1.0"
+    GIT_URL = "https://github.com/kbaseapps/ProkkaAnnotation.git"
+    GIT_COMMIT_HASH = "f9ca137bddc6c28d04c24b36c213cce07aa6fbe2"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -86,7 +86,7 @@ class ProkkaAnnotation:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN annotate
-        print("Input parameters: " + pformat(params))
+        print(("Input parameters: " + pformat(params)))
         object_ref = params['object_ref']
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                            "includeMetadata": 1})[0]
