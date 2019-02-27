@@ -17,6 +17,7 @@ from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from DataFileUtil.DataFileUtilClient import DataFileUtil
 from GenomeAnnotationAPI.GenomeAnnotationAPIClient import GenomeAnnotationAPI
 from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.kb_SetUtilitiesClient import kb_SetUtilities
 from KBaseReport.KBaseReportClient import KBaseReport
 from Workspace.WorkspaceClient import Workspace as workspaceService
 
@@ -33,6 +34,7 @@ class ProkkaUtils:
         self.au = AssemblyUtil(self.callback_url)
         self.kbr = KBaseReport(self.callback_url)
         self.dfu = DataFileUtil(self.callback_url)
+        self.ksu = kb_SetUtilities(self.callback_url)
         self.genome_api = GenomeAnnotationAPI(self.callback_url)
 
         self.sso_ref = None
@@ -635,9 +637,19 @@ class ProkkaUtils:
              "workspace_name": self.output_workspace
              })
 
-        return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
-                "report_ref": report_info["ref"]}
-
+        return {"output_genome_ref": genome_ref, "report_message" : report_message}
+    
+    def make_genome_set(self, output_workspace, object_ref_list, output_genome_name):
+        """ Create a genome set from annotated assemblySets and genomeSets
+ 
+        :param genome: Reannotated Genomes References, Output GenomeSet Reference
+        """
+     
+        self.ksu.KButil_Build_GenomeSet({"input_refs" : object_ref_list,
+                                        "output_name" : output_genome_name,
+                                        "desc" : "GenomeSet from Prokka Annotation",
+                                        "workspace_name": output_workspace} )
+        
     def annotate_genome(self, params):
         """ User input an existing genome to re-annotate.
 
@@ -729,12 +741,4 @@ class ProkkaUtils:
         report_message = "Genome saved to: " + output_workspace + "/" + \
                          output_genome_name + "\n" + annotated_assembly.report_message
 
-        report_info = self.kbr.create_extended_report(
-            {"message": report_message,
-             "objects_created": [{"ref": genome_ref, "description": "Annotated genome"}],
-             "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": output_workspace
-             })
-
-        return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
-                "report_ref": report_info["ref"]}
+        return {"output_genome_ref": genome_ref, "report_message" : report_message}

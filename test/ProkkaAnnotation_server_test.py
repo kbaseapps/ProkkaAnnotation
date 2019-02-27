@@ -101,7 +101,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
         print("Uploaded bogus assembly " + str(assembly_ref))
         return assembly_ref
 
-    def test_validation_integration(self):
+  # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
+    def mytest_validation_integration(self):
         """
         This test does some basic validation tests of the required parameters.
         :return:
@@ -116,7 +117,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
             self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0,
                                                         "output_genome_name": 0})
 
-    def test_reannotate_genome_official(self):
+    def mytest_reannotate_genome_official(self):
         """
         This test takes about 25 minutes to run. It uploads the rhodobacter_gff, runs prokka genome reannotation
         and then checks to see if a specific feature has been updated correctly
@@ -177,8 +178,8 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 self.assertEquals(new_function, ["N-acetylglucosamine repressor"])
                 break
 
-    @unittest.skip("Skip CI test")
-    def test_reannotate_genome(self):
+    #@unittest.skip("Skip CI test")
+    def mytest_reannotate_genome(self):
         """
         DOESN"T WORK ON CI WITH THIS DATASET, ONLY WITH APPDEV, THIS TEST IS COMMENTED OUT
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.
@@ -242,17 +243,16 @@ class ProkkaAnnotationTest(unittest.TestCase):
         # TEST NEW PROTEIN FUNCTION
         self.assertNotEquals(old_feature, new_feature)
         self.assertEqual(old_feature["function"], "fructokinase")
-        self.assertEqual(new_feature["function"], "Pantothenate kinase")
+        self.assertEqual(new_feature["functions"][0], "Pantothenate kinase")
 
         old_feature = genome["features"][1]
         new_feature = re_annotated_genome["features"][1]
 
         # TEST HYPOTHETICAL PROTEIN
         self.assertEqual(old_feature["function"], "putative Pre (Mob) type recombination enzyme")
-        self.assertEqual(old_feature["function"], new_feature["function"])
+        self.assertEqual(old_feature["function"], new_feature["functions"][0])
 
-    # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
-    def test_annotate_contigs(self):
+    def mytest_annotate_contigs(self):
 
         assembly_file_name = "small.fna"  # "AP009048.fna"
         assembly_test_file = os.path.join("/kb/module/test/data/", assembly_file_name)
@@ -285,7 +285,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                           "output_genome_name": genome_name,
                                           "evalue": None,
                                           "fast": 0,
-                                          "gcode": 0,
+                                          "gcode": 11,
                                           "genus": "genus",
                                           "kingdom": "Bacteria",
                                           "metagenome": 0,
@@ -313,8 +313,43 @@ class ProkkaAnnotationTest(unittest.TestCase):
             if feature["dna_sequence"] != dna_sequences[feature["id"]]:
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
+        
+    def test_assembly_set(self):
 
-    def test_annotate_contigs_too_big(self):
+        assembly_name = "Assembly.1"
+        assembly_ref = "25635/6/1"
+        genome_name = "Genome.1"
+
+        result = self.getImpl().annotate(self.getContext(),
+                                         {"object_ref": assembly_ref,
+                                          "output_workspace": self.getWsName(),
+                                          "output_genome_name": genome_name,
+                                          "evalue": None,
+                                          "fast": 1,
+                                          "gcode": 11,
+                                          "genus": "genus",
+                                          "kingdom": "Bacteria",
+                                          "metagenome": 0,
+                                          "mincontiglen": 1,
+                                          "norrna": 1,
+                                          "notrna": 1,
+                                          "rawproduct": 0,
+                                          "rfam": 0,
+                                          "scientific_name": "Super : duper - name;"
+                                          })[0]
+
+        print ("RESULT:", result["report_ref"])
+        
+        rep = self.getWsClient().get_objects([{"ref": result["report_ref"]}])[0]["data"]
+        self.assertTrue("text_message" in rep)
+        print("Report:\n" + str(rep["text_message"]))
+        print("ObjectsCreated:\n", rep["objects_created"])
+        
+        bad_dnas = 0
+
+        self.assertEqual(bad_dnas, 0)
+
+    def mytest_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
         """
