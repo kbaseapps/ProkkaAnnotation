@@ -117,7 +117,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
             self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0,
                                                         "output_genome_name": 0})
 
-    def mytest_reannotate_genome_official(self):
+    def test_reannotate_genome_official(self):
         """
         This test takes about 25 minutes to run. It uploads the rhodobacter_gff, runs prokka genome reannotation
         and then checks to see if a specific feature has been updated correctly
@@ -314,11 +314,11 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
         
-    def test_assembly_set(self):
+    def mytest_genome_set(self):
 
         assembly_name = "Assembly.1"
         assembly_ref = "25635/6/1"
-        genome_name = "Genome.1"
+        genome_name = "GenomeSet1"
 
         result = self.getImpl().annotate(self.getContext(),
                                          {"object_ref": assembly_ref,
@@ -335,11 +335,42 @@ class ProkkaAnnotationTest(unittest.TestCase):
                                           "notrna": 1,
                                           "rawproduct": 0,
                                           "rfam": 0,
-                                          "scientific_name": "Super : duper - name;"
+                                          "scientific_name": "Super : duper - genome;"
+                                          })[0]
+        
+        rep = self.getWsClient().get_objects([{"ref": result["report_ref"]}])[0]["data"]
+        self.assertTrue("text_message" in rep)
+        print("Report:\n" + str(rep["text_message"]))
+        print("ObjectsCreated:\n", rep["objects_created"])
+        
+        bad_dnas = 0
+
+        self.assertEqual(bad_dnas, 0)
+
+    def mytest_assembly_set(self):
+
+        assembly_name = "Assembly.1"
+        assembly_ref = "25635/8/1"
+        genome_name = "GenomeSet2"
+
+        result = self.getImpl().annotate(self.getContext(),
+                                         {"object_ref": assembly_ref,
+                                          "output_workspace": self.getWsName(),
+                                          "output_genome_name": genome_name,
+                                          "evalue": None,
+                                          "fast": 1,
+                                          "gcode": 11,
+                                          "genus": "genus",
+                                          "kingdom": "Bacteria",
+                                          "metagenome": 0,
+                                          "mincontiglen": 1,
+                                          "norrna": 1,
+                                          "notrna": 1,
+                                          "rawproduct": 0,
+                                          "rfam": 0,
+                                          "scientific_name": "Super : duper - assembly;"
                                           })[0]
 
-        print ("RESULT:", result["report_ref"])
-        
         rep = self.getWsClient().get_objects([{"ref": result["report_ref"]}])[0]["data"]
         self.assertTrue("text_message" in rep)
         print("Report:\n" + str(rep["text_message"]))

@@ -40,7 +40,6 @@ class ProkkaAnnotation:
         self.config['SDK_CALLBACK_URL'] = os.environ['SDK_CALLBACK_URL']
         self.config['KB_AUTH_TOKEN'] = os.environ['KB_AUTH_TOKEN']
         self.ws_client = workspaceService(config["workspace-url"])
-#        self.output_workspace = None
         self.kbr = KBaseReport(config["SDK_CALLBACK_URL"])
         #END_CONSTRUCTOR
         pass
@@ -99,62 +98,23 @@ class ProkkaAnnotation:
 
         self.config['ctx'] = ctx
         prokka_runner = ProkkaUtils(self.config)
-        report_message = ''
-        objects_created = []
         
         if "KBaseGenomeAnnotations.Assembly" in object_type:
-            #return [prokka_runner.annotate_assembly(params, object_info)]
+            params['object_set'] = 0
             ret = prokka_runner.annotate_assembly(params, object_info)
-            report_message += ret['report_message']
-            objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
-            
         elif "KBaseGenomes.Genome" in object_type:
-            #return [prokka_runner.annotate_genome(params)]
+            params['object_set'] = 0
             ret = prokka_runner.annotate_genome(params)
-            report_message += ret['report_message']
-            objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
-            
         elif "KBaseSets.AssemblySet" in object_type:
-            object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']['items']
-            object_ref_list = []
-            for object_list in object_set:
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_list['ref']}],
-                                                           "includeMetadata": 1})[0]
-                params['object_ref'] = object_list['ref']
-                output_genome_name = object_info[1] + ".prokka"
-                params['output_genome_name'] = output_genome_name
-                ret = prokka_runner.annotate_assembly(params, object_info)
-                report_message += ret['report_message']
-                objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
-                object_ref_list += [ret['output_genome_ref']]
-            new_genomeset_ref = prokka_runner.make_genome_set(output_workspace, object_ref_list,output_genome_name)
-            objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genomeSet"}]
-              
+            params['object_set'] = 1
+            ret= prokka_runner.annotate_assembly_set(params, object_ref)
         elif "KBaseSearch.GenomeSet" in object_type:
-            object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']["elements"]
-            object_ref_list = []
-            for object_list in object_set:
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_list}],
-                                                           "includeMetadata": 1})[0]
-                params['object_ref'] = object_list
-                output_genome_name = object_info[1] + ".prokka"
-                params['output_genome_name'] = output_genome_name
-                ret = prokka_runner.annotate_genome(params)
-                report_message += ret['report_message']
-                objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
-                object_ref_list += [ret['output_genome_ref']]
-                
-            new_genomeset_ref = prokka_runner.make_genome_set(output_workspace, object_ref_list, output_genome_name)
-            objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genomeSet"}]                
+            params['object_set'] = 1
+            ret = prokka_runner.annotate_genome_set(params, object_ref)
         else:
             raise Exception("Unsupported type" + object_type)
         
-        report_info = self.kbr.create_extended_report(
-            {"message": report_message,
-             "objects_created": objects_created,
-             "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": output_workspace
-             })
+        report_info = ret['report_info']
         return [{"report_name": report_info["name"],
                "report_ref": report_info["ref"]}]
 
