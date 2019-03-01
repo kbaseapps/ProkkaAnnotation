@@ -19,7 +19,7 @@ from installed_clients.GenomeAnnotationAPIClient import GenomeAnnotationAPI
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.WorkspaceClient import Workspace as workspaceService
-
+from installed_clients.kb_SetUtilitiesClient import kb_SetUtilities
 
 class ProkkaUtils:
 

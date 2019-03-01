@@ -4,7 +4,6 @@ import os
 import uuid
 from pprint import pformat
 from ProkkaAnnotation.Util.ProkkaUtils import ProkkaUtils
-from KBaseReport.KBaseReportClient import KBaseReport
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 #END_HEADER
@@ -40,7 +39,6 @@ class ProkkaAnnotation:
         self.config['SDK_CALLBACK_URL'] = os.environ['SDK_CALLBACK_URL']
         self.config['KB_AUTH_TOKEN'] = os.environ['KB_AUTH_TOKEN']
         self.ws_client = workspaceService(config["workspace-url"])
-        self.kbr = KBaseReport(config["SDK_CALLBACK_URL"])
         #END_CONSTRUCTOR
         pass
 
