@@ -12,7 +12,7 @@ from __future__ import print_function
 try:
     # baseclient and this client are in a package
     from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
+except ImportError:
     # no they aren't
     from baseclient import BaseClient as _BaseClient  # @Reimport
 
@@ -23,7 +23,7 @@ class GenomeAnnotationAPI(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login',
+            auth_svc='https://ci.kbase.us/services/auth/api/legacy/KBase/Sessions/Login',
             service_ver='release'):
         if url is None:
             url = 'https://kbase.us/services/service_wizard'
@@ -43,9 +43,8 @@ class GenomeAnnotationAPI(object):
            "ref" of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_taxon',
-            [inputs_get_taxon], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_taxon',
+                                        [inputs_get_taxon], self._service_ver, context)
 
     def get_assembly(self, inputs_get_assembly, context=None):
         """
@@ -55,9 +54,8 @@ class GenomeAnnotationAPI(object):
            "ref" of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_assembly',
-            [inputs_get_assembly], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_assembly',
+                                        [inputs_get_assembly], self._service_ver, context)
 
     def get_feature_types(self, inputs_get_feature_types, context=None):
         """
@@ -67,9 +65,8 @@ class GenomeAnnotationAPI(object):
            structure: parameter "ref" of type "ObjectReference"
         :returns: instance of list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_types',
-            [inputs_get_feature_types], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_types',
+                                        [inputs_get_feature_types], self._service_ver, context)
 
     def get_feature_type_descriptions(self, inputs_get_feature_type_descriptions, context=None):
         """
@@ -79,9 +76,8 @@ class GenomeAnnotationAPI(object):
            "ObjectReference", parameter "feature_type_list" of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_type_descriptions',
-            [inputs_get_feature_type_descriptions], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_type_descriptions',
+                                        [inputs_get_feature_type_descriptions], self._service_ver, context)
 
     def get_feature_type_counts(self, inputs_get_feature_type_counts, context=None):
         """
@@ -91,9 +87,8 @@ class GenomeAnnotationAPI(object):
            "feature_type_list" of list of String
         :returns: instance of mapping from String to Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_type_counts',
-            [inputs_get_feature_type_counts], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_type_counts',
+                                        [inputs_get_feature_type_counts], self._service_ver, context)
 
     def get_feature_ids(self, inputs_get_feature_ids, context=None):
         """
@@ -116,9 +111,8 @@ class GenomeAnnotationAPI(object):
            to list of String, parameter "by_alias" of mapping from String to
            list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_ids',
-            [inputs_get_feature_ids], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_ids',
+                                        [inputs_get_feature_ids], self._service_ver, context)
 
     def get_features(self, inputs_get_features, context=None):
         """
@@ -142,9 +136,8 @@ class GenomeAnnotationAPI(object):
            "feature_quality_score" of list of String, parameter
            "feature_notes" of String, parameter "feature_inference" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_features',
-            [inputs_get_features], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_features',
+                                        [inputs_get_features], self._service_ver, context)
 
     def get_features2(self, params, context=None):
         """
@@ -173,9 +166,8 @@ class GenomeAnnotationAPI(object):
            "feature_quality_score" of list of String, parameter
            "feature_notes" of String, parameter "feature_inference" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_features2',
-            [params], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_features2',
+                                        [params], self._service_ver, context)
 
     def get_proteins(self, inputs_get_proteins, context=None):
         """
@@ -190,9 +182,8 @@ class GenomeAnnotationAPI(object):
            mapping from String to list of String, parameter "protein_md5" of
            String, parameter "protein_domain_locations" of list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_proteins',
-            [inputs_get_proteins], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_proteins',
+                                        [inputs_get_proteins], self._service_ver, context)
 
     def get_feature_locations(self, inputs_get_feature_locations, context=None):
         """
@@ -204,9 +195,8 @@ class GenomeAnnotationAPI(object):
            structure: parameter "contig_id" of String, parameter "strand" of
            String, parameter "start" of Long, parameter "length" of Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_locations',
-            [inputs_get_feature_locations], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_locations',
+                                        [inputs_get_feature_locations], self._service_ver, context)
 
     def get_feature_publications(self, inputs_get_feature_publications, context=None):
         """
@@ -216,9 +206,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_publications',
-            [inputs_get_feature_publications], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_publications',
+                                        [inputs_get_feature_publications], self._service_ver, context)
 
     def get_feature_dna(self, inputs_get_feature_dna, context=None):
         """
@@ -231,9 +220,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_dna',
-            [inputs_get_feature_dna], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_dna',
+                                        [inputs_get_feature_dna], self._service_ver, context)
 
     def get_feature_functions(self, inputs_get_feature_functions, context=None):
         """
@@ -243,9 +231,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_functions',
-            [inputs_get_feature_functions], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_functions',
+                                        [inputs_get_feature_functions], self._service_ver, context)
 
     def get_feature_aliases(self, inputs_get_feature_aliases, context=None):
         """
@@ -255,9 +242,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_feature_aliases',
-            [inputs_get_feature_aliases], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_feature_aliases',
+                                        [inputs_get_feature_aliases], self._service_ver, context)
 
     def get_cds_by_gene(self, inputs_get_cds_by_gene, context=None):
         """
@@ -271,9 +257,8 @@ class GenomeAnnotationAPI(object):
            String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_cds_by_gene',
-            [inputs_get_cds_by_gene], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_cds_by_gene',
+                                        [inputs_get_cds_by_gene], self._service_ver, context)
 
     def get_cds_by_mrna(self, inputs_mrna_id_list, context=None):
         """
@@ -282,9 +267,8 @@ class GenomeAnnotationAPI(object):
            "ObjectReference", parameter "mrna_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_cds_by_mrna',
-            [inputs_mrna_id_list], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_cds_by_mrna',
+                                        [inputs_mrna_id_list], self._service_ver, context)
 
     def get_gene_by_cds(self, inputs_get_gene_by_cds, context=None):
         """
@@ -294,9 +278,8 @@ class GenomeAnnotationAPI(object):
            of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_gene_by_cds',
-            [inputs_get_gene_by_cds], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_gene_by_cds',
+                                        [inputs_get_gene_by_cds], self._service_ver, context)
 
     def get_gene_by_mrna(self, inputs_get_gene_by_mrna, context=None):
         """
@@ -306,9 +289,8 @@ class GenomeAnnotationAPI(object):
            "mrna_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_gene_by_mrna',
-            [inputs_get_gene_by_mrna], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_gene_by_mrna',
+                                        [inputs_get_gene_by_mrna], self._service_ver, context)
 
     def get_mrna_by_cds(self, inputs_get_mrna_by_cds, context=None):
         """
@@ -318,9 +300,8 @@ class GenomeAnnotationAPI(object):
            of list of String
         :returns: instance of mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_by_cds',
-            [inputs_get_mrna_by_cds], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_mrna_by_cds',
+                                        [inputs_get_mrna_by_cds], self._service_ver, context)
 
     def get_mrna_by_gene(self, inputs_get_mrna_by_gene, context=None):
         """
@@ -330,9 +311,8 @@ class GenomeAnnotationAPI(object):
            "gene_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_by_gene',
-            [inputs_get_mrna_by_gene], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_mrna_by_gene',
+                                        [inputs_get_mrna_by_gene], self._service_ver, context)
 
     def get_mrna_exons(self, inputs_get_mrna_exons, context=None):
         """
@@ -347,9 +327,8 @@ class GenomeAnnotationAPI(object):
            parameter "exon_dna_sequence" of String, parameter "exon_ordinal"
            of Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_exons',
-            [inputs_get_mrna_exons], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_mrna_exons',
+                                        [inputs_get_mrna_exons], self._service_ver, context)
 
     def get_mrna_utrs(self, inputs_get_mrna_utrs, context=None):
         """
@@ -362,9 +341,8 @@ class GenomeAnnotationAPI(object):
            parameter "strand" of String, parameter "start" of Long, parameter
            "length" of Long, parameter "utr_dna_sequence" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_mrna_utrs',
-            [inputs_get_mrna_utrs], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_mrna_utrs',
+                                        [inputs_get_mrna_utrs], self._service_ver, context)
 
     def get_summary(self, inputs_get_summary, context=None):
         """
@@ -386,9 +364,8 @@ class GenomeAnnotationAPI(object):
            "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_summary',
-            [inputs_get_summary], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_summary',
+                                        [inputs_get_summary], self._service_ver, context)
 
     def save_summary(self, inputs_save_summary, context=None):
         """
@@ -410,9 +387,8 @@ class GenomeAnnotationAPI(object):
            String, parameter "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.save_summary',
-            [inputs_save_summary], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.save_summary',
+                                        [inputs_save_summary], self._service_ver, context)
 
     def get_combined_data(self, params, context=None):
         """
@@ -496,9 +472,8 @@ class GenomeAnnotationAPI(object):
            String, parameter "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_combined_data',
-            [params], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_combined_data',
+                                        [params], self._service_ver, context)
 
     def get_genome_v1(self, params, context=None):
         """
@@ -506,7 +481,9 @@ class GenomeAnnotationAPI(object):
         filters instead of arbitrary get subdata included paths.
         :param params: instance of type "GetGenomeParamsV1" (downgrade -
            optional, defaults to true. Convert new genome features into a
-           back-compatible representation.) -> structure: parameter "genomes"
+           back-compatible representation. no_merge - optional, defaults to
+           false. If a new genome is being downgraded, do not merge new
+           fields into the features field.) -> structure: parameter "genomes"
            of list of type "GenomeSelectorV1" (ref - genome refference
            feature array - optional, which array the
            included_feature_position_index refer to. defaults to "features".
@@ -519,11 +496,12 @@ class GenomeAnnotationAPI(object):
            "included_fields" of list of String, parameter
            "included_feature_fields" of list of String, parameter "downgrade"
            of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
-           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "no_metadata" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1))
+           1)), parameter "no_merge" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "ignore_errors" of
+           type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "no_data" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "no_metadata" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data
@@ -871,9 +849,8 @@ class GenomeAnnotationAPI(object):
            "extracted_id" (An id extracted from an object.), parameter
            "handle_error" of String, parameter "handle_stacktrace" of String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.get_genome_v1',
-            [params], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.get_genome_v1',
+                                        [params], self._service_ver, context)
 
     def save_one_genome_v1(self, params, context=None):
         """
@@ -1213,9 +1190,8 @@ class GenomeAnnotationAPI(object):
            metadata about an object. Arbitrary key-value pairs provided by
            the user.) -> mapping from String to String
         """
-        return self._client.call_method(
-            'GenomeAnnotationAPI.save_one_genome_v1',
-            [params], self._service_ver, context)
+        return self._client.call_method('GenomeAnnotationAPI.save_one_genome_v1',
+                                        [params], self._service_ver, context)
 
     def status(self, context=None):
         return self._client.call_method('GenomeAnnotationAPI.status',
