@@ -13,13 +13,12 @@ from BCBio import GFF
 from Bio import SeqIO
 from Bio.SeqRecord import SeqRecord
 
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
-from DataFileUtil.DataFileUtilClient import DataFileUtil
-from GenomeAnnotationAPI.GenomeAnnotationAPIClient import GenomeAnnotationAPI
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from installed_clients.kb_SetUtilitiesClient import kb_SetUtilities
-from KBaseReport.KBaseReportClient import KBaseReport
-from Workspace.WorkspaceClient import Workspace as workspaceService
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.DataFileUtilClient import DataFileUtil
+from installed_clients.GenomeAnnotationAPIClient import GenomeAnnotationAPI
+from installed_clients.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.KBaseReportClient import KBaseReport
+from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 
 class ProkkaUtils:
@@ -288,7 +287,7 @@ class ProkkaUtils:
                     if ec:
                         aliases.append(ec)
                         genes_with_ec += 1
-                    md5 = hashlib.md5(dna).hexdigest()
+                    md5 = hashlib.md5(dna.encode()).hexdigest()
                     feature = {"id": fid, "location": location, "type": "gene",
                                "aliases": aliases, "md5": md5, "dna_sequence": dna,
                                "dna_sequence_length": len(dna),
@@ -604,7 +603,7 @@ class ProkkaUtils:
         :return:
         """
         output_file_shock_id = self.dfu.file_to_shock({"file_path": filepath})["shock_id"]
-        print("Uploaded filepath" + filepath + "to shock and got id" + output_file_shock_id)
+        print(f"Uploaded filepath {filepath} to shock and got id {output_file_shock_id}")
         return {"shock_id": output_file_shock_id,
                 "name": os.path.basename(filepath),
                 "label": os.path.basename(filepath),
