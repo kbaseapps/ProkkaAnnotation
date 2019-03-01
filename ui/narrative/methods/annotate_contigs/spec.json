@@ -18,7 +18,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome"]
+                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome", "KBaseSets.AssemblySet", "KBaseSearch.GenomeSet"]
             }
         },
         {
@@ -37,7 +37,7 @@
             "default_values": [""],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types" : [ "KBaseGenomes.Genome" ],
+                "valid_ws_types" : [ "KBaseGenomes.Genome", "KBaseSearch.GenomeSet" ],
                 "is_output_name":true
             }
         },
