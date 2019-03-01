@@ -1,4 +1,4 @@
-FROM kbase/kbase:sdkbase2.latest
+FROM kbase/sdkbase2:python
 MAINTAINER KBase Developer
 # -----------------------------------------
 
@@ -6,7 +6,6 @@ MAINTAINER KBase Developer
 # any required dependencies for your module.
 
 # RUN apt-get update
-RUN pip install coverage
 RUN apt-get update -qq && \
     apt-get install -yq --no-install-recommends \
                                                 git \
@@ -26,15 +25,6 @@ RUN git clone -b "v1.12" https://github.com/tseemann/prokka && \
 # set links to /usr/bin
 ENV PATH $PATH:/kb/prokka/bin
 
-# update security libraries in the base image
-RUN pip install setuptools --upgrade\
-    && pip install cffi --upgrade \
-    && pip install pyopenssl --upgrade \
-    && pip install ndg-httpsclient --upgrade \
-    && pip install pyasn1 --upgrade \
-    && pip install requests --upgrade \
-    && pip install 'requests[security]' --upgrade
-
 # Update tbl2asn to recent version (25.3):
 #RUN mv /kb/prokka/binaries/linux/tbl2asn /kb/prokka/binaries/linux/tbl2asn.orig && \
 #    wget ftp://ftp.ncbi.nih.gov/toolbox/ncbi_tools/converters/by_program/tbl2asn/linux.tbl2asn.gz && \
@@ -49,7 +39,7 @@ ENV PATH $PATH:/kb/barrnap/bin
 RUN git clone -b "bcbio-gff-v0.6.4" https://github.com/chapmanb/bcbb && \
     cd bcbb/gff && \
     python setup.py build && \
-    sudo python setup.py install
+    python setup.py install
 
 # -----------------------------------------
 
