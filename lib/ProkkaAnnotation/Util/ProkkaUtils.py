@@ -665,7 +665,7 @@ class ProkkaUtils:
             object_ref_list += [ret['output_genome_ref']]
         
         new_genomeset_ref = self.make_genome_set(output_workspace, object_ref_list, output_genomeset_name)
-        objects_created +=  [{"ref": new_genomeset_ref, "description": "Annotated genomeSet"}]
+        report_message += "Added the GenomeSet" + output_genomeset_name
         
         report_info = self.create_final_report(report_message,objects_created,file_links, output_workspace)
 
