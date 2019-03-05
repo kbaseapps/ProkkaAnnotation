@@ -1,0 +1,293 @@
+{
+    "ver": "0.0.1",
+    "authors": [
+        "rsutormin", "bsadkhin", "landml"
+    ],
+    "contact": "help@kbase.us",
+    "categories": ["active", "annotation"],
+    "widgets": {
+        "input": null,
+        "output": "no-display"
+    },
+    "parameters": [
+        {
+            "id": "object_ref",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome", "KBaseSets.AssemblySet", "KBaseSearch.GenomeSet"]
+            }
+        },
+        {
+            "id": "scientific_name",
+            "optional": true,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type" : "text"
+        },
+        {
+            "id": "output_genome_name",
+            "optional": false,
+            "advanced": false,
+            "allow_multiple": false,
+            "default_values": [""],
+            "field_type": "text",
+            "text_options": {
+                "valid_ws_types" : [ "KBaseSearch.GenomeSet" ],
+                "is_output_name":true
+            }
+        },
+        {
+            "id": "kingdom",
+            "optional": false,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": ["Bacteria"],
+            "field_type" : "dropdown",
+            "dropdown_options":{
+            "options": [
+                {
+                 "value": "Bacteria",
+                 "display": "Bacteria"
+                },
+                {
+                  "value": "Archaea",
+                  "display": "Archaea"
+                },
+                {
+                  "value": "Mitochondria",
+                  "display": "Mitochondria"
+                },
+                {
+                  "value": "Viruses",
+                  "display": "Viruses"
+                }
+              ]
+            }
+        },
+        {
+            "id": "genus",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [""],
+            "field_type" : "dropdown",
+            "dropdown_options":{
+            "options": [
+                {
+                 "value": "",
+                 "display": "Do not use genus-specific database"
+                },
+                {
+                  "value": "Enterococcus",
+                  "display": "Enterococcus"
+                },
+                {
+                  "value": "Escherichia",
+                  "display": "Escherichia"
+                },
+                {
+                  "value": "Staphylococcus",
+                  "display": "Staphylococcus"
+                }
+              ]
+            }
+        },
+        {
+            "id": "gcode",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "11" ],
+            "field_type" : "text",
+            "text_options" : {
+                "validate_as": "int"
+            }
+        },
+        {
+            "id": "metagenome",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "rawproduct",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "fast",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "mincontiglen",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "1" ],
+            "field_type" : "text",
+            "text_options" : {
+                "validate_as": "int"
+            }
+        },
+        {
+            "id": "evalue",
+            "optional": true,
+            "advanced": true,
+            "allow_multiple": false,
+            "default_values": [ "" ],
+            "field_type" : "text"
+        },
+        {
+            "id": "rfam",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "norrna",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        },
+        {
+            "id": "notrna",
+            "optional":true,
+            "advanced":true,
+            "allow_multiple":false,
+            "default_values":["0"],
+            "field_type" : "checkbox",
+            "checkbox_options":{
+                "checked_value": 1,
+                "unchecked_value": 0
+            }
+        }
+    ],
+    "behavior": {
+        "service-mapping": {
+            "url": "",
+            "name": "ProkkaAnnotation",
+            "method": "annotate",
+            "input_mapping": [
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "output_workspace"
+                },
+                {
+                    "input_parameter": "object_ref",
+                    "target_property": "object_ref",
+                    "target_type_transform": "ref"
+                },
+                {
+                    "input_parameter": "output_genome_name",
+                    "target_property": "output_genome_name"
+                },
+                {
+                    "input_parameter": "scientific_name",
+                    "target_property": "scientific_name"
+                },
+                {
+                    "input_parameter": "kingdom",
+                    "target_property": "kingdom"
+                },
+                {
+                    "input_parameter": "genus",
+                    "target_property": "genus"
+                },
+                {
+                    "input_parameter": "gcode",
+                    "target_property": "gcode"
+                },
+                {
+                    "input_parameter": "metagenome",
+                    "target_property": "metagenome"
+                },
+                {
+                    "input_parameter": "rawproduct",
+                    "target_property": "rawproduct"
+                },
+                {
+                    "input_parameter": "fast",
+                    "target_property": "fast"
+                },
+                {
+                    "input_parameter": "mincontiglen",
+                    "target_property": "mincontiglen"
+                },
+                {
+                    "input_parameter": "evalue",
+                    "target_property": "evalue"
+                },
+                {
+                    "input_parameter": "rfam",
+                    "target_property": "rfam"
+                },
+                {
+                    "input_parameter": "norrna",
+                    "target_property": "norrna"
+                },
+                {
+                    "input_parameter": "notrna",
+                    "target_property": "notrna"
+                }
+            ],
+                "output_mapping": [
+                {
+                    "service_method_output_path": [0,"report_name"],
+                    "target_property": "report_name"
+                },
+                {
+                    "service_method_output_path": [0,"report_ref"],
+                    "target_property": "report_ref"
+                },
+                {
+                    "input_parameter": "output_genome_name",
+                    "target_property": "id"
+                },
+                {
+                    "narrative_system_variable": "workspace",
+                    "target_property": "ws"
+                }
+            ]
+
+        }
+    },
+    "job_id_output_field": "docker"
+}
