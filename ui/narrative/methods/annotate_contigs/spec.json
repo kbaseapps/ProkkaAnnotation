@@ -37,7 +37,7 @@
             "default_values": [""],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types" : [ "KBaseGenomes.Genome", "KBaseSearch.GenomeSet" ],
+                "valid_ws_types" : [ "KBaseSearch.GenomeSet" ],
                 "is_output_name":true
             }
         },
