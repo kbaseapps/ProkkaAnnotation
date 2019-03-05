@@ -1,24 +1,24 @@
 {
     "ver": "0.0.1",
     "authors": [
-        "rsutormin", "bsadkhin"
+        "rsutormin", "bsadkhin", "landml"
     ],
     "contact": "help@kbase.us",
     "categories": ["active", "annotation"],
     "widgets": {
-        "input": "kbaseNarrativeMethodInput",
-        "output": "kbaseGenomeView"
+        "input": null,
+        "output": "no-display"
     },
     "parameters": [
         {
             "id": "object_ref",
             "optional": false,
             "advanced": false,
-            "allow_multiple": false,
+            "allow_multiple": true,
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome"]
+                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseGenomes.Genome", "KBaseSets.AssemblySet", "KBaseSearch.GenomeSet"]
             }
         },
         {
@@ -37,7 +37,7 @@
             "default_values": [""],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types" : [ "KBaseGenomes.Genome", "KBaseSearch.GenomeSet" ],
+                "valid_ws_types" : [ "KBaseSearch.GenomeSet" ],
                 "is_output_name":true
             }
         },
