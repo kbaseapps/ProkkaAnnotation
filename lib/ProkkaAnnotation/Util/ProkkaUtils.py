@@ -517,10 +517,12 @@ class ProkkaUtils:
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
 
-        function_summary_fp = os.path.join(self.scratch, "ontology_report")
-        ontology_summary_fp = os.path.join(self.scratch, "function_report")
-        onto_r = open(function_summary_fp, "w")
-        func_r = open(ontology_summary_fp, "w")
+        ontology_summary_fp = os.path.join(self.scratch, annotation_args["output_genome_name"] + "_ontology_report")
+        function_summary_fp = os.path.join(self.scratch, annotation_args["output_genome_name"] + "_function_report")
+        print ("*****", ontology_summary_fp)
+        print ("*****", function_summary_fp)
+        onto_r = open(ontology_summary_fp, "w")
+        func_r = open(function_summary_fp, "w")
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
