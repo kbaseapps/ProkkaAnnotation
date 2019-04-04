@@ -25,8 +25,8 @@ class ProkkaAnnotation:
     # the latter method is running.
     ######################################### noqa
     VERSION = "2.1.0"
-    GIT_URL = "https://github.com/kbaseapps/ProkkaAnnotation.git"
-    GIT_COMMIT_HASH = "f9ca137bddc6c28d04c24b36c213cce07aa6fbe2"
+    GIT_URL = "https://github.com/landml/ProkkaAnnotation"
+    GIT_COMMIT_HASH = "0da508fc52c5ead7fd0c8687df55307377bb9dd4"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -92,6 +92,7 @@ class ProkkaAnnotation:
         object_ref = params['object_ref']
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                            "includeMetadata": 1})[0]
+
         object_type = object_info[2]
 
         self.config['ctx'] = ctx

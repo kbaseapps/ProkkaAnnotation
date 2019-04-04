@@ -92,7 +92,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         return assembly_ref
 
   # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
-    def mytest_validation_integration(self):
+    def test_validation_integration(self):
         """
         This test does some basic validation tests of the required parameters.
         :return:
@@ -169,7 +169,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 break
 
     #@unittest.skip("Skip CI test")
-    def mytest_reannotate_genome(self):
+    def test_reannotate_genome(self):
         """
         DOESN"T WORK ON CI WITH THIS DATASET, ONLY WITH APPDEV, THIS TEST IS COMMENTED OUT
         This test uploads the genome.json object, replacing the features with a single feature, and runs prokka against this feature.
@@ -242,7 +242,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         self.assertEqual(old_feature["function"], "putative Pre (Mob) type recombination enzyme")
         self.assertEqual(old_feature["function"], new_feature["functions"][0])
 
-    def mytest_annotate_contigs(self):
+    def test_annotate_contigs(self):
 
         assembly_file_name = "small.fna"  # "AP009048.fna"
         assembly_test_file = os.path.join("/kb/module/test/data/", assembly_file_name)
@@ -253,24 +253,14 @@ class ProkkaAnnotationTest(unittest.TestCase):
         assembly_ref = au.save_assembly_from_fasta({"file": {"path": assembly_temp_file},
                                                     "workspace_name": self.getWsName(),
                                                     "assembly_name": assembly_name})
-        # Add a genome to the WS to test ref_paths
+#
+#       Delete the genome reference that was set up and passed as genome_ref;assembly_ref
+#       The genome that was formerly here was NOT the parent of the assembly and it
+#       interfered with the code that was testing whether or not the assembly was readable.
+#
         genome_name = "Genome.1"
-        genome = {"id": "Unknown", "features": [],
-                  "scientific_name": "",
-                  "domain": "", "genetic_code": 0,
-                  "assembly_ref": assembly_ref,
-                  "cdss": [], "mrnas": [],
-                  "source": "Magic!",
-                  "gc_content": 0, "dna_size": 0,
-                  "reference_annotation": 0}
-        prov = self.getContext().provenance()
-        gfu = GenomeFileUtil(os.environ["SDK_CALLBACK_URL"])
-        info = gfu.save_one_genome(
-            {"workspace": self.getWsName(), "name": genome_name,
-             "data": genome, "provenance": prov})["info"]
-        genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
         result = self.getImpl().annotate(self.getContext(),
-                                         {"object_ref": "{};{}".format(genome_ref, assembly_ref),
+                                         {"object_ref": assembly_ref,
                                           "output_workspace": self.getWsName(),
                                           "output_genome_name": genome_name,
                                           "evalue": None,
@@ -304,7 +294,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
         
-    def mytest_genome_set(self):
+    def test_genome_set(self):
 
         assembly_name = "Assembly.1"
         assembly_ref = "25635/6/1"
@@ -337,7 +327,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
 
         self.assertEqual(bad_dnas, 0)
 
-    def mytest_assembly_set(self):
+    def test_assembly_set(self):
 
         assembly_name = "Assembly.1"
         assembly_ref = "25635/8/1"
@@ -370,7 +360,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
 
         self.assertEqual(bad_dnas, 0)
 
-    def mytest_annotate_contigs_too_big(self):
+    def test_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
         """

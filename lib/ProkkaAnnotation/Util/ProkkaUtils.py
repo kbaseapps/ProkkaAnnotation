@@ -62,6 +62,23 @@ class ProkkaUtils:
         :return: first element in the list
         """
         return qualifier[0] if (qualifier and len(qualifier) > 0) else None
+    
+    def _can_i_access(self, parent_ref, object_ref):
+        new_ref = object_ref
+        if parent_ref > '  ':
+            new_ref = parent_ref + ';' + object_ref
+        
+        try:
+            self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}], "includeMetadata": 1})[0]               
+            return True
+        except:
+            try:
+                self.ws_client.get_object_info_new({'objects' : [{'ref' :new_ref }]})
+                return True
+            except Exception:
+                print("Failure, couldn't donwload the new ref either" + new_ref)
+                raise IOError("Unable to read " + object_ref + " or " + new_ref)
+                return False
 
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
@@ -702,12 +719,17 @@ class ProkkaUtils:
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
+        good_to_go = self._can_i_access('', genome_ref)
+                
         output_name = self._get_input_value(params, "output_genome_name")
         
         genome_data = \
             self.genome_api.get_genome_v1({"genomes": [{"ref": genome_ref}], 'downgrade': 0})[
                 "genomes"][0]
 
+        if 'assembly_ref' in genome_data['data']:
+            good_to_go = self._can_i_access('', genome_data['data']['assembly_ref'])
+            
         fasta_for_prokka_filepath = self.write_genome_to_fasta(genome_data)
         output_dir = self.run_prokka(params, fasta_for_prokka_filepath)
         prokka_results = self.retrieve_prokka_results(output_dir)
@@ -754,6 +776,8 @@ class ProkkaUtils:
         output_workspace = params["output_workspace"]
 
         assembly_ref = self._get_input_value(params, "object_ref")
+        good_to_go = self._can_i_access('', assembly_ref)
+
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
         assembly_info = self.inspect_assembly(assembly_info[10], assembly_ref)
