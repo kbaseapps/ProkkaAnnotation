@@ -26,7 +26,7 @@ class ProkkaAnnotation:
     ######################################### noqa
     VERSION = "2.1.0"
     GIT_URL = "https://github.com/landml/ProkkaAnnotation"
-    GIT_COMMIT_HASH = "e917cec649e4495ff6f405903385930407af4580"
+    GIT_COMMIT_HASH = "0da508fc52c5ead7fd0c8687df55307377bb9dd4"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -90,12 +90,9 @@ class ProkkaAnnotation:
         output_workspace = params["output_workspace"]
         print("Input parameters: " + pformat(params))
         object_ref = params['object_ref']
-        print ("ObjectREF", object_ref)
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                            "includeMetadata": 1})[0]
-        print ("ObjectINFO", object_info)
 
-        
         object_type = object_info[2]
 
         self.config['ctx'] = ctx
@@ -125,73 +122,6 @@ class ProkkaAnnotation:
         # At some point might do deeper type checking...
         if not isinstance(returnVal, dict):
             raise ValueError('Method annotate return value ' +
-                             'returnVal is not type dict as required.')
-        # return the results
-        return [returnVal]
-
-    def annotate_sets(self, ctx, params):
-        """
-        :param params: instance of type "AnnotateSetsParams" -> structure:
-           parameter "object_refs" of list of type "GenomeParams" ->
-           structure: parameter "object_ref" of type "data_obj_ref"
-           (Reference to an Assembly or Genome object in the workspace @id ws
-           KBaseGenomeAnnotations.Assembly @id ws KBaseGenomes.Genome),
-           parameter "output_workspace" of String, parameter
-           "output_genome_name" of String, parameter "scientific_name" of
-           String, parameter "kingdom" of String, parameter "genus" of
-           String, parameter "gcode" of Long, parameter "metagenome" of type
-           "boolean" (A boolean. 0 = false, anything else = true.), parameter
-           "rawproduct" of type "boolean" (A boolean. 0 = false, anything
-           else = true.), parameter "fast" of type "boolean" (A boolean. 0 =
-           false, anything else = true.), parameter "mincontiglen" of Long,
-           parameter "evalue" of String, parameter "rfam" of type "boolean"
-           (A boolean. 0 = false, anything else = true.), parameter "norrna"
-           of type "boolean" (A boolean. 0 = false, anything else = true.),
-           parameter "notrna" of type "boolean" (A boolean. 0 = false,
-           anything else = true.)
-        :returns: instance of type "AnnotateOutput" -> structure: parameter
-           "output_genome_ref" of type "genome_ref" (Reference to an Genome
-           object in the workspace @id ws KBaseGenomes.Genome), parameter
-           "report_name" of String, parameter "report_ref" of String
-        """
-        # ctx is the context object
-        # return variables are: returnVal
-        #BEGIN annotate_sets
-        output_workspace = params["output_workspace"]
-        print("Input parameters: " + pformat(params))
-        object_refs = params['object_refs']
-        self.config['ctx'] = ctx
-        
-        for object_ref in object_refs:
-            object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
-                                                           "includeMetadata": 1})[0]
-            object_type = object_info[2]
-
-            prokka_runner = ProkkaUtils(self.config)
-        
-            if "KBaseGenomeAnnotations.Assembly" in object_type:
-                params['object_set'] = 0
-                ret = prokka_runner.annotate_assembly(params, object_info)
-            elif "KBaseGenomes.Genome" in object_type:
-                params['object_set'] = 0
-                ret = prokka_runner.annotate_genome(params)
-            elif "KBaseSets.AssemblySet" in object_type:
-                params['object_set'] = 1
-                ret= prokka_runner.annotate_assembly_set(params, object_ref)
-            elif "KBaseSearch.GenomeSet" in object_type:
-                params['object_set'] = 1
-                ret = prokka_runner.annotate_genome_set(params, object_ref)
-            else:
-                raise Exception("Unsupported type" + object_type)
-        
-        report_info = ret['report_info']
-        return [{"report_name": report_info["name"],
-               "report_ref": report_info["ref"]}]
-       #END annotate_sets
-
-        # At some point might do deeper type checking...
-        if not isinstance(returnVal, dict):
-            raise ValueError('Method annotate_sets return value ' +
                              'returnVal is not type dict as required.')
         # return the results
         return [returnVal]
