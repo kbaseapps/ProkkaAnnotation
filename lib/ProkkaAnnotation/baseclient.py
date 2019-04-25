@@ -5,7 +5,7 @@
 #
 ############################################################
 
-from __future__ import print_function
+
 
 import json as _json
 import requests as _requests
@@ -15,12 +15,12 @@ import os as _os
 try:
     from configparser import ConfigParser as _ConfigParser  # py 3
 except ImportError:
-    from ConfigParser import ConfigParser as _ConfigParser  # py 2
+    from configparser import ConfigParser as _ConfigParser  # py 2
 
 try:
     from urllib.parse import urlparse as _urlparse  # py3
 except ImportError:
-    from urlparse import urlparse as _urlparse  # py2
+    from urllib.parse import urlparse as _urlparse  # py2
 import time
 
 _CT = 'content-type'

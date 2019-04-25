@@ -1,30 +1,20 @@
 # -*- coding: utf-8 -*-
-import unittest
-import os  # noqa: F401
 import json  # noqa: F401
-import time
-import requests
+import os  # noqa: F401
 import shutil
-
+import time
+import unittest
+from configparser import ConfigParser  # py3
 from os import environ
-
-try:
-    from ConfigParser import ConfigParser  # py2
-except:
-    from configparser import ConfigParser  # py3
-
 from shutil import copyfile
 
-from pprint import pprint  # noqa: F401
-
-from biokbase.workspace.client import Workspace as workspaceService
 from ProkkaAnnotation.ProkkaAnnotationImpl import ProkkaAnnotation
 from ProkkaAnnotation.ProkkaAnnotationServer import MethodContext
-from AssemblyUtil.AssemblyUtilClient import AssemblyUtil
 from ProkkaAnnotation.authclient import KBaseAuth as _KBaseAuth
-from AssemblySequenceAPI.AssemblySequenceAPIClient import AssemblySequenceAPI
-from GenomeFileUtil.GenomeFileUtilClient import GenomeFileUtil
-from DataFileUtil.DataFileUtilClient import DataFileUtil
+from installed_clients.AssemblySequenceAPIClient import AssemblySequenceAPI
+from installed_clients.AssemblyUtilClient import AssemblyUtil
+from installed_clients.GenomeFileUtilClient import GenomeFileUtil
+from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 
 class ProkkaAnnotationTest(unittest.TestCase):
@@ -168,13 +158,13 @@ class ProkkaAnnotationTest(unittest.TestCase):
         for feature in un_annotated_genome["features"]:
             if feature["id"] == "RSP_1441":
                 old_function = feature["functions"]
-                self.assertEquals(old_function, ["regulatory protein, GntR family"])
+                self.assertEqual(old_function, ["regulatory protein, GntR family"])
                 break
 
         for feature in re_annotated_genome["features"]:
             if feature["id"] == "RSP_1441":
                 new_function = feature["functions"]
-                self.assertEquals(new_function, ["N-acetylglucosamine repressor"])
+                self.assertEqual(new_function, ["N-acetylglucosamine repressor"])
                 break
 
     @unittest.skip("Skip CI test")
@@ -240,7 +230,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         new_feature = re_annotated_genome["features"][0]
 
         # TEST NEW PROTEIN FUNCTION
-        self.assertNotEquals(old_feature, new_feature)
+        self.assertNotEqual(old_feature, new_feature)
         self.assertEqual(old_feature["function"], "fructokinase")
         self.assertEqual(new_feature["function"], "Pantothenate kinase")
 

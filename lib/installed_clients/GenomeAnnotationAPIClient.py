@@ -12,10 +12,9 @@ from __future__ import print_function
 try:
     # baseclient and this client are in a package
     from .baseclient import BaseClient as _BaseClient  # @UnusedImport
-except:
+except ImportError:
     # no they aren't
     from baseclient import BaseClient as _BaseClient  # @Reimport
-import time
 
 
 class GenomeAnnotationAPI(object):
@@ -24,7 +23,7 @@ class GenomeAnnotationAPI(object):
             self, url=None, timeout=30 * 60, user_id=None,
             password=None, token=None, ignore_authrc=False,
             trust_all_ssl_certificates=False,
-            auth_svc='https://kbase.us/services/authorization/Sessions/Login',
+            auth_svc='https://ci.kbase.us/services/auth/api/legacy/KBase/Sessions/Login',
             service_ver='release',
             async_job_check_time_ms=100, async_job_check_time_scale_percent=150, 
             async_job_check_max_time_ms=300000):
@@ -40,14 +39,6 @@ class GenomeAnnotationAPI(object):
             async_job_check_time_scale_percent=async_job_check_time_scale_percent,
             async_job_check_max_time_ms=async_job_check_max_time_ms)
 
-    def _check_job(self, job_id):
-        return self._client._check_job('GenomeAnnotationAPI', job_id)
-
-    def _get_taxon_submit(self, inputs_get_taxon, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_taxon', [inputs_get_taxon],
-             self._service_ver, context)
-
     def get_taxon(self, inputs_get_taxon, context=None):
         """
         :param inputs_get_taxon: instance of type "inputs_get_taxon" (* *
@@ -56,22 +47,8 @@ class GenomeAnnotationAPI(object):
            "ref" of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        job_id = self._get_taxon_submit(inputs_get_taxon, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_assembly_submit(self, inputs_get_assembly, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_assembly', [inputs_get_assembly],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_taxon',
+                                    [inputs_get_taxon], self._service_ver, context)
 
     def get_assembly(self, inputs_get_assembly, context=None):
         """
@@ -81,22 +58,8 @@ class GenomeAnnotationAPI(object):
            "ref" of type "ObjectReference"
         :returns: instance of type "ObjectReference"
         """
-        job_id = self._get_assembly_submit(inputs_get_assembly, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_types_submit(self, inputs_get_feature_types, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_types', [inputs_get_feature_types],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_assembly',
+                                    [inputs_get_assembly], self._service_ver, context)
 
     def get_feature_types(self, inputs_get_feature_types, context=None):
         """
@@ -106,22 +69,8 @@ class GenomeAnnotationAPI(object):
            structure: parameter "ref" of type "ObjectReference"
         :returns: instance of list of String
         """
-        job_id = self._get_feature_types_submit(inputs_get_feature_types, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_type_descriptions_submit(self, inputs_get_feature_type_descriptions, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_type_descriptions', [inputs_get_feature_type_descriptions],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_types',
+                                    [inputs_get_feature_types], self._service_ver, context)
 
     def get_feature_type_descriptions(self, inputs_get_feature_type_descriptions, context=None):
         """
@@ -131,22 +80,8 @@ class GenomeAnnotationAPI(object):
            "ObjectReference", parameter "feature_type_list" of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_feature_type_descriptions_submit(inputs_get_feature_type_descriptions, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_type_counts_submit(self, inputs_get_feature_type_counts, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_type_counts', [inputs_get_feature_type_counts],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_type_descriptions',
+                                    [inputs_get_feature_type_descriptions], self._service_ver, context)
 
     def get_feature_type_counts(self, inputs_get_feature_type_counts, context=None):
         """
@@ -156,22 +91,8 @@ class GenomeAnnotationAPI(object):
            "feature_type_list" of list of String
         :returns: instance of mapping from String to Long
         """
-        job_id = self._get_feature_type_counts_submit(inputs_get_feature_type_counts, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_ids_submit(self, inputs_get_feature_ids, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_ids', [inputs_get_feature_ids],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_type_counts',
+                                    [inputs_get_feature_type_counts], self._service_ver, context)
 
     def get_feature_ids(self, inputs_get_feature_ids, context=None):
         """
@@ -194,22 +115,8 @@ class GenomeAnnotationAPI(object):
            to list of String, parameter "by_alias" of mapping from String to
            list of String
         """
-        job_id = self._get_feature_ids_submit(inputs_get_feature_ids, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_features_submit(self, inputs_get_features, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_features', [inputs_get_features],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_ids',
+                                    [inputs_get_feature_ids], self._service_ver, context)
 
     def get_features(self, inputs_get_features, context=None):
         """
@@ -233,22 +140,8 @@ class GenomeAnnotationAPI(object):
            "feature_quality_score" of list of String, parameter
            "feature_notes" of String, parameter "feature_inference" of String
         """
-        job_id = self._get_features_submit(inputs_get_features, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_features2_submit(self, params, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_features2', [params],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_features',
+                                    [inputs_get_features], self._service_ver, context)
 
     def get_features2(self, params, context=None):
         """
@@ -277,22 +170,8 @@ class GenomeAnnotationAPI(object):
            "feature_quality_score" of list of String, parameter
            "feature_notes" of String, parameter "feature_inference" of String
         """
-        job_id = self._get_features2_submit(params, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_proteins_submit(self, inputs_get_proteins, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_proteins', [inputs_get_proteins],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_features2',
+                                    [params], self._service_ver, context)
 
     def get_proteins(self, inputs_get_proteins, context=None):
         """
@@ -307,22 +186,8 @@ class GenomeAnnotationAPI(object):
            mapping from String to list of String, parameter "protein_md5" of
            String, parameter "protein_domain_locations" of list of String
         """
-        job_id = self._get_proteins_submit(inputs_get_proteins, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_locations_submit(self, inputs_get_feature_locations, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_locations', [inputs_get_feature_locations],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_proteins',
+                                    [inputs_get_proteins], self._service_ver, context)
 
     def get_feature_locations(self, inputs_get_feature_locations, context=None):
         """
@@ -334,22 +199,8 @@ class GenomeAnnotationAPI(object):
            structure: parameter "contig_id" of String, parameter "strand" of
            String, parameter "start" of Long, parameter "length" of Long
         """
-        job_id = self._get_feature_locations_submit(inputs_get_feature_locations, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_publications_submit(self, inputs_get_feature_publications, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_publications', [inputs_get_feature_publications],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_locations',
+                                    [inputs_get_feature_locations], self._service_ver, context)
 
     def get_feature_publications(self, inputs_get_feature_publications, context=None):
         """
@@ -359,22 +210,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        job_id = self._get_feature_publications_submit(inputs_get_feature_publications, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_dna_submit(self, inputs_get_feature_dna, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_dna', [inputs_get_feature_dna],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_publications',
+                                    [inputs_get_feature_publications], self._service_ver, context)
 
     def get_feature_dna(self, inputs_get_feature_dna, context=None):
         """
@@ -387,22 +224,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_feature_dna_submit(inputs_get_feature_dna, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_functions_submit(self, inputs_get_feature_functions, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_functions', [inputs_get_feature_functions],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_dna',
+                                    [inputs_get_feature_dna], self._service_ver, context)
 
     def get_feature_functions(self, inputs_get_feature_functions, context=None):
         """
@@ -412,22 +235,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_feature_functions_submit(inputs_get_feature_functions, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_feature_aliases_submit(self, inputs_get_feature_aliases, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_feature_aliases', [inputs_get_feature_aliases],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_functions',
+                                    [inputs_get_feature_functions], self._service_ver, context)
 
     def get_feature_aliases(self, inputs_get_feature_aliases, context=None):
         """
@@ -437,22 +246,8 @@ class GenomeAnnotationAPI(object):
            "feature_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        job_id = self._get_feature_aliases_submit(inputs_get_feature_aliases, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_cds_by_gene_submit(self, inputs_get_cds_by_gene, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_cds_by_gene', [inputs_get_cds_by_gene],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_feature_aliases',
+                                    [inputs_get_feature_aliases], self._service_ver, context)
 
     def get_cds_by_gene(self, inputs_get_cds_by_gene, context=None):
         """
@@ -466,22 +261,8 @@ class GenomeAnnotationAPI(object):
            String
         :returns: instance of mapping from String to list of String
         """
-        job_id = self._get_cds_by_gene_submit(inputs_get_cds_by_gene, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_cds_by_mrna_submit(self, inputs_mrna_id_list, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_cds_by_mrna', [inputs_mrna_id_list],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_cds_by_gene',
+                                    [inputs_get_cds_by_gene], self._service_ver, context)
 
     def get_cds_by_mrna(self, inputs_mrna_id_list, context=None):
         """
@@ -490,22 +271,8 @@ class GenomeAnnotationAPI(object):
            "ObjectReference", parameter "mrna_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_cds_by_mrna_submit(inputs_mrna_id_list, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_gene_by_cds_submit(self, inputs_get_gene_by_cds, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_gene_by_cds', [inputs_get_gene_by_cds],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_cds_by_mrna',
+                                    [inputs_mrna_id_list], self._service_ver, context)
 
     def get_gene_by_cds(self, inputs_get_gene_by_cds, context=None):
         """
@@ -515,22 +282,8 @@ class GenomeAnnotationAPI(object):
            of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_gene_by_cds_submit(inputs_get_gene_by_cds, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_gene_by_mrna_submit(self, inputs_get_gene_by_mrna, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_gene_by_mrna', [inputs_get_gene_by_mrna],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_gene_by_cds',
+                                    [inputs_get_gene_by_cds], self._service_ver, context)
 
     def get_gene_by_mrna(self, inputs_get_gene_by_mrna, context=None):
         """
@@ -540,22 +293,8 @@ class GenomeAnnotationAPI(object):
            "mrna_id_list" of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_gene_by_mrna_submit(inputs_get_gene_by_mrna, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_mrna_by_cds_submit(self, inputs_get_mrna_by_cds, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_mrna_by_cds', [inputs_get_mrna_by_cds],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_gene_by_mrna',
+                                    [inputs_get_gene_by_mrna], self._service_ver, context)
 
     def get_mrna_by_cds(self, inputs_get_mrna_by_cds, context=None):
         """
@@ -565,22 +304,8 @@ class GenomeAnnotationAPI(object):
            of list of String
         :returns: instance of mapping from String to String
         """
-        job_id = self._get_mrna_by_cds_submit(inputs_get_mrna_by_cds, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_mrna_by_gene_submit(self, inputs_get_mrna_by_gene, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_mrna_by_gene', [inputs_get_mrna_by_gene],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_mrna_by_cds',
+                                    [inputs_get_mrna_by_cds], self._service_ver, context)
 
     def get_mrna_by_gene(self, inputs_get_mrna_by_gene, context=None):
         """
@@ -590,22 +315,8 @@ class GenomeAnnotationAPI(object):
            "gene_id_list" of list of String
         :returns: instance of mapping from String to list of String
         """
-        job_id = self._get_mrna_by_gene_submit(inputs_get_mrna_by_gene, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_mrna_exons_submit(self, inputs_get_mrna_exons, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_mrna_exons', [inputs_get_mrna_exons],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_mrna_by_gene',
+                                    [inputs_get_mrna_by_gene], self._service_ver, context)
 
     def get_mrna_exons(self, inputs_get_mrna_exons, context=None):
         """
@@ -620,22 +331,8 @@ class GenomeAnnotationAPI(object):
            parameter "exon_dna_sequence" of String, parameter "exon_ordinal"
            of Long
         """
-        job_id = self._get_mrna_exons_submit(inputs_get_mrna_exons, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_mrna_utrs_submit(self, inputs_get_mrna_utrs, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_mrna_utrs', [inputs_get_mrna_utrs],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_mrna_exons',
+                                    [inputs_get_mrna_exons], self._service_ver, context)
 
     def get_mrna_utrs(self, inputs_get_mrna_utrs, context=None):
         """
@@ -648,22 +345,8 @@ class GenomeAnnotationAPI(object):
            parameter "strand" of String, parameter "start" of Long, parameter
            "length" of Long, parameter "utr_dna_sequence" of String
         """
-        job_id = self._get_mrna_utrs_submit(inputs_get_mrna_utrs, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_summary_submit(self, inputs_get_summary, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_summary', [inputs_get_summary],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_mrna_utrs',
+                                    [inputs_get_mrna_utrs], self._service_ver, context)
 
     def get_summary(self, inputs_get_summary, context=None):
         """
@@ -685,22 +368,8 @@ class GenomeAnnotationAPI(object):
            "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        job_id = self._get_summary_submit(inputs_get_summary, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _save_summary_submit(self, inputs_save_summary, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.save_summary', [inputs_save_summary],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_summary',
+                                    [inputs_get_summary], self._service_ver, context)
 
     def save_summary(self, inputs_save_summary, context=None):
         """
@@ -722,22 +391,8 @@ class GenomeAnnotationAPI(object):
            String, parameter "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        job_id = self._save_summary_submit(inputs_save_summary, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result']
-
-    def _get_combined_data_submit(self, params, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_combined_data', [params],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.save_summary',
+                                    [inputs_save_summary], self._service_ver, context)
 
     def get_combined_data(self, params, context=None):
         """
@@ -821,22 +476,8 @@ class GenomeAnnotationAPI(object):
            String, parameter "original_source_filename" of String, parameter
            "feature_type_counts" of mapping from String to Long
         """
-        job_id = self._get_combined_data_submit(params, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _get_genome_v1_submit(self, params, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.get_genome_v1', [params],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_combined_data',
+                                    [params], self._service_ver, context)
 
     def get_genome_v1(self, params, context=None):
         """
@@ -844,7 +485,9 @@ class GenomeAnnotationAPI(object):
         filters instead of arbitrary get subdata included paths.
         :param params: instance of type "GetGenomeParamsV1" (downgrade -
            optional, defaults to true. Convert new genome features into a
-           back-compatible representation.) -> structure: parameter "genomes"
+           back-compatible representation. no_merge - optional, defaults to
+           false. If a new genome is being downgraded, do not merge new
+           fields into the features field.) -> structure: parameter "genomes"
            of list of type "GenomeSelectorV1" (ref - genome refference
            feature array - optional, which array the
            included_feature_position_index refer to. defaults to "features".
@@ -857,11 +500,12 @@ class GenomeAnnotationAPI(object):
            "included_fields" of list of String, parameter
            "included_feature_fields" of list of String, parameter "downgrade"
            of type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
-           1)), parameter "ignore_errors" of type "boolean" (A boolean - 0
-           for false, 1 for true. @range (0, 1)), parameter "no_data" of type
-           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1)),
-           parameter "no_metadata" of type "boolean" (A boolean - 0 for
-           false, 1 for true. @range (0, 1))
+           1)), parameter "no_merge" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "ignore_errors" of
+           type "boolean" (A boolean - 0 for false, 1 for true. @range (0,
+           1)), parameter "no_data" of type "boolean" (A boolean - 0 for
+           false, 1 for true. @range (0, 1)), parameter "no_metadata" of type
+           "boolean" (A boolean - 0 for false, 1 for true. @range (0, 1))
         :returns: instance of type "GenomeDataSetV1" -> structure: parameter
            "genomes" of list of type "GenomeDataV1" -> structure: parameter
            "data" of type "Genome" (Genome object holds much of the data
@@ -1209,22 +853,8 @@ class GenomeAnnotationAPI(object):
            "extracted_id" (An id extracted from an object.), parameter
            "handle_error" of String, parameter "handle_stacktrace" of String
         """
-        job_id = self._get_genome_v1_submit(params, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
-
-    def _save_one_genome_v1_submit(self, params, context=None):
-        return self._client._submit_job(
-             'GenomeAnnotationAPI.save_one_genome_v1', [params],
-             self._service_ver, context)
+        return self._client.run_job('GenomeAnnotationAPI.get_genome_v1',
+                                    [params], self._service_ver, context)
 
     def save_one_genome_v1(self, params, context=None):
         """
@@ -1564,28 +1194,9 @@ class GenomeAnnotationAPI(object):
            metadata about an object. Arbitrary key-value pairs provided by
            the user.) -> mapping from String to String
         """
-        job_id = self._save_one_genome_v1_submit(params, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
+        return self._client.run_job('GenomeAnnotationAPI.save_one_genome_v1',
+                                    [params], self._service_ver, context)
 
     def status(self, context=None):
-        job_id = self._client._submit_job('GenomeAnnotationAPI.status', 
-            [], self._service_ver, context)
-        async_job_check_time = self._client.async_job_check_time
-        while True:
-            time.sleep(async_job_check_time)
-            async_job_check_time = (async_job_check_time *
-                self._client.async_job_check_time_scale_percent / 100.0)
-            if async_job_check_time > self._client.async_job_check_max_time:
-                async_job_check_time = self._client.async_job_check_max_time
-            job_state = self._check_job(job_id)
-            if job_state['finished']:
-                return job_state['result'][0]
+        return self._client.run_job('GenomeAnnotationAPI.status',
+                                    [], self._service_ver, context)

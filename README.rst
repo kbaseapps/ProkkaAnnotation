@@ -1,11 +1,8 @@
-[![Build Status](https://travis-ci.org/rsutormin/ProkkaAnnotation.svg?branch=master)](https://travis-ci.org/rsutormin/ProkkaAnnotation)
-
-
 Prokka Annotate Assembly
 ^^^^^^^^^^^^^^^^^^^^^^^^
 1) Retrieve the seed system ontology from "KBaseOntology/seed_subsystem_ontology" and create a table of SSO Numbers with EC numbers that map to them.
 
-2) Inspect assembly to see if it has too many contigs (>30,000). This might mean it is not a metagenome or is non prokaryotic.
+2) Inspect assembly to see if it has too many contigs (>30,000). If there are too many contigs, shis might mean the input assembly is a metagenome or is non prokaryotic.
 
 3) Retrieve the FASTA from the assembly_ref using AssemblyUtils.getAssembly_as_fasta, and rename the contigs, but keep a record of the old names
 
