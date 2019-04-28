@@ -523,6 +523,8 @@ class ProkkaUtils:
           """
         genome_data = annotation_args["genome_data"]
         new_annotations = annotation_args["new_annotations"]
+        parent_ref = annotation_args.get("parent_ref", None)
+        genome_ref = annotation_args.get("genome_ref", None)
 
         new_genome = False
         if 'feature_counts' in genome_data['data']:
@@ -604,10 +606,16 @@ class ProkkaUtils:
             else:
                 genome_data["data"]["ontologies_present"] = ontologies_present
 
-        info = self.gfu.save_one_genome({"workspace": self.output_workspace,
-                                         "name": annotation_args["output_genome_name"],
-                                         "data": genome_data["data"],
-                                         "provenance": self.ctx.provenance()})["info"]
+        if (genome_ref):
+            print("Old Ref is " + genome_data['data']['assembly_ref'])
+            genome_data['data']['assembly_ref'] = genome_ref + ";" + genome_data['data'][
+                'assembly_ref']
+            print("New  Ref is " + genome_data['data']['assembly_ref'])
+
+            info = self.gfu.save_one_genome({"workspace": self.output_workspace,
+                                             "name": annotation_args["output_genome_name"],
+                                             "data": genome_data["data"],
+                                             "provenance": self.ctx.provenance()})["info"]
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
         annotated_genome = namedtuple("annotated_genome",
@@ -670,6 +678,8 @@ class ProkkaUtils:
             ref = object_set[object_list]['ref']
 
             corrected_ref = self.get_correct_ref(parent_ref, ref)
+            params['object_ref'] = corrected_ref
+            params['parent_ref'] = parent_ref
 
             if corrected_ref is None:
                 report_message += "You do not have access to the genome " + ref + "\n"
@@ -681,8 +691,7 @@ class ProkkaUtils:
                                                         "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = corrected_ref
-                params['parent_ref'] = parent_ref
+
                 ret = self.annotate_genome(params)
             else:
                 object_info = \
@@ -690,8 +699,6 @@ class ProkkaUtils:
                                                         "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = corrected_ref
-                params['parent_ref'] = parent_ref
                 ret = self.annotate_assembly(params, object_info)
 
             report_message += ret['report_message']
@@ -745,9 +752,12 @@ class ProkkaUtils:
 
         output_name = self._get_input_value(params, "output_genome_name")
 
+        print("Genome Ref to download : " + genome_ref)
         genome_data = \
             self.genome_api.get_genome_v1({"genomes": [{"ref": genome_ref}], 'downgrade': 0})[
                 "genomes"][0]
+
+        print("Successfully downloaded " + genome_ref)
 
         fasta_for_prokka_filepath = self.write_genome_to_fasta(genome_data)
         output_dir = self.run_prokka(params, fasta_for_prokka_filepath)
@@ -755,7 +765,9 @@ class ProkkaUtils:
         new_annotations = self.get_new_annotations(prokka_results.gff_filepath)
         annotated_genome = self.annotate_genome_with_new_annotations(genome_data=genome_data,
                                                                      new_annotations=new_annotations,
-                                                                     output_genome_name=output_name)
+                                                                     output_genome_name=output_name,
+                                                                     parent_ref=parent_ref,
+                                                                     genome_ref=genome_ref)
 
         genome_ref = annotated_genome.genome_ref
         stats = annotated_genome.stats
@@ -802,8 +814,6 @@ class ProkkaUtils:
         parent_ref = params.get("parent_ref", None)
         if parent_ref:
             assembly_ref = parent_ref + ";" + assembly_ref
-
-
 
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
