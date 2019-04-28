@@ -1,3 +1,6 @@
+### Version 2.1.0
+- Add support for GenomeSets and AssemblySets
+
 ### Version 1.0.4
 - Features IDs in the annotated genomes are now unique IDs generated
   by Prokka, not gene names (the latter are now stored as feature aliases).
