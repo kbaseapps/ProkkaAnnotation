@@ -640,12 +640,13 @@ class ProkkaUtils:
 
     def annotate_genome_set(self, params, object_ref):
         object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']['elements']
-        return self.annotate_set(params, object_set, "genome")
+        return self.annotate_set(params, object_set, object_ref, "genome")
 
     def annotate_assembly_set(self, params, object_ref):
         object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']['items']
-        return self.annotate_set(params, object_set, "assembly")
+        return self.annotate_set(params, object_set, object_ref, "assembly")
 
+    #
   #
   #     AssemblySets and GenomeSets are very different in how they represent
   #         the members of the set. There is a difference (above) in
@@ -654,7 +655,7 @@ class ProkkaUtils:
   #         Finally, they are different because the object_info gets passed to the
   #         annotation of an assembly but not with the genome.
   #
-    def annotate_set(self, params, object_set, object_type):
+    def annotate_set(self, params, object_set, object_ref, object_type):
         object_ref_list = []
         objects_created = []
         file_links = []
@@ -662,25 +663,37 @@ class ProkkaUtils:
         ret = ''
         output_workspace = params["output_workspace"]
         output_genomeset_name = params["output_genome_name"]
-        for object_list in object_set:
+
+        for object_list in object_set.keys():
+            ref = object_list
+            good_to_go = self._can_i_access(object_ref, ref)
+
+            if not good_to_go:
+                report_message = "You do not have access to the genome " + \
+                                 object_set[object_list]['ref']
+                file_links = []
+                genome_ref = ""
+                continue
+
             if object_type == 'genome':
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_list}],
+
+                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
                                                            "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = object_list
+                params['object_ref'] = ref
                 ret = self.annotate_genome(params)
             else:
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_list['ref']}],
+                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
                                                            "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = object_list['ref']
+                params['object_ref'] = ref
                 ret = self.annotate_assembly(params, object_info)
             report_message += ret['report_message']
             file_links += ret['file_links']
 
-            objects_created +=  [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
+            objects_created += [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
             object_ref_list += [ret['output_genome_ref']]
         
         new_genomeset_ref = self.make_genome_set(output_workspace, object_ref_list, output_genomeset_name)
