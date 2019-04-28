@@ -21,6 +21,7 @@ from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 from installed_clients.kb_SetUtilitiesClient import kb_SetUtilities
 
+
 class ProkkaUtils:
 
     def __init__(self, config):
@@ -62,23 +63,27 @@ class ProkkaUtils:
         :return: first element in the list
         """
         return qualifier[0] if (qualifier and len(qualifier) > 0) else None
-    
-    def _can_i_access(self, parent_ref, object_ref):
-        new_ref = object_ref
-        if parent_ref > '  ':
-            new_ref = parent_ref + ';' + object_ref
-        
+
+    def get_correct_ref(self, parent_ref, object_ref):
+        new_ref = parent_ref + ';' + object_ref
+
         try:
-            self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}], "includeMetadata": 1})[0]               
-            return True
+            self.ws_client.get_object_info_new(
+                {"objects": [{"ref": object_ref}], "includeMetadata": 1})[0]
+            return object_ref
         except:
-            try:
-                self.ws_client.get_object_info_new({'objects' : [{'ref' :new_ref }]})
-                return True
-            except Exception:
-                print("Failure, couldn't donwload the new ref either" + new_ref)
-                raise IOError("Unable to read " + object_ref + " or " + new_ref)
-                return False
+            pass
+
+
+        try:
+            self.ws_client.get_object_info_new({'objects': [{'ref': new_ref}]})
+            return new_ref
+        except:
+            pass
+
+        return None
+
+
 
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
@@ -220,7 +225,7 @@ class ProkkaUtils:
         prokka_cmd_list.append(subject_fasta_filepath)
         print("Prokka command line: " + str(prokka_cmd_list))
 
-        #tbl2asn or some other non essential prokka binary will fail, so supress that
+        # tbl2asn or some other non essential prokka binary will fail, so supress that
         try:
             check_output(prokka_cmd_list, cwd=self.scratch)
         except CalledProcessError as e:
@@ -513,8 +518,6 @@ class ProkkaUtils:
                 feature["ontology_terms"]["SSO"][id] = [ontology_event_index]
         return feature
 
-
-
     def annotate_genome_with_new_annotations(self, **annotation_args):
         """
         Annotate the genome with new annotations for  Genome ReAnnotation
@@ -534,10 +537,12 @@ class ProkkaUtils:
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
 
-        ontology_summary_fp = os.path.join(self.scratch, annotation_args["output_genome_name"] + "_ontology_report")
-        function_summary_fp = os.path.join(self.scratch, annotation_args["output_genome_name"] + "_function_report")
-        print ("*****", ontology_summary_fp)
-        print ("*****", function_summary_fp)
+        ontology_summary_fp = os.path.join(self.scratch, annotation_args[
+            "output_genome_name"] + "_ontology_report")
+        function_summary_fp = os.path.join(self.scratch, annotation_args[
+            "output_genome_name"] + "_function_report")
+        print("*****", ontology_summary_fp)
+        print("*****", function_summary_fp)
         onto_r = open(ontology_summary_fp, "w")
         func_r = open(function_summary_fp, "w")
         func_r.write("function_id current_function new_function\n")
@@ -632,7 +637,7 @@ class ProkkaUtils:
         report_info = self.kbr.create_extended_report(
             {"message": report_message,
              "objects_created": objects_created,
-             "file_links" : file_links,
+             "file_links": file_links,
              "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
              "workspace_name": output_workspace
              })
@@ -647,14 +652,14 @@ class ProkkaUtils:
         return self.annotate_set(params, object_set, object_ref, "assembly")
 
     #
-  #
-  #     AssemblySets and GenomeSets are very different in how they represent
-  #         the members of the set. There is a difference (above) in
-  #         ['data']['items'] vs ['data']['elements']. Then there is a difference
-  #         in whether you get a list or a dict (which effects the code below)
-  #         Finally, they are different because the object_info gets passed to the
-  #         annotation of an assembly but not with the genome.
-  #
+    #
+    #     AssemblySets and GenomeSets are very different in how they represent
+    #         the members of the set. There is a difference (above) in
+    #         ['data']['items'] vs ['data']['elements']. Then there is a difference
+    #         in whether you get a list or a dict (which effects the code below)
+    #         Finally, they are different because the object_info gets passed to the
+    #         annotation of an assembly but not with the genome.
+    #
     def annotate_set(self, params, object_set, object_ref, object_type):
         object_ref_list = []
         objects_created = []
@@ -665,63 +670,64 @@ class ProkkaUtils:
         output_genomeset_name = params["output_genome_name"]
 
         for object_list in object_set.keys():
-            ref = object_list
-            good_to_go = self._can_i_access(object_ref, ref)
+            ref = object_set[object_list]['ref']
 
-            if not good_to_go:
-                report_message = "You do not have access to the genome " + \
-                                 object_set[object_list]['ref']
-                file_links = []
-                genome_ref = ""
+            new_ref = self._can_i_access(object_ref, ref)
+
+            if new_ref is None:
+                report_message = "You do not have access to the genome " + ref
                 continue
 
             if object_type == 'genome':
-
                 object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
-                                                           "includeMetadata": 1})[0]
+                                                                  "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = ref
                 ret = self.annotate_genome(params)
             else:
                 object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
-                                                           "includeMetadata": 1})[0]
+                                                                  "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = ref
                 ret = self.annotate_assembly(params, object_info)
+
             report_message += ret['report_message']
             file_links += ret['file_links']
 
-            objects_created += [{"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
+            objects_created += [
+                {"ref": ret['output_genome_ref'], "description": "Annotated genome"}]
             object_ref_list += [ret['output_genome_ref']]
-        
-        new_genomeset_ref = self.make_genome_set(output_workspace, object_ref_list, output_genomeset_name)
-        objects_created +=  [{"ref": new_genomeset_ref, "description": "Annotated genomeSet"}]
-        report_message += "\nAdded the GenomeSet" + output_genomeset_name
-        
-        report_info = self.create_final_report(report_message,objects_created,file_links, output_workspace)
 
-        return {"report_info" : report_info,
-                "output_genome_ref" : objects_created,
-                "report_message" : report_message,
-                "file_links" : file_links }
-    
+        new_genomeset_ref = self.make_genome_set(output_workspace, object_ref_list,
+                                                 output_genomeset_name)
+        objects_created += [{"ref": new_genomeset_ref, "description": "Annotated genomeSet"}]
+        report_message += "\nAdded the GenomeSet" + output_genomeset_name
+
+        report_info = self.create_final_report(report_message, objects_created, file_links,
+                                               output_workspace)
+
+        return {"report_info": report_info,
+                "output_genome_ref": objects_created,
+                "report_message": report_message,
+                "file_links": file_links}
+
     def make_genome_set(self, output_workspace, object_ref_list, output_genomeset_name):
         """ Create a genome set from annotated assemblySets and genomeSets
  
         :param genome: Reannotated Genomes References, Output GenomeSet Reference
         """
-        ret=self.ksu.KButil_Build_GenomeSet({"input_refs" : object_ref_list,
-                                        "output_name" : output_genomeset_name,
-                                        "desc" : "GenomeSet from Prokka Annotation",
-                                        "workspace_name": output_workspace} )
+        ret = self.ksu.KButil_Build_GenomeSet({"input_refs": object_ref_list,
+                                               "output_name": output_genomeset_name,
+                                               "desc": "GenomeSet from Prokka Annotation",
+                                               "workspace_name": output_workspace})
         output_genomeset_ref = output_workspace + "/" + output_genomeset_name
 
         info = self.ws_client.get_objects([{"ref": output_genomeset_ref}])[0]["info"]
         genome_set_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
-        return(genome_set_ref)
-        
+        return (genome_set_ref)
+
     def annotate_genome(self, params):
         """ User input an existing genome to re-annotate.
 
@@ -733,16 +739,16 @@ class ProkkaUtils:
 
         genome_ref = self._get_input_value(params, "object_ref")
         good_to_go = self._can_i_access('', genome_ref)
-                
+
         output_name = self._get_input_value(params, "output_genome_name")
-        
+
         genome_data = \
             self.genome_api.get_genome_v1({"genomes": [{"ref": genome_ref}], 'downgrade': 0})[
                 "genomes"][0]
 
         if 'assembly_ref' in genome_data['data']:
             good_to_go = self._can_i_access('', genome_data['data']['assembly_ref'])
-            
+
         fasta_for_prokka_filepath = self.write_genome_to_fasta(genome_data)
         output_dir = self.run_prokka(params, fasta_for_prokka_filepath)
         prokka_results = self.retrieve_prokka_results(output_dir)
@@ -762,18 +768,21 @@ class ProkkaUtils:
                           "Number of features sent into prokka:{2}\n"
                           "New functions found:{3}\n"
                           "Ontology terms found:{4}\n"
-                          ).format(output_name, genome_ref, stats["current_functions"], stats["new_functions"],
+                          ).format(output_name, genome_ref, stats["current_functions"],
+                                   stats["new_functions"],
                                    stats["new_ontologies"])
 
         if 'object_set' in params and params['object_set'] == 1:
-            return {"output_genome_ref": genome_ref, "report_message" : report_message, "file_links" : file_links}
+            return {"output_genome_ref": genome_ref, "report_message": report_message,
+                    "file_links": file_links}
         else:
             objects_created = [{"ref": genome_ref, "description": "Annotated genome output_name"}]
-            report_info = self.create_final_report(report_message, objects_created, file_links, self.output_workspace)
-            return {"report_info" : report_info,
+            report_info = self.create_final_report(report_message, objects_created, file_links,
+                                                   self.output_workspace)
+            return {"report_info": report_info,
                     "output_genome_ref": genome_ref,
-                    "report_message" : report_message,
-                    "file_links" : file_links}
+                    "report_message": report_message,
+                    "file_links": file_links}
 
     def annotate_assembly(self, params, assembly_info):
         """
@@ -842,13 +851,15 @@ class ProkkaUtils:
         report_message = "Genome saved to: " + output_workspace + "/" + \
                          output_genome_name + "\n" + annotated_assembly.report_message
 
-
         if 'object_set' in params and params['object_set'] == 1:
-            return {"output_genome_ref": genome_ref, "report_message" : report_message, "file_links" : []}
+            return {"output_genome_ref": genome_ref, "report_message": report_message,
+                    "file_links": []}
         else:
-            objects_created = [{"ref": genome_ref, "description": "Annotated assembly" + output_genome_name}]
-            report_info = self.create_final_report(report_message, objects_created, [], output_workspace)
-            return {"report_info" : report_info,
+            objects_created = [
+                {"ref": genome_ref, "description": "Annotated assembly" + output_genome_name}]
+            report_info = self.create_final_report(report_message, objects_created, [],
+                                                   output_workspace)
+            return {"report_info": report_info,
                     "output_genome_ref": [genome_ref],
-                    "report_message" : report_message,
-                    "file_links" : []}
+                    "report_message": report_message,
+                    "file_links": []}
