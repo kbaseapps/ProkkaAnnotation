@@ -672,7 +672,7 @@ class ProkkaUtils:
         for object_list in object_set.keys():
             ref = object_set[object_list]['ref']
 
-            new_ref = self._can_i_access(object_ref, ref)
+            new_ref = self.get_correct_ref(object_ref, ref)
 
             if new_ref is None:
                 report_message = "You do not have access to the genome " + ref
@@ -715,7 +715,7 @@ class ProkkaUtils:
 
     def make_genome_set(self, output_workspace, object_ref_list, output_genomeset_name):
         """ Create a genome set from annotated assemblySets and genomeSets
- 
+
         :param genome: Reannotated Genomes References, Output GenomeSet Reference
         """
         ret = self.ksu.KButil_Build_GenomeSet({"input_refs": object_ref_list,
@@ -738,7 +738,6 @@ class ProkkaUtils:
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
-        good_to_go = self._can_i_access('', genome_ref)
 
         output_name = self._get_input_value(params, "output_genome_name")
 
@@ -746,8 +745,6 @@ class ProkkaUtils:
             self.genome_api.get_genome_v1({"genomes": [{"ref": genome_ref}], 'downgrade': 0})[
                 "genomes"][0]
 
-        if 'assembly_ref' in genome_data['data']:
-            good_to_go = self._can_i_access('', genome_data['data']['assembly_ref'])
 
         fasta_for_prokka_filepath = self.write_genome_to_fasta(genome_data)
         output_dir = self.run_prokka(params, fasta_for_prokka_filepath)
@@ -798,7 +795,7 @@ class ProkkaUtils:
         output_workspace = params["output_workspace"]
 
         assembly_ref = self._get_input_value(params, "object_ref")
-        good_to_go = self._can_i_access('', assembly_ref)
+
 
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
