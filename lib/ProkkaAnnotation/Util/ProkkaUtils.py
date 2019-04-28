@@ -672,9 +672,9 @@ class ProkkaUtils:
         for object_list in object_set.keys():
             ref = object_set[object_list]['ref']
 
-            new_ref = self.get_correct_ref(object_ref, ref)
+            corrected_ref = self.get_correct_ref(object_ref, ref)
 
-            if new_ref is None:
+            if corrected_ref is None:
                 report_message = "You do not have access to the genome " + ref
                 continue
 
@@ -683,14 +683,14 @@ class ProkkaUtils:
                                                                   "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = ref
+                params['object_ref'] = corrected_ref
                 ret = self.annotate_genome(params)
             else:
                 object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
                                                                   "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
-                params['object_ref'] = ref
+                params['object_ref'] = corrected_ref
                 ret = self.annotate_assembly(params, object_info)
 
             report_message += ret['report_message']
