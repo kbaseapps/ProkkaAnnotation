@@ -74,7 +74,6 @@ class ProkkaUtils:
         except:
             pass
 
-
         try:
             self.ws_client.get_object_info_new({'objects': [{'ref': new_ref}]})
             return new_ref
@@ -82,8 +81,6 @@ class ProkkaUtils:
             pass
 
         return None
-
-
 
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
@@ -675,19 +672,21 @@ class ProkkaUtils:
             corrected_ref = self.get_correct_ref(object_ref, ref)
 
             if corrected_ref is None:
-                report_message = "You do not have access to the genome " + ref
+                report_message += "You do not have access to the genome " + ref + "\n"
                 continue
 
             if object_type == 'genome':
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
-                                                                  "includeMetadata": 1})[0]
+                object_info = \
+                self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
+                                                    "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = corrected_ref
                 ret = self.annotate_genome(params)
             else:
-                object_info = self.ws_client.get_object_info_new({"objects": [{"ref": ref}],
-                                                                  "includeMetadata": 1})[0]
+                object_info = \
+                self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
+                                                    "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = corrected_ref
@@ -745,7 +744,6 @@ class ProkkaUtils:
             self.genome_api.get_genome_v1({"genomes": [{"ref": genome_ref}], 'downgrade': 0})[
                 "genomes"][0]
 
-
         fasta_for_prokka_filepath = self.write_genome_to_fasta(genome_data)
         output_dir = self.run_prokka(params, fasta_for_prokka_filepath)
         prokka_results = self.retrieve_prokka_results(output_dir)
@@ -795,7 +793,6 @@ class ProkkaUtils:
         output_workspace = params["output_workspace"]
 
         assembly_ref = self._get_input_value(params, "object_ref")
-
 
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
