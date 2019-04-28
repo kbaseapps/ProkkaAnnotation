@@ -657,7 +657,7 @@ class ProkkaUtils:
     #         Finally, they are different because the object_info gets passed to the
     #         annotation of an assembly but not with the genome.
     #
-    def annotate_set(self, params, object_set, object_ref, object_type):
+    def annotate_set(self, params, object_set, parent_ref, object_type):
         object_ref_list = []
         objects_created = []
         file_links = []
@@ -669,7 +669,7 @@ class ProkkaUtils:
         for object_list in object_set.keys():
             ref = object_set[object_list]['ref']
 
-            corrected_ref = self.get_correct_ref(object_ref, ref)
+            corrected_ref = self.get_correct_ref(parent_ref, ref)
 
             if corrected_ref is None:
                 report_message += "You do not have access to the genome " + ref + "\n"
@@ -677,19 +677,21 @@ class ProkkaUtils:
 
             if object_type == 'genome':
                 object_info = \
-                self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
-                                                    "includeMetadata": 1})[0]
+                    self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
+                                                        "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = corrected_ref
+                params['parent_ref'] = parent_ref
                 ret = self.annotate_genome(params)
             else:
                 object_info = \
-                self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
-                                                    "includeMetadata": 1})[0]
+                    self.ws_client.get_object_info_new({"objects": [{"ref": corrected_ref}],
+                                                        "includeMetadata": 1})[0]
                 output_genome_name = object_info[1] + ".prokka"
                 params['output_genome_name'] = output_genome_name
                 params['object_ref'] = corrected_ref
+                params['parent_ref'] = parent_ref
                 ret = self.annotate_assembly(params, object_info)
 
             report_message += ret['report_message']
@@ -737,6 +739,9 @@ class ProkkaUtils:
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
+        parent_ref = params.get("parent_ref", None)
+        if parent_ref:
+            genome_ref = parent_ref + ";" + genome_ref
 
         output_name = self._get_input_value(params, "output_genome_name")
 
@@ -793,6 +798,12 @@ class ProkkaUtils:
         output_workspace = params["output_workspace"]
 
         assembly_ref = self._get_input_value(params, "object_ref")
+
+        parent_ref = params.get("parent_ref", None)
+        if parent_ref:
+            assembly_ref = parent_ref + ";" + assembly_ref
+
+
 
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
