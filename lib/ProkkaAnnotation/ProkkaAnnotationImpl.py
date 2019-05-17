@@ -90,14 +90,21 @@ class ProkkaAnnotation:
         output_workspace = params["output_workspace"]
         print("Input parameters: " + pformat(params))
         object_ref = params['object_ref']
+
+        parent_ref = params.get('parent_ref', None)
+
+        if parent_ref:
+            object_ref = parent_ref + ";" + object_ref
+
+
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
-                                                           "includeMetadata": 1})[0]
+                                                          "includeMetadata": 1})[0]
 
         object_type = object_info[2]
 
         self.config['ctx'] = ctx
         prokka_runner = ProkkaUtils(self.config)
-        
+
         if "KBaseGenomeAnnotations.Assembly" in object_type:
             params['object_set'] = 0
             ret = prokka_runner.annotate_assembly(params, object_info)
@@ -106,16 +113,16 @@ class ProkkaAnnotation:
             ret = prokka_runner.annotate_genome(params)
         elif "KBaseSets.AssemblySet" in object_type:
             params['object_set'] = 1
-            ret= prokka_runner.annotate_assembly_set(params, object_ref)
+            ret = prokka_runner.annotate_assembly_set(params, object_ref)
         elif "KBaseSearch.GenomeSet" in object_type:
             params['object_set'] = 1
             ret = prokka_runner.annotate_genome_set(params, object_ref)
         else:
             raise Exception("Unsupported type" + object_type)
-        
+
         report_info = ret['report_info']
         return [{"report_name": report_info["name"],
-               "report_ref": report_info["ref"]}]
+                 "report_ref": report_info["ref"]}]
 
         #END annotate
 
