@@ -96,12 +96,9 @@ class ProkkaAnnotation:
         if parent_ref:
             object_ref = parent_ref + ";" + object_ref
 
-        print("About to get object" + object_ref)
 
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                           "includeMetadata": 1})[0]
-
-        print(object_info)
 
         object_type = object_info[2]
 

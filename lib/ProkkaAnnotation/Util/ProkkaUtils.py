@@ -650,11 +650,13 @@ class ProkkaUtils:
 
     def annotate_genome_set(self, params, object_ref):
         object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']['elements']
-        return self.annotate_set(params, object_set, object_ref, "genome")
+        object_set_refs = [object_set[o]["ref"] for o in object_set.keys()]
+        return self.annotate_set(params, object_set_refs, object_ref, "genome")
 
     def annotate_assembly_set(self, params, object_ref):
         object_set = self.ws_client.get_objects([{"ref": object_ref}])[0]['data']['items']
-        return self.annotate_set(params, object_set, object_ref, "assembly")
+        object_set_refs = [o["ref"] for o in object_set]
+        return self.annotate_set(params, object_set_refs, object_ref, "assembly")
 
     #
     #
@@ -674,9 +676,13 @@ class ProkkaUtils:
         output_workspace = params["output_workspace"]
         output_genomeset_name = params["output_genome_name"]
 
-        for object_list in object_set.keys():
-            ref = object_set[object_list]['ref']
+        print(type(params),params)
+        print(type(object_set),object_set)
+        print(type(parent_ref),parent_ref)
+        print(type(object_type),object_type)
 
+
+        for ref in object_set:
             corrected_ref = self.get_correct_ref(parent_ref, ref)
             params['object_ref'] = corrected_ref
             params['parent_ref'] = parent_ref
