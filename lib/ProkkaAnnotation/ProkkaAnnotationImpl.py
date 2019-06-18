@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
+import uuid
 from pprint import pformat
 from ProkkaAnnotation.Util.ProkkaUtils import ProkkaUtils
 from installed_clients.WorkspaceClient import Workspace as workspaceService
@@ -24,8 +25,8 @@ class ProkkaAnnotation:
     # the latter method is running.
     ######################################### noqa
     VERSION = "2.1.0"
-    GIT_URL = "https://github.com/kbaseapps/ProkkaAnnotation.git"
-    GIT_COMMIT_HASH = "f9ca137bddc6c28d04c24b36c213cce07aa6fbe2"
+    GIT_URL = "https://github.com/landml/ProkkaAnnotation"
+    GIT_COMMIT_HASH = "0da508fc52c5ead7fd0c8687df55307377bb9dd4"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -86,21 +87,36 @@ class ProkkaAnnotation:
         # ctx is the context object
         # return variables are: returnVal
         #BEGIN annotate
-        print(("Input parameters: " + pformat(params)))
+        output_workspace = params["output_workspace"]
+        print("Input parameters: " + pformat(params))
         object_ref = params['object_ref']
         object_info = self.ws_client.get_object_info_new({"objects": [{"ref": object_ref}],
                                                            "includeMetadata": 1})[0]
+
         object_type = object_info[2]
 
         self.config['ctx'] = ctx
         prokka_runner = ProkkaUtils(self.config)
-
+        
         if "KBaseGenomeAnnotations.Assembly" in object_type:
-            return [prokka_runner.annotate_assembly(params, object_info)]
+            params['object_set'] = 0
+            ret = prokka_runner.annotate_assembly(params, object_info)
         elif "KBaseGenomes.Genome" in object_type:
-            return [prokka_runner.annotate_genome(params)]
+            params['object_set'] = 0
+            ret = prokka_runner.annotate_genome(params)
+        elif "KBaseSets.AssemblySet" in object_type:
+            params['object_set'] = 1
+            ret= prokka_runner.annotate_assembly_set(params, object_ref)
+        elif "KBaseSearch.GenomeSet" in object_type:
+            params['object_set'] = 1
+            ret = prokka_runner.annotate_genome_set(params, object_ref)
         else:
             raise Exception("Unsupported type" + object_type)
+        
+        report_info = ret['report_info']
+        return [{"report_name": report_info["name"],
+               "report_ref": report_info["ref"]}]
+
         #END annotate
 
         # At some point might do deeper type checking...
