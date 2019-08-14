@@ -57,11 +57,6 @@ parameters :
             Genetic code
         short-hint : |
              Genetic code / Translation table  (default '11')
-    metagenome :
-        ui-name : |
-            Metagenome
-        short-hint : |
-            Improve gene predictions for highly fragmented genomes (default OFF).
     rawproduct :
         ui-name : |
             Raw product

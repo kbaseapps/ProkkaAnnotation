@@ -156,14 +156,11 @@ class ProkkaUtils:
         """
         output_dir = "/kb/module/work/tmp/temp_" + str(uuid.uuid4())
 
+        prokka_cmd_list = ["perl", "/kb/prokka/bin/prokka", "--outdir", output_dir, "--prefix", "mygenome"]
+
         # --kingdom [X]  Annotation mode: Archaea|Bacteria|Mitochondria|Viruses (default "Bacteria")
-        kingdom = "Bacteria"
         if "kingdom" in params and params["kingdom"]:
-            kingdom = params["kingdom"]
-
-        prokka_cmd_list = ["perl", "/kb/prokka/bin/prokka", "--outdir", output_dir, "--prefix",
-                           "mygenome", "--kingdom", kingdom]
-
+            prokka_cmd_list.extend(["--kingdom", str(params['kingdom'])])
         # --genus [X]       Genus name (triggers to use --usegenus)
         if "genus" in params and params["genus"]:
             prokka_cmd_list.extend(["--genus", str(params["genus"]), "--usegenus"])
@@ -495,8 +492,6 @@ class ProkkaUtils:
                 feature["ontology_terms"]["SSO"][id] = [ontology_event_index]
         return feature
 
-
-
     def annotate_genome_with_new_annotations(self, **annotation_args):
         """
         Annotate the genome with new annotations for  Genome ReAnnotation
@@ -664,32 +659,12 @@ class ProkkaUtils:
                                                                      output_genome_name=output_name)
         return self.report_annotated_genome(annotated_genome)
 
-    def annotate_assembly(self, params, assembly_info):
-        """
-        Annotate an assembly with Prokka. The steps include to download the assembly as a fasta file,
-        rename the contigs, run prokka against the contigs, parse the results, and finally,
-        create and upload a genome object.
-
-        :param params: object reference, output_genome_name and output_workspace
-        :param assembly_info: Information used to determine if the assembly is too big
-        :return: Report with newly annotated assembly as a genome, and stats about it
-        """
-        self.download_seed_data()
-        output_workspace = params["output_workspace"]
-
-        assembly_ref = self._get_input_value(params, "object_ref")
+    def save_genome(self, params, prokka_results, renamed_assembly, assembly_ref):
+        """"""
+        # Parse Results
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
-        assembly_info = self.inspect_assembly(assembly_info[10], assembly_ref)
-        orig_fasta_file = self.au.get_assembly_as_fasta({"ref": assembly_ref})["path"]
 
-        # Rename Assembly and Keep Track of Old Contigs
-        renamed_assembly = self.create_renamed_assembly(orig_fasta_file)
-        # Run Prokka with the modified, renamed fasta file
-        output_dir = self.run_prokka(params, renamed_assembly.filepath)
-        # Prokka_results
-        prokka_results = self.retrieve_prokka_results(output_dir)
-        # Parse Results
         annotated_assembly = self.parse_prokka_results(gff_filepath=prokka_results.gff_filepath,
                                                        cds_to_dna=prokka_results.cds_to_dna,
                                                        cds_to_prot=prokka_results.cds_to_prot,
@@ -726,15 +701,149 @@ class ProkkaUtils:
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        report_message = "Genome saved to: " + output_workspace + "/" + \
-                         output_genome_name + "\n" + annotated_assembly.report_message
+        return genome_ref, annotated_assembly.report_message
 
-        report_info = self.kbr.create_extended_report(
-            {"message": report_message,
-             "objects_created": [{"ref": genome_ref, "description": "Annotated genome"}],
-             "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
-             "workspace_name": output_workspace
-             })
+    def _replace_id(self, line, new_ids_to_old, fasta=False):
+        if fasta:
+            if '>' ==  line[0]:
+                tokens = line.split()
+                if len(tokens) > 1:
+                    id_ = tokens[0][1:].strip()
+                    rest = ' '.join(tokens[1:])
+                    return '>' + new_ids_to_old[id_] + ' ' + rest
+                else:
+                    id_ = tokens[0][1:].strip()
+                    return '>' + new_ids_to_old[id_]
+            else:
+                return line
+        else:
+            id_, rest = line.split('\t')[0], line.split('\t')[1:]
+            return '\t'.join([new_ids_to_old[id_]] + rest)
 
-        return {"output_genome_ref": genome_ref, "report_name": report_info["name"],
-                "report_ref": report_info["ref"]}
+
+    def _rename_and_separate_gff(self, gff, new_ids_to_old):
+        fasta = []
+        save = []
+        with open(gff) as f:
+            for l in f:
+                if '##FASTA' in l:
+                    for line in f:
+                        fasta.append(self._replace_id(line, new_ids_to_old, True))
+                    break
+                if '##' in l:
+                    continue
+                save.append(self._replace_id(l, new_ids_to_old))
+        gff_path = gff + "_edited.gff"
+        with open(gff_path, 'w') as f:
+            for l in save:
+                f.write(l.strip() + '\n')
+        fasta_path = gff  + "edited.fa"
+        with open(fasta_path, 'w') as f:
+            for l in fasta:
+                f.write(l.strip() + '\n')
+        return gff_path, fasta_path
+
+
+    def save_metagenome(self, params, gff_file, fasta_file):
+        output_name = self._get_input_value(params, "output_metagenome_name")
+        output_workspace = self._get_input_value(params, "output_workspace")
+
+        metagenome_ref = self.gfu.fasta_gff_to_metagenome({
+            "fasta_file": {'path': fasta_file},
+            "gff_file": {'path': gff_file},
+            "genome_name": output_name,
+            "workspace_name": output_workspace,
+            "generate_missing_genes": True
+        })['genome_ref']
+
+        return metagenome_ref
+
+    def annotate_metagenome(self, params):
+        """"""
+        metagenome_ref = self._get_input_value(params, "object_ref")
+        output_genome_name = self._get_input_value(params, "output_metagenome_name")
+        output_workspace = self._get_input_value(params, "output_workspace")
+
+        # orig_fasta_file = self.au.get_fastas({'ref_lst': [metagenome_ref]})
+        obj_data = self.dfu.get_objects({"object_refs": [metagenome_ref]})['data'][0]['data']
+        orig_fasta_file = self.au.get_assembly_as_fasta({"ref": obj_data['assembly_ref']})["path"]
+
+        renamed_assembly = self.create_renamed_assembly(orig_fasta_file)
+        output_dir = self.run_prokka(params, renamed_assembly.filepath)
+
+        # need to analyse output gff and fastas from prokka.
+
+        metagenome_ref = self.save_metagenome(params, output_dir)
+
+        report_message = "Metagenome saved to: " + output_workspace + "/" + \
+                         output_genome_name + "\n"
+
+        report_info = self.kbr.create_extended_report({
+            "message": report_message,
+            "objects_created": [{"ref": metagenome_ref, "description": "Annotated Metagenome Assembly"}],
+            "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
+            "workspace_name": output_workspace
+        })
+
+        return {
+            "output_metagenome_ref": metagenome_ref,
+            "report_name": report_info["name"],
+            "report_ref": report_info["ref"]
+        }
+
+    def annotate_assembly(self, params, assembly_info):
+        """
+        Annotate an assembly with Prokka. The steps include to download the assembly as a fasta file,
+        rename the contigs, run prokka against the contigs, parse the results, and finally,
+        create and upload a genome object.
+
+        :param params: object reference, output_genome_name and output_workspace
+        :param assembly_info: Information used to determine if the assembly is too big
+        :return: Report with newly annotated assembly as a genome, and stats about it
+        """
+        self.download_seed_data()
+
+        output_workspace = params["output_workspace"]
+        if params.get('metagenome'):
+            save_type = "Annotated Metagenome Assembly"
+            output_field_name = 'output_metagenome_ref'
+            output_name = self._get_input_value(params, "output_metagenome_name")
+        else:
+            save_type = "Annotated Genome"
+            output_field_name = "output_genome_ref"
+            output_name = self._get_input_value(params, "output_genome_name")
+
+        assembly_ref = self._get_input_value(params, "object_ref")
+        output_workspace = self._get_input_value(params, "output_workspace")
+        assembly_info = self.inspect_assembly(assembly_info[10], assembly_ref)
+        orig_fasta_file = self.au.get_assembly_as_fasta({"ref": assembly_ref})["path"]
+
+        # Rename Assembly and Keep Track of Old Contigs
+        renamed_assembly = self.create_renamed_assembly(orig_fasta_file)
+        # Run Prokka with the modified, renamed fasta file
+        output_dir = self.run_prokka(params, renamed_assembly.filepath)
+        # Prokka_results
+
+        if params.get('metagenome'):
+            gff_file, fasta_file = self._rename_and_separate_gff(output_dir + "/mygenome.gff", renamed_assembly.new_ids_to_old)
+            genome_ref = self.save_metagenome(params, gff_file, fasta_file)
+            report_message = ""
+        else:
+            prokka_results = self.retrieve_prokka_results(output_dir)
+            genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref)
+            
+        report_message = f"{save_type} saved to: " + output_workspace + "/" + \
+                      output_name + "\n" + report_message
+
+        report_info = self.kbr.create_extended_report({
+            "message": report_message,
+            "objects_created": [{"ref": genome_ref, "description": save_type}],
+            "report_object_name": "kb_prokka_report_" + str(uuid.uuid4()),
+            "workspace_name": output_workspace
+        })
+
+        return {
+            output_field_name: genome_ref,
+            "report_name": report_info["name"],
+            "report_ref": report_info["ref"]
+        }
