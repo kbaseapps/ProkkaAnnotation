@@ -16,7 +16,7 @@ from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 
-
+@unittest.skip('x')
 class ProkkaAnnotationTest(unittest.TestCase):
 
     @classmethod

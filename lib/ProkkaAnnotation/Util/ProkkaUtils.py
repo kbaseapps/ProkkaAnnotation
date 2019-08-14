@@ -772,8 +772,8 @@ class ProkkaUtils:
         output_dir = self.run_prokka(params, renamed_assembly.filepath)
 
         # need to analyse output gff and fastas from prokka.
-
-        metagenome_ref = self.save_metagenome(params, output_dir)
+        gff_file, fasta_file = self._rename_and_separate_gff(output_dir + "/mygenome.gff", renamed_assembly.new_ids_to_old)
+        metagenome_ref = self.save_metagenome(params, gff_file, fasta_file)
 
         report_message = "Metagenome saved to: " + output_workspace + "/" + \
                          output_genome_name + "\n"
