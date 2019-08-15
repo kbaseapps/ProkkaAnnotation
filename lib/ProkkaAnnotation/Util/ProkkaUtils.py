@@ -815,7 +815,9 @@ class ProkkaUtils:
 
         assembly_ref = self._get_input_value(params, "object_ref")
         output_workspace = self._get_input_value(params, "output_workspace")
-        assembly_info = self.inspect_assembly(assembly_info[10], assembly_ref)
+        # for now, don't do this check if we are using a metagenome
+        if not params.get('metagenome'):
+            assembly_info = self.inspect_assembly(assembly_info[10], assembly_ref)
         orig_fasta_file = self.au.get_assembly_as_fasta({"ref": assembly_ref})["path"]
 
         # Rename Assembly and Keep Track of Old Contigs
