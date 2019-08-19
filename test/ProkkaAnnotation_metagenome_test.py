@@ -151,9 +151,21 @@ class ProkkaAnnotationTest(unittest.TestCase):
         })[0]
         self.verify_output(ret)
 
+    def unzip_save_fasta(self, fasta, fastazip):
+        i = gzip.GzipFile(fastazip, 'rb')
+        s = i.read()
+        i.close()
+        o = open(fasta, 'wb')
+        o.write(s)
+        o.close()
+        print(f"File {fastazip} unzipped to {fasta}...")
+
     def test_annotate_metagenome_from_annotated_metagenome_assembly(self):
         metagenome_gff = "data/59111.assembled.gff"
         metagenome_fasta = "data/59111.assembled.fna"
+        if not os.path.isfile(metagenome_fasta):
+            metagenome_fasta_zip = "data/59111.assembled.fna.gz"
+            unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
 
         ref = self.create_metagenome(metagenome_gff, metagenome_fasta, 'metagenome_metagenome')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
@@ -166,6 +178,10 @@ class ProkkaAnnotationTest(unittest.TestCase):
     def test_annotate_metagenome_from_assembly(self):
         """"""
         metagenome_fasta = "data/59111.assembled.fna"
+        if not os.path.isfile(metagenome_fasta):
+            metagenome_fasta_zip = "data/59111.assembled.fna.gz"
+            unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
+
         ref = self.create_assembly(metagenome_fasta, 'metagenome_assembly')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
             "object_ref": ref,
