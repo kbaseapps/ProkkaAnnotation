@@ -11,4 +11,4 @@ module-version:
     2.1.1
 
 owners:
-    [jmc, scanon, bsadkhin]
+    [jmc, scanon, bsadkhin, slebras, landml]
