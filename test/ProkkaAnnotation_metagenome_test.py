@@ -3,6 +3,7 @@ import json  # noqa: F401
 import os  # noqa: F401
 import shutil
 import time
+import gzip
 import unittest
 from configparser import ConfigParser  # py3
 from os import environ
@@ -165,7 +166,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         metagenome_fasta = "data/59111.assembled.fna"
         if not os.path.isfile(metagenome_fasta):
             metagenome_fasta_zip = "data/59111.assembled.fna.gz"
-            unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
+            self.unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
 
         ref = self.create_metagenome(metagenome_gff, metagenome_fasta, 'metagenome_metagenome')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
@@ -180,7 +181,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         metagenome_fasta = "data/59111.assembled.fna"
         if not os.path.isfile(metagenome_fasta):
             metagenome_fasta_zip = "data/59111.assembled.fna.gz"
-            unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
+            self.unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
 
         ref = self.create_assembly(metagenome_fasta, 'metagenome_assembly')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
