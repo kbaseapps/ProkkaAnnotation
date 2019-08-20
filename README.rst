@@ -48,3 +48,7 @@ Prokka Re-Annotate Genome
 8) If it is an old genome, append the actual SSO event in the style as in the Prokka assembly directly into the genome. The evidence will automatically be set correctly.
 
 13) Save the genome and create a report, updating only the output_genome name and the features. No other fields will be updated.
+
+Prokka Annotate Metagenome (from assembly or AnnotatedMetagenomeAsssembly object)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Functionally the same as non-metagenome version, but doesn't impose size limit and produces KBaseMetagenomes.AnnotatedMetagenomeAssembly object output.

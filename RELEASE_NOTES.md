@@ -1,3 +1,7 @@
+### Version 2.1.2
+- annotate_metagenome added in order to creat KBaseMetagenome.AnnotatedMetagenomeAssembly output objects.
+  the function removes a limit on the size of the incoming fasta/assembly.
+
 ### Version 1.0.4
 - Features IDs in the annotated genomes are now unique IDs generated
   by Prokka, not gene names (the latter are now stored as feature aliases).
