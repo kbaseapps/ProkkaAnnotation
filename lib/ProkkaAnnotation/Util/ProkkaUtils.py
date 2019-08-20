@@ -660,7 +660,17 @@ class ProkkaUtils:
         return self.report_annotated_genome(annotated_genome)
 
     def save_genome(self, params, prokka_results, renamed_assembly, assembly_ref):
-        """"""
+        """
+        Save KBaseGenomes.Genome object,
+        inputs:
+            params           - input parameters from .spec
+            prokka_results   - result files from prokka run
+            renamed_assembly - assembly object with renamed contigs
+            assembly_ref     - reference to input assembly object
+        output:
+            genome_ref: saved genome object reference
+            report_message: message associated with er
+        """
         # Parse Results
         output_genome_name = self._get_input_value(params, "output_genome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
@@ -704,6 +714,14 @@ class ProkkaUtils:
         return genome_ref, annotated_assembly.report_message
 
     def _replace_id(self, line, new_ids_to_old, fasta=False):
+        """
+        inputs:
+            line           - text line to replace id of
+            new_ids_to_old - dict of newly assigned ids to input (old) ids
+            fasta.         - bool wheter file is fasta, else is gff file
+        outputs:
+            returned text line
+        """
         if fasta:
             if '>' ==  line[0]:
                 tokens = line.split()
@@ -722,6 +740,12 @@ class ProkkaUtils:
 
 
     def _rename_and_separate_gff(self, gff, new_ids_to_old):
+        """
+        rename the output gff file ids and separate the fasta file from the gff3.
+        inputs:
+            gff            - path to gff_file
+            new_ids_to_old - dict of newly assigned ids to input (old) ids
+        """
         fasta = []
         save = []
         with open(gff) as f:
@@ -745,6 +769,14 @@ class ProkkaUtils:
 
 
     def save_metagenome(self, params, gff_file, fasta_file):
+        """
+        inputs:
+            params     - input "params" from .spec
+            gff_file   - path to gff_file to save as Metagenome
+            fasta_file - path to fasta_file to save as Metagenome
+        outputs:
+            metagenome_ref - saved KBaseMetagenomes.AnnotatedMetagenomeAssembly object ref
+        """
         output_name = self._get_input_value(params, "output_metagenome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
 
@@ -759,7 +791,16 @@ class ProkkaUtils:
         return metagenome_ref
 
     def annotate_metagenome(self, params):
-        """"""
+        """
+        Given a KBaseMetagenome.AnnotatedMetagenomeAssembly object, reannotate it using Prokka.
+        Saves a KBaseMetagenome.AnnotatedMetagenomeAssembly as output.
+        inputs:
+            params - input "params" from .spec
+        outputs:
+            output_metagenome_ref - saved KBaseMetagenomes.AnnotatedMetagenomeAssembly object ref
+            report_name - name of outgoing report object
+            report_ref  - reference to Report object
+        """
         metagenome_ref = self._get_input_value(params, "object_ref")
         output_genome_name = self._get_input_value(params, "output_metagenome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
