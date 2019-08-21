@@ -109,18 +109,6 @@
             }
         },
         {
-            "id": "metagenome",
-            "optional":true,
-            "advanced":true,
-            "allow_multiple":false,
-            "default_values":["0"],
-            "field_type" : "checkbox",
-            "checkbox_options":{
-                "checked_value": 1,
-                "unchecked_value": 0
-            }
-        },
-        {
             "id": "rawproduct",
             "optional":true,
             "advanced":true,
@@ -234,10 +222,6 @@
                 {
                     "input_parameter": "gcode",
                     "target_property": "gcode"
-                },
-                {
-                    "input_parameter": "metagenome",
-                    "target_property": "metagenome"
                 },
                 {
                     "input_parameter": "rawproduct",

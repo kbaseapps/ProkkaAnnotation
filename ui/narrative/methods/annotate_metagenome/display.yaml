@@ -1,0 +1,118 @@
+#
+# define display information
+#
+name: Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka(v1.12)
+tooltip: |
+    Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka annotation pipeline.
+screenshots: []
+
+icon: prokka.png
+
+#
+# define a set of similar methods that might be useful to the user
+#
+suggestions:
+    apps:
+        related:
+            []
+        next:
+            []
+    methods:
+        related:
+            []
+        next:
+            []
+
+#
+# Configure the display and description of parameters
+#
+parameters :
+    object_ref :
+        ui-name : |
+            Assembly or Annotated Metagenome Assembly
+        short-hint : |
+            Assembly object (set of dna contigs) or Annotated Metagenome Assembly object (set of features with Ontology and Function to reannotate)
+    output_metagenome_name :
+        ui-name : |
+            Output metagenome name
+        short-hint : |
+            The name under which the resulting Annotated Metagenome Assembly will be saved in the Narrative
+    kingdom :
+        ui-name : |
+            Kingdom
+        short-hint : |
+            Annotation mode: Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
+    genus :
+        ui-name : |
+            Genus
+        short-hint : |
+             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database) (default 'do not use genus-specific database')
+    gcode :
+        ui-name : |
+            Genetic code
+        short-hint : |
+             Genetic code / Translation table  (default '11')
+    rawproduct :
+        ui-name : |
+            Raw product
+        short-hint : |
+            Do not clean up /product annotation (default is to do clean up).
+    fast :
+        ui-name : |
+            Fast
+        short-hint : |
+            Fast mode - skip CDS /product searching (default is to do CDS /product searching).
+    mincontiglen :
+        ui-name : |
+            Min.contig size
+        short-hint : |
+            Minimum contig size [NCBI needs 200] (default '1')
+    evalue :
+        ui-name : |
+            E-value
+        short-hint : |
+            Similarity e-value cutoff (default '1e-06').
+    rfam :
+        ui-name : |
+            Rfam
+        short-hint : |
+            Enable searching for ncRNAs with Infernal+Rfam (SLOW!, default OFF).
+    norrna :
+        ui-name : |
+            No rRNA
+        short-hint : |
+            Don't run rRNA search (default is to run rRNAs).
+    notrna :
+        ui-name : |
+            No tRNA
+        short-hint : |
+            Don't run tRNA search (default is to run tRNAs).
+description : |
+    <p>
+    This is a KBase wrapper for the
+    <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a>
+    annotation pipeline.
+    </p>
+
+    <p>
+    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4Mbp genome can be fully annotated in less than 20 minutes.
+    </p>
+
+    <p>
+    For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
+    </p>
+
+    <p>
+    See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
+    </p>
+
+    <p>Prokka version: 1.12</p>
+    <p>Barrnap version: 0.8</p>
+
+
+publications :
+    -
+        pmid : 24642063
+        display-text: |
+            Seemann T. Prokka: rapid prokaryotic genome annotation. Bioinformatics. 2014;30: 2068–2069. doi:10.1093/bioinformatics/btu153
+        link: https://www.ncbi.nlm.nih.gov/pubmed/24642063
