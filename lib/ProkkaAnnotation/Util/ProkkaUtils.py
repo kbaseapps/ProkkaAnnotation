@@ -768,25 +768,25 @@ class ProkkaUtils:
         return gff_path, fasta_path
 
 
-    def save_metagenome(self, params, gff_file, fasta_file):
+    def save_metagenome(self, params, gff_file, ws_ref):
         """
         inputs:
             params     - input "params" from .spec
             gff_file   - path to gff_file to save as Metagenome
-            fasta_file - path to fasta_file to save as Metagenome
+            ws_ref - either a KBaseMetagenomes.AnnotatedMetagenomeAssembly or KBaseGenomeAnnotations.Assembly obect ref
         outputs:
             metagenome_ref - saved KBaseMetagenomes.AnnotatedMetagenomeAssembly object ref
         """
         output_name = self._get_input_value(params, "output_metagenome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
 
-        metagenome_ref = self.gfu.fasta_gff_to_metagenome({
-            "fasta_file": {'path': fasta_file},
+        metagenome_ref = self.gfu.ws_obj_gff_to_metagenome({
+            "ws_ref": ws_ref,
             "gff_file": {'path': gff_file},
             "genome_name": output_name,
             "workspace_name": output_workspace,
             "generate_missing_genes": True
-        })['genome_ref']
+        })['metagenome_ref']
 
         return metagenome_ref
 
@@ -814,7 +814,7 @@ class ProkkaUtils:
 
         # need to analyse output gff and fastas from prokka.
         gff_file, fasta_file = self._rename_and_separate_gff(output_dir + "/mygenome.gff", renamed_assembly.new_ids_to_old)
-        metagenome_ref = self.save_metagenome(params, gff_file, fasta_file)
+        metagenome_ref = self.save_metagenome(params, gff_file, metagenome_ref)
 
         report_message = "Metagenome saved to: " + output_workspace + "/" + \
                          output_genome_name + "\n"
@@ -869,7 +869,7 @@ class ProkkaUtils:
 
         if params.get('metagenome'):
             gff_file, fasta_file = self._rename_and_separate_gff(output_dir + "/mygenome.gff", renamed_assembly.new_ids_to_old)
-            genome_ref = self.save_metagenome(params, gff_file, fasta_file)
+            genome_ref = self.save_metagenome(params, gff_file, assembly_ref)
             report_message = ""
         else:
             prokka_results = self.retrieve_prokka_results(output_dir)
