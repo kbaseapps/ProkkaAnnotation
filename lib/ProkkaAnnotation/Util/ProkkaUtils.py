@@ -659,7 +659,7 @@ class ProkkaUtils:
                                                                      output_genome_name=output_name)
         return self.report_annotated_genome(annotated_genome)
 
-    def save_genome(self, params, prokka_results, renamed_assembly, assembly_ref):
+    def save_genome(self, params, prokka_results, renamed_assembly, assembly_ref, assembly_info):
         """
         Save KBaseGenomes.Genome object,
         inputs:
@@ -780,14 +780,14 @@ class ProkkaUtils:
         output_name = self._get_input_value(params, "output_metagenome_name")
         output_workspace = self._get_input_value(params, "output_workspace")
 
-        metagenome_ref = self.gfu.ws_obj_gff_to_metagenome({
+        ret = self.gfu.ws_obj_gff_to_metagenome({
             "ws_ref": ws_ref,
             "gff_file": {'path': gff_file},
             "genome_name": output_name,
             "workspace_name": output_workspace,
             "generate_missing_genes": True
-        })['metagenome_ref']
-
+        })
+        metagenome_ref = ret['metagenome_ref']
         return metagenome_ref
 
     def annotate_metagenome(self, params):
@@ -866,15 +866,14 @@ class ProkkaUtils:
         # Run Prokka with the modified, renamed fasta file
         output_dir = self.run_prokka(params, renamed_assembly.filepath)
         # Prokka_results
-
         if params.get('metagenome'):
             gff_file, fasta_file = self._rename_and_separate_gff(output_dir + "/mygenome.gff", renamed_assembly.new_ids_to_old)
             genome_ref = self.save_metagenome(params, gff_file, assembly_ref)
             report_message = ""
         else:
             prokka_results = self.retrieve_prokka_results(output_dir)
-            genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref)
-            
+            genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
+
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
                       output_name + "\n" + report_message
 
