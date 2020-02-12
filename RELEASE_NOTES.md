@@ -1,8 +1,6 @@
-### Version 2.1.4
-- Bug fixes, all tests passing.
-
 ### Version 2.1.3
 - Fixing output methods for annotate_metagenome to no longer create an extra Assembly object.
+- Bug fixes, all tests passing.
 
 ### Version 2.1.2
 - annotate_metagenome added in order to create KBaseMetagenome.AnnotatedMetagenomeAssembly output objects.

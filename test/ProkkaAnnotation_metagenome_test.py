@@ -83,13 +83,6 @@ class ProkkaAnnotationTest(unittest.TestCase):
         gff_path = self.scratch + "/metagenome.gff"
         shutil.copyfile(gff, gff_path)
         shutil.copyfile(fasta, fasta_path)
-        # metagenome_ref = self.gfu.fasta_gff_to_metagenome({
-        #     "gff_file": {'path': gff_path},
-        #     "fasta_file": {'path': fasta_path},
-        #     "genome_name": output_name,
-        #     "workspace_name": self.getWsName(),
-        #     "generate_missing_genes": True
-        # })['genome_ref']
         ret = self.gfu.fasta_gff_to_metagenome({
             "gff_file": {'path': gff_path},
             "fasta_file": {'path': fasta_path},
