@@ -334,8 +334,12 @@ class ProkkaUtils:
         report += "Number of genes with non-hypothetical function: " + str(non_hypothetical) + "\n"
         report += "Number of genes with EC-number: " + str(genes_with_ec) + "\n"
         report += "Number of genes with Seed Subsystem Ontology: " + str(genes_with_sso) + "\n"
-        report += "Average protein length: " + str(int(sum(prot_lengths) /
-                                                       float(len(prot_lengths)))) + " aa.\n"
+        avg_prot_length = ""
+        if len(prot_lengths) > 0:
+            avg_prot_length = str(int(sum(prot_lengths) / float(len(prot_lengths)))) + " aa.\n"
+        else:
+            avg_prot_length = "not available due to no protein.\n"
+        report += "Average protein length: " + avg_prot_length
 
         annotated_assembly = namedtuple("annotated_assembly", "features cdss mrnas report_message")
         return annotated_assembly(features, cdss, mrnas, report)
