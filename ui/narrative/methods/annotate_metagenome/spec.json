@@ -7,7 +7,7 @@
     "categories": ["active", "annotation"],
     "widgets": {
         "input": "kbaseNarrativeMethodInput",
-        "output": "kbaseGenomeView"
+        "output": "kbaseAnnotatedMetagenomeAssemblyView"
     },
     "parameters": [
         {
