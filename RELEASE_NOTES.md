@@ -1,5 +1,9 @@
+### Version 2.1.3
+- Fixing output methods for annotate_metagenome to no longer create an extra Assembly object.
+- Bug fixes, all tests passing.
+
 ### Version 2.1.2
-- annotate_metagenome added in order to creat KBaseMetagenome.AnnotatedMetagenomeAssembly output objects.
+- annotate_metagenome added in order to create KBaseMetagenome.AnnotatedMetagenomeAssembly output objects.
   the function removes a limit on the size of the incoming fasta/assembly.
 
 ### Version 1.0.4

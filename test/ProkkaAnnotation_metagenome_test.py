@@ -83,13 +83,14 @@ class ProkkaAnnotationTest(unittest.TestCase):
         gff_path = self.scratch + "/metagenome.gff"
         shutil.copyfile(gff, gff_path)
         shutil.copyfile(fasta, fasta_path)
-        metagenome_ref = self.gfu.fasta_gff_to_metagenome({
+        ret = self.gfu.fasta_gff_to_metagenome({
             "gff_file": {'path': gff_path},
             "fasta_file": {'path': fasta_path},
             "genome_name": output_name,
             "workspace_name": self.getWsName(),
             "generate_missing_genes": True
-        })['genome_ref']
+        })
+        metagenome_ref = ret['metagenome_ref']
         return metagenome_ref
 
     def create_assembly(self, fasta, output_name):
@@ -126,6 +127,15 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 f.write(l.strip() + '\n')
         return gff_path, fasta_path
 
+    def _unzip_save_fasta(self, fasta, fastazip):
+        i = gzip.GzipFile(fastazip, 'rb')
+        s = i.read()
+        i.close()
+        o = open(fasta, 'wb')
+        o.write(s)
+        o.close()
+        print(f"File {fastazip} unzipped to {fasta}...")
+
     def verify_output(self, ret):
         self.assertTrue('output_metagenome_ref' in ret)
         self.assertTrue('report_name' in ret)
@@ -140,10 +150,10 @@ class ProkkaAnnotationTest(unittest.TestCase):
         })[0]
         self.verify_output(ret)
 
-    @unittest.skip('x')
+    # @unittest.skip('x')
     def test_annotate_metagenome_from_annotated_metagenome_assembly_short(self):
-        metagenome_gff = "data/short_one.gff"
-        metagenome_fasta = "data/short_one.fa"
+        metagenome_gff = "data/metagenomes/short_one.gff"
+        metagenome_fasta = "data/metagenomes/short_one.fa"
         ref = self.create_metagenome(metagenome_gff, metagenome_fasta, 'metagenome_metagenome_short')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
             "object_ref": ref,
@@ -152,21 +162,13 @@ class ProkkaAnnotationTest(unittest.TestCase):
         })[0]
         self.verify_output(ret)
 
-    def unzip_save_fasta(self, fasta, fastazip):
-        i = gzip.GzipFile(fastazip, 'rb')
-        s = i.read()
-        i.close()
-        o = open(fasta, 'wb')
-        o.write(s)
-        o.close()
-        print(f"File {fastazip} unzipped to {fasta}...")
-
+    # @unittest.skip('x')
     def test_annotate_metagenome_from_annotated_metagenome_assembly(self):
-        metagenome_gff = "data/59111.assembled.gff"
-        metagenome_fasta = "data/59111.assembled.fna"
+        metagenome_gff = "data/metagenomes/59111.assembled.gff"
+        metagenome_fasta = "data/metagenomes/59111.assembled.fna"
         if not os.path.isfile(metagenome_fasta):
-            metagenome_fasta_zip = "data/59111.assembled.fna.gz"
-            self.unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
+            metagenome_fasta_zip = "data/metagenomes/59111.assembled.fna.gz"
+            self._unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
 
         ref = self.create_metagenome(metagenome_gff, metagenome_fasta, 'metagenome_metagenome')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
@@ -176,12 +178,13 @@ class ProkkaAnnotationTest(unittest.TestCase):
         })[0]
         self.verify_output(ret)
 
+    # @unittest.skip('x')
     def test_annotate_metagenome_from_assembly(self):
         """"""
-        metagenome_fasta = "data/59111.assembled.fna"
+        metagenome_fasta = "data/metagenomes/59111.assembled.fna"
         if not os.path.isfile(metagenome_fasta):
-            metagenome_fasta_zip = "data/59111.assembled.fna.gz"
-            self.unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
+            metagenome_fasta_zip = "data/metagenomes/59111.assembled.fna.gz"
+            self._unzip_save_fasta(metagenome_fasta, metagenome_fasta_zip)
 
         ref = self.create_assembly(metagenome_fasta, 'metagenome_assembly')
         ret = self.serviceImpl.annotate_metagenome(self.getContext(), {
@@ -191,6 +194,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         })[0]
         self.verify_output(ret)
 
+    # @unittest.skip('x')
     def test_validation_integration(self):
         """
         This test does some basic validation tests of the required parameters.
