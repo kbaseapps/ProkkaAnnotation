@@ -1,3 +1,6 @@
+### Version 2.1.4
+- Adding in RE taxonomy dropdown for scientific_name field.
+
 ### Version 2.1.3
 - Fixing output methods for annotate_metagenome to no longer create an extra Assembly object.
 - Bug fixes, all tests passing.
