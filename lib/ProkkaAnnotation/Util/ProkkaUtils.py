@@ -25,7 +25,7 @@ class ProkkaUtils:
 
     def __init__(self, config):
         self.scratch = config["scratch"]
-        self.ctx = config['ctx'];
+        self.ctx = config['ctx']
         self.callback_url = config["SDK_CALLBACK_URL"]
 
         self.ws_client = workspaceService(config["workspace-url"])
@@ -49,7 +49,7 @@ class ProkkaUtils:
         :return: Parameter Value
         :raises ValueError: raises an exception if the key doesn"t exist
         """
-        if not key in params:
+        if key not in params:
             raise ValueError("Parameter " + key + " should be set in input parameters")
         return params[key]
 
@@ -105,11 +105,11 @@ class ProkkaUtils:
             n_contigs = len(contig["data"]["contigs"])
         if n_contigs >= 30000:
             message = """
-             Hmmm.  There are over 30,000 contigs in this Assembly. 
-             It looks like you are trying to run Prokka on a metagenome or non-prokaryotic data set. 
-             If this is a metagenome data set we recommend using an App like MaxBin to first bin the contigs into genome-like bins. 
-             These bins can then be individually annotated as a single genome using Prokka. 
-             If this data comes from a Eukaryotic sample, KBase does not currently have an annotation app designed for Eukaryotes. 
+             Hmmm.  There are over 30,000 contigs in this Assembly.
+             It looks like you are trying to run Prokka on a metagenome or non-prokaryotic data set.
+             If this is a metagenome data set we recommend using an App like MaxBin to first bin the contigs into genome-like bins.
+             These bins can then be individually annotated as a single genome using Prokka.
+             If this data comes from a Eukaryotic sample, KBase does not currently have an annotation app designed for Eukaryotes.
              Alternatively, you can try reducing the number of contigs using a filter app.")
              raise ValueError("Too many contigs for Prokka.  See logs for details and suggestions
              """
@@ -199,7 +199,7 @@ class ProkkaUtils:
         prokka_cmd_list.append(subject_fasta_filepath)
         print("Prokka command line: " + str(prokka_cmd_list))
 
-        #tbl2asn or some other non essential prokka binary will fail, so supress that
+        # tbl2asn or some other non essential prokka binary will fail, so supress that
         try:
             check_output(prokka_cmd_list, cwd=self.scratch)
         except CalledProcessError as e:
@@ -412,7 +412,7 @@ class ProkkaUtils:
         time_string = str(
             datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
         yml_text = open('/kb/module/kbase.yml').read()
-        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+        version = re.search(r"module-version:\n\W+(.+)\n", yml_text).group(1)
 
         return {
             "method": "Prokka Annotation",
@@ -431,7 +431,7 @@ class ProkkaUtils:
         time_string = str(
             datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
         yml_text = open('/kb/module/kbase.yml').read()
-        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+        version = re.search(r"module-version:\n\W+(.+)\n", yml_text).group(1)
 
         return {
             "method": "Prokka Annotation (Evidence)",
@@ -727,7 +727,7 @@ class ProkkaUtils:
             returned text line
         """
         if fasta:
-            if '>' ==  line[0]:
+            if '>' == line[0]:
                 tokens = line.split()
                 if len(tokens) > 1:
                     id_ = tokens[0][1:].strip()
@@ -741,7 +741,6 @@ class ProkkaUtils:
         else:
             id_, rest = line.split('\t')[0], line.split('\t')[1:]
             return '\t'.join([new_ids_to_old[id_]] + rest)
-
 
     def _rename_and_separate_gff(self, gff, new_ids_to_old):
         """
@@ -765,12 +764,11 @@ class ProkkaUtils:
         with open(gff_path, 'w') as f:
             for l in save:
                 f.write(l.strip() + '\n')
-        fasta_path = gff  + "edited.fa"
+        fasta_path = gff + "edited.fa"
         with open(fasta_path, 'w') as f:
             for l in fasta:
                 f.write(l.strip() + '\n')
         return gff_path, fasta_path
-
 
     def save_metagenome(self, params, gff_file, ws_ref):
         """
@@ -879,7 +877,7 @@ class ProkkaUtils:
             genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
 
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
-                      output_name + "\n" + report_message
+                         output_name + "\n" + report_message
 
         report_info = self.kbr.create_extended_report({
             "message": report_message,

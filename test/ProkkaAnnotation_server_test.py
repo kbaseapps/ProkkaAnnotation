@@ -16,11 +16,12 @@ from installed_clients.AssemblyUtilClient import AssemblyUtil
 from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 
-# @unittest.skip('x')
+@unittest.skip('x')
 class ProkkaAnnotationTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        return
         config_file = environ.get("KB_DEPLOYMENT_CONFIG", None)
         cls.cfg = {}
         config = ConfigParser()
@@ -91,7 +92,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         print("Uploaded bogus assembly " + str(assembly_ref))
         return assembly_ref
 
-    # @unittest.skip('x')
+    @unittest.skip('x')
     def test_validation_integration(self):
         """
         This test does some basic validation tests of the required parameters.
@@ -107,7 +108,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
             self.getImpl().annotate(self.getContext(), {"object_workspace": "0", "object_ref": 0,
                                                         "output_genome_name": 0})
 
-    # @unittest.skip('x')
+    @unittest.skip('x')
     def test_reannotate_genome_official(self):
         """
         This test takes about 25 minutes to run. It uploads the rhodobacter_gff, runs prokka genome reannotation
@@ -244,7 +245,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
         self.assertEqual(old_feature["function"], new_feature["function"])
 
     # NOTE: According to Python unittest naming rules test method names should start from "test". # noqa
-    # @unittest.skip('x')
+    @unittest.skip('x')
     def test_annotate_contigs(self):
 
         assembly_file_name = "small.fna"  # "AP009048.fna"
@@ -307,7 +308,7 @@ class ProkkaAnnotationTest(unittest.TestCase):
                 bad_dnas += 1
         self.assertEqual(bad_dnas, 0)
 
-    # @unittest.skip('x')
+    @unittest.skip('x')
     def test_annotate_contigs_too_big(self):
         """
         simulate a metagenome contig file
