@@ -576,11 +576,14 @@ class ProkkaUtils:
                     for key, value in ontologies_present["SSO"].items():
                         genome_data["data"]["ontologies_present"]["SSO"][key] = value
                 else:
-                    genome_data["data"]["ontologies_present"] = ontologies_present["SSO"]
+                    genome_data["data"]["ontologies_present"]["SSO"] = ontologies_present["SSO"]
 
             else:
                 genome_data["data"]["ontologies_present"] = ontologies_present
 
+        print('*' * 80)
+        print(json.dumps(genome_data, indent=2))
+        print('*' * 80)
         info = self.gfu.save_one_genome({"workspace": self.output_workspace,
                                          "name": annotation_args["output_genome_name"],
                                          "data": genome_data["data"],
