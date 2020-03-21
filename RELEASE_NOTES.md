@@ -1,3 +1,6 @@
+### Version 2.1.4
+- Bug fix for setting ontologies_present to the correct type in a certain execution path
+
 ### Version 2.1.3
 - Fixing output methods for annotate_metagenome to no longer create an extra Assembly object.
 - Bug fixes, all tests passing.
