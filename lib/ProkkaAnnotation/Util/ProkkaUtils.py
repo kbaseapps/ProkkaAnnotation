@@ -576,7 +576,7 @@ class ProkkaUtils:
                     for key, value in ontologies_present["SSO"].items():
                         genome_data["data"]["ontologies_present"]["SSO"][key] = value
                 else:
-                    genome_data["data"]["ontologies_present"] = ontologies_present["SSO"]
+                    genome_data["data"]["ontologies_present"]["SSO"] = ontologies_present["SSO"]
 
             else:
                 genome_data["data"]["ontologies_present"] = ontologies_present
