@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate Assembly and Re-annotate Genomes with Prokka(v1.12)
+name: Annotate an Assembly and Reannotate a Genome with Prokka - v1.12
 tooltip: |
-    Annotate Assembly and Re-annotate Genomes with Prokka annotation pipeline.
+    Annotate an Assembly object and reannotate a Genome object using the Prokka annotation pipeline.
 screenshots: []
 
 icon: prokka.png
@@ -31,89 +31,94 @@ parameters :
         ui-name : |
             Assembly or Genome
         short-hint : |
-            Assembly object (set of dna contigs) or Genome object (set of features with Ontology and Function to reannotate)
+            The Assembly object (set of DNA contigs) or Genome object (set of features with Ontology and Function) to reannotate.
     scientific_name :
         ui-name : |
             Scientific name
         short-hint : |
-            Optional scientific name of organism (default 'Unknown')
+            The optional scientific name of organism (default is 'Unknown').
     output_genome_name :
         ui-name : |
-            Output genome
+            Output Genome
         short-hint : |
-            The name under which the resulting Genome will be saved in the Narrative
+            The name under which the resulting Genome will be saved in the Narrative.
     kingdom :
         ui-name : |
             Kingdom
         short-hint : |
-            Annotation mode: Archaea | Bacteria | Mitochondria | Viruses (default 'Bacteria').
+            The annotation mode: Archaea, Bacteria, Mitochondria, Viruses (default is 'Bacteria').
     genus :
         ui-name : |
             Genus
         short-hint : |
-             Optional genus name: Enterococcus | Escherichia | Staphylococcus (uses genus-specific BLAST database) (default 'do not use genus-specific database')
+             Optional genus name: Enterococcus, Escherichia, Staphylococcus (uses genus-specific BLAST database). Note that the default is 'do not use genus-specific database.'
     gcode :
         ui-name : |
             Genetic code
         short-hint : |
-             Genetic code / Translation table  (default '11')
+            The genetic code/translation table (default is '11').
+    metagenome :
+        ui-name : |
+            metagenome
+        short-hint : |
+            Improve gene predictions for highly fragmented genomes (default is 'OFF').
     rawproduct :
         ui-name : |
             Raw product
         short-hint : |
-            Do not clean up /product annotation (default is to do clean up).
+            Do not clean up the product annotation. Note that the default is to do clean up.
     fast :
         ui-name : |
             Fast
         short-hint : |
-            Fast mode - skip CDS /product searching (default is to do CDS /product searching).
+            Fast mode. Click this checkbox to turn off CDS/product searching (default is to do CDS/product searching).
     mincontiglen :
         ui-name : |
-            Min.contig size
+            Min contig size
         short-hint : |
-            Minimum contig size [NCBI needs 200] (default '1')
+            The minimum contig size (default is '1'). Note that NCBI needs 200.
     evalue :
         ui-name : |
             E-value
         short-hint : |
-            Similarity e-value cutoff (default '1e-06').
+            The similarity E-value cutoff (default is '1e-06').
     rfam :
         ui-name : |
             Rfam
         short-hint : |
-            Enable searching for ncRNAs with Infernal+Rfam (SLOW!, default OFF).
+            Click this checkbox to enable searching for ncRNAs with Infernal+Rfam (default is 'OFF'). Note that enabling this will cause the App to run very slowly.
     norrna :
         ui-name : |
             No rRNA
         short-hint : |
-            Don't run rRNA search (default is to run rRNAs).
+            Click this checkbox to turn off the rRNA search (default is to run rRNAs).
     notrna :
         ui-name : |
             No tRNA
         short-hint : |
-            Don't run tRNA search (default is to run tRNAs).
+            Click this checkbox to turn off the tRNA search (default is to run tRNAs).
 description : |
-    <p>
-    This is a KBase wrapper for the
-    <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a>
-    annotation pipeline.
+    <p>This App allows users to annotate either an Assemby or a Genome using the <a href="http://www.bioinformatics.net.au/software.prokka.shtml" target="_blank">Prokka</a> annotation pipeline written by Torsten Seemann.</p>
+
+    <p>This App uses <a href="https://github.com/tseemann/prokka">Prokka version: 1.12</a>.</p>
+
+    <p>Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4Mbp genome can be fully annotated in less than 20 minutes. It produces standards-compliant output files for further analysis or viewing in genome browsers. As with other 3rd-party tools in KBase, not all options available from Prokka have been exposed to the KBase user.</p>
+
+    <p>For rRNA prediction, this App currently uses Barrnap version 0.8 (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).</p>
+
+    <p>If the input object is a genome and the 'Fast' option was not selected, the proteins will be compared to the SEED ontology and associated functions. Function and ontology reports will be created for these genomes.</p>
+
+    <p><strong>The Results</strong>
+    <ul>
+    <li>The <i>Objects</i> section has a table of the data object created by the App. Click on the name of the data object to open a data viewer cell (below the currently selected cell).</li>
+    <li>The <i>Summary</i> section give details about the coding and noncoding features that were created as well as the average protein length.</li>
+    <li>The <i>Files</i> section (if present) has a list of the function and ontology reports that were created and can be downloaded.</li>
+    </ul>
     </p>
 
-    <p>
-    Prokka is a software tool for the rapid annotation of prokaryotic genomes. A typical 4Mbp genome can be fully annotated in less than 20 minutes.
-    </p>
+    <p><strong>GUI Output</strong><br>The GUI output currently consists of three tabs. The &quot;Overview&quot; tab provides basic information on the annotation job, the &quot;Browse Features&quot; tab allows the user to scroll through the features that were called, and the &quot;Browse Contigs&quot; tab provides information on the contigs in the genome. Users can sort on the various types of features. Note that some features will overlap (e.g., &quot;prophage&quot; and &quot;CDS&quot;).</p>
 
-    <p>
-    For rRNA prediction this app currently uses Barrnap (written by the author of Prokka and recommended if you prefer speed over absolute accuracy).
-    </p>
-
-    <p>
-    See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
-    </p>
-
-    <p>Prokka version: 1.12</p>
-    <p>Barrnap version: 0.8</p>
-
+    <p>More information on the Prokka pipeline can be found <a href=”https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst”>here</a>.</p>
 
 publications :
     -
