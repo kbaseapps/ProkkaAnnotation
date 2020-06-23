@@ -36,14 +36,14 @@
                     {
                         "search_text": "prefix:{{dynamic_dropdown_input}}",
                         "ns": "ncbi_taxonomy",
-                        "limit": 1000
+                        "limit": 50
                     }
                 ],
                 "query_on_empty_input": 0,
                 "result_array_index": 0,
                 "path_to_selection_items": ["results"],
                 "selection_id": "scientific_name",
-                "description_template": "NCBI Tax ID {{ncbi_taxon_id}}:&nbsp<strong>{{scientific_name}}</strong>",
+                "description_template": "NCBI Taxon ID {{ncbi_taxon_id}}:&nbsp<strong>{{scientific_name}}</strong>",
                 "multiselection": false
             }
         },
