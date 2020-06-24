@@ -7,7 +7,7 @@
     "categories": ["active", "annotation"],
     "widgets": {
         "input": "kbaseNarrativeMethodInput",
-        "output": "kbaseAnnotatedMetagenomeAssemblyView"
+        "output": "no-display"
     },
     "parameters": [
         {
@@ -248,14 +248,6 @@
                 {
                     "service_method_output_path": [0,"report_ref"],
                     "target_property": "report_ref"
-                },
-                {
-                    "input_parameter": "output_metagenome_name",
-                    "target_property": "id"
-                },
-                {
-                    "narrative_system_variable": "workspace",
-                    "target_property": "ws"
                 }
             ]
 

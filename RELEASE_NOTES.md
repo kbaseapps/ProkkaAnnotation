@@ -1,3 +1,7 @@
+### Version 2.1.5
+- Adding in RE taxonomy dropdown for scientific_name field.
+- Removing output viewer for AnnotatedMetagenomeAssembly
+
 ### Version 2.1.4
 - Bug fix for setting ontologies_present to the correct type in a certain execution path
 
