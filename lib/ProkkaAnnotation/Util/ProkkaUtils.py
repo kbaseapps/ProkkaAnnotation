@@ -34,7 +34,7 @@ class ProkkaUtils:
     ->run_prokka
     ->If metagenome:
       ->_rename_and_separate_gff
-    -    >_replace_id
+        ->_replace_id
       ->save_metagenome
     ->Else:
       ->retrieve_prokka_results
@@ -871,7 +871,6 @@ class ProkkaUtils:
         """
         # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
 	# We can reactivate this code.
-        #self.download_seed_data()
         #self.download_seed_data()
 
         output_workspace = params["output_workspace"]
