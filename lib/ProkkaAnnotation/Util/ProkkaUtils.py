@@ -23,6 +23,24 @@ from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 class ProkkaUtils:
 
+    """Major function paths through this code:
+    annotate_genome
+    ->self.run_prokka
+    ->self.retrieve_prokka_results
+    ->self.get_new_annotations
+    ->self.annotate_genome_with_new_annotations
+
+    annotate_assembly
+    ->run_prokka
+    ->If metagenome:
+      ->_rename_and_separate_gff
+    -    >_replace_id
+      ->save_metagenome
+    ->Else:
+      ->retrieve_prokka_results
+      ->save_genome
+    """
+    
     def __init__(self, config):
         self.scratch = config["scratch"]
         self.ctx = config['ctx'];
@@ -65,6 +83,9 @@ class ProkkaUtils:
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
         the create a table from ec numbers to sso (ec_to_sso)
+
+        NOTE THIS CODE IS CURRENTLY NOT BEING CALLED, but Chris wanted me(Jason) to 
+        keep the code in place if we fix the mappings in the future.  PTV-1539
 
         :return: None
         """
@@ -643,7 +664,9 @@ class ProkkaUtils:
         :param params: Reference to the genome, Output File Name, UI Parameters
         :return: Report with Reannotated Genome and Stats about it
         """
-        self.download_seed_data()
+        # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
+        # We can reactivate this code.
+        #self.download_seed_data()
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
@@ -846,7 +869,10 @@ class ProkkaUtils:
         :param assembly_info: Information used to determine if the assembly is too big
         :return: Report with newly annotated assembly as a genome, and stats about it
         """
-        self.download_seed_data()
+        # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
+	# We can reactivate this code.
+        #self.download_seed_data()
+        #self.download_seed_data()
 
         output_workspace = params["output_workspace"]
         if params.get('metagenome'):
