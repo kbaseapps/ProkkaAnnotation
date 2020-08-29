@@ -28,7 +28,15 @@ class ProkkaUtils:
     ->self.run_prokka
     ->self.retrieve_prokka_results
     ->self.get_new_annotations
+      ->self.make_annotation_evidence
     ->self.annotate_genome_with_new_annotations
+      ->self.create_genome_ontology_fields
+        ->self.make_sso_ontology_event
+      if new ontologies:
+        ->self.new_genome_ontologies
+      else:
+        -->self.old_genome_ontologies
+      ->self.gfu.save_one_genome
 
     annotate_assembly
     ->run_prokka
@@ -39,6 +47,8 @@ class ProkkaUtils:
     ->Else:
       ->retrieve_prokka_results
       ->save_genome
+        ->parse_prokka_results
+          ->self.make_annotation_evidence
     """
     
     def __init__(self, config):
