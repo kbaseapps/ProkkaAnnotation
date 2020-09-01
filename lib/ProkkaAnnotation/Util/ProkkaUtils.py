@@ -98,8 +98,16 @@ class ProkkaUtils:
 
         Returns a dictionary of EC term to EC description
         """
-        
-        
+        # read EC ontology file
+        file = open('lib/ProkkaAnnotation/Util/EBI_EC_ontologyDictionary.json',mode='r')
+        # read all lines at once
+        ec_file_contents = file.read()
+        # close the file
+        file.close()
+
+        ec_data = json.loads(ec_file_contents)
+
+        return 1
 
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
@@ -639,7 +647,8 @@ class ProkkaUtils:
         annotated_genome = namedtuple("annotated_genome",
                                       "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
-        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd()))
+        self.get_EC_ontologies()
+        print("CURRENT WORKING DIRECTORY 1: " + str(os.getcwd()))
         return annotated_genome(genome_ref, function_summary_fp, ontology_summary_fp,
                                 stats)
 
@@ -767,7 +776,8 @@ class ProkkaUtils:
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd()))
+        self.get_EC_ontologies()
+        print("CURRENT WORKING DIRECTORY 2: " + str(os.getcwd()))
         return genome_ref, annotated_assembly.report_message
 
     def _replace_id(self, line, new_ids_to_old, fasta=False):
@@ -933,6 +943,7 @@ class ProkkaUtils:
             prokka_results = self.retrieve_prokka_results(output_dir)
             genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
 
+        self.get_EC_ontologies()
         print("CURRENT WORKING DRIECTORY: " + str(os.getcwd()))
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
                       output_name + "\n" + report_message
