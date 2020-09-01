@@ -106,7 +106,9 @@ class ProkkaUtils:
         file.close()
 
         ec_data = json.loads(ec_file_contents)
-
+        print("EC DATA KEYS: " + str(ec_data.keys()))
+        terms = ec.data["term_hash"].keys()
+        print("EC DATA Terms Length: " + str(len(terms)))
         return 1
 
     def download_seed_data(self):
@@ -944,7 +946,7 @@ class ProkkaUtils:
             genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
 
         self.get_EC_ontologies()
-        print("CURRENT WORKING DRIECTORY: " + str(os.getcwd()))
+        print("CURRENT WORKING DIRECTORY 3: " + str(os.getcwd()))
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
                       output_name + "\n" + report_message
 
