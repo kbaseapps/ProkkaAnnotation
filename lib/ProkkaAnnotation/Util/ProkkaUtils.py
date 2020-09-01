@@ -107,7 +107,7 @@ class ProkkaUtils:
 
         ec_data = json.loads(ec_file_contents)
         print("EC DATA KEYS: " + str(ec_data.keys()))
-        terms = ec.data["term_hash"].keys()
+        terms = ec_data["term_hash"].keys()
         print("EC DATA Terms Length: " + str(len(terms)))
         return 1
 
