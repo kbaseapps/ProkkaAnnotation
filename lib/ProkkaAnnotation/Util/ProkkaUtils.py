@@ -639,7 +639,7 @@ class ProkkaUtils:
         annotated_genome = namedtuple("annotated_genome",
                                       "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
-        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd())
+        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd()))
         return annotated_genome(genome_ref, function_summary_fp, ontology_summary_fp,
                                 stats)
 
@@ -767,7 +767,7 @@ class ProkkaUtils:
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd())
+        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd()))
         return genome_ref, annotated_assembly.report_message
 
     def _replace_id(self, line, new_ids_to_old, fasta=False):
