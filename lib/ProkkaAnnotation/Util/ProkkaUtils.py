@@ -5,6 +5,7 @@ import os
 import re
 import time
 import uuid
+import os
 from collections import namedtuple
 from pprint import pprint
 from subprocess import check_output, CalledProcessError
@@ -89,6 +90,16 @@ class ProkkaUtils:
         :return: first element in the list
         """
         return qualifier[0] if (qualifier and len(qualifier) > 0) else None
+
+    def get_EC_ontologies(self):
+        """
+        CURRENTLY THIS IS STORED LOCALLY. 
+        DOWN THE LINE WE NEED TO PUT THIS INTO THE ONTOLOGY REFERENCE DB
+
+        Returns a dictionary of EC term to EC description
+        """
+        
+        
 
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
@@ -628,6 +639,7 @@ class ProkkaUtils:
         annotated_genome = namedtuple("annotated_genome",
                                       "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
+        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd())
         return annotated_genome(genome_ref, function_summary_fp, ontology_summary_fp,
                                 stats)
 
@@ -755,6 +767,7 @@ class ProkkaUtils:
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
+        print("CURRENT WORKING DIRECTORY: " + str(os.getcwd())
         return genome_ref, annotated_assembly.report_message
 
     def _replace_id(self, line, new_ids_to_old, fasta=False):
@@ -920,6 +933,7 @@ class ProkkaUtils:
             prokka_results = self.retrieve_prokka_results(output_dir)
             genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
 
+        print("CURRENT WORKING DRIECTORY: " + str(os.getcwd()))
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
                       output_name + "\n" + report_message
 
