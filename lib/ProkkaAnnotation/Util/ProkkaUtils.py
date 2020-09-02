@@ -67,6 +67,7 @@ class ProkkaUtils:
         self.sso_ref = None
         self.sso_event = None
         self.ec_to_sso = {}
+        self.ec_lookup_dictionary = dict()
         self.output_workspace = None
 
     @staticmethod
@@ -104,11 +105,12 @@ class ProkkaUtils:
         ec_file_contents = file.read()
         # close the file
         file.close()
-
+        # convert JSON
         ec_data = json.loads(ec_file_contents)
-        print("EC DATA KEYS: " + str(ec_data.keys()))
-        terms = ec_data["term_hash"].keys()
-        print("EC DATA Terms Length: " + str(len(terms)))
+#        terms = ec_data["term_hash"].keys()
+#        print("EC DATA Terms Length: " + str(len(terms)))
+        for term in ec_data["term_hash"]:
+            self.ec_lookup_dictionary[term] = term["name"]
         return 1
 
     def download_seed_data(self):
@@ -332,9 +334,9 @@ class ProkkaUtils:
                         aliases.append(name)
                     if gene:
                         aliases.append(gene)
-                    if ec:
-                        aliases.append(ec)
-                        genes_with_ec += 1
+#                    if ec:
+#                        aliases.append(ec)
+#                        genes_with_ec += 1
                     md5 = hashlib.md5(dna.encode()).hexdigest()
                     feature = {"id": fid, "location": location, "type": "gene",
                                "aliases": aliases, "md5": md5, "dna_sequence": dna,
@@ -344,6 +346,14 @@ class ProkkaUtils:
                         feature["function"] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
+                    if ec and ec in self.ec_lookup_dictionary:
+                        ec_terms = {}
+                        ec_terms[ec] = {"id": ec,
+                                        "evidence": [evidence],
+                                        "term_name": ec_lookup_dictionary[ec],
+                                        "term_lineage": []}
+                        feature["ontology_terms"] = {"EC": ec_terms}
+			genes_with_ec += 1
                     if ec and ec in self.ec_to_sso:
                         sso_list = self.ec_to_sso[ec]
                         sso_terms = {}
@@ -418,6 +428,14 @@ class ProkkaUtils:
                         ec_numbers = qualifiers["eC_number"]
                         sso_terms = dict()
                         for ec in ec_numbers:
+#                            if ec and ec in self.ec_lookup_dictionary:
+#                                ec_terms = {}
+#                                ec_terms[ec] = {"id": ec,
+#                                                "evidence": [evidence],
+#                                                "term_name": ec_lookup_dictionary[ec],
+#                                                "term_lineage": []}
+#                                feature["ontology_terms"] = {"EC": ec_terms}
+#                                genes_with_ec += 1
                             sso_list = self.ec_to_sso.get(ec, [])
                             for sso_item in sso_list:
                                 sso_terms[sso_item["id"]] = {"id": sso_item["id"],
@@ -649,8 +667,6 @@ class ProkkaUtils:
         annotated_genome = namedtuple("annotated_genome",
                                       "genome_ref function_summary_filepath ontology_summary_filepath stats")
 
-        self.get_EC_ontologies()
-        print("CURRENT WORKING DIRECTORY 1: " + str(os.getcwd()))
         return annotated_genome(genome_ref, function_summary_fp, ontology_summary_fp,
                                 stats)
 
@@ -707,6 +723,7 @@ class ProkkaUtils:
         # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
         # We can reactivate this code.
         #self.download_seed_data()
+        self.get_EC_ontologies()
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
@@ -778,8 +795,6 @@ class ProkkaUtils:
 
         genome_ref = str(info[6]) + "/" + str(info[0]) + "/" + str(info[4])
 
-        self.get_EC_ontologies()
-        print("CURRENT WORKING DIRECTORY 2: " + str(os.getcwd()))
         return genome_ref, annotated_assembly.report_message
 
     def _replace_id(self, line, new_ids_to_old, fasta=False):
@@ -914,7 +929,7 @@ class ProkkaUtils:
         # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
 	# We can reactivate this code.
         #self.download_seed_data()
-
+        self.get_EC_ontologies()
         output_workspace = params["output_workspace"]
         if params.get('metagenome'):
             save_type = "Annotated Metagenome Assembly"
@@ -945,8 +960,6 @@ class ProkkaUtils:
             prokka_results = self.retrieve_prokka_results(output_dir)
             genome_ref, report_message = self.save_genome(params, prokka_results, renamed_assembly, assembly_ref, assembly_info)
 
-        self.get_EC_ontologies()
-        print("CURRENT WORKING DIRECTORY 3: " + str(os.getcwd()))
         report_message = f"{save_type} saved to: " + output_workspace + "/" + \
                       output_name + "\n" + report_message
 
