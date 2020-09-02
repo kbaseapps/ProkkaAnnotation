@@ -353,7 +353,7 @@ class ProkkaUtils:
                                         "term_name": ec_lookup_dictionary[ec],
                                         "term_lineage": []}
                         feature["ontology_terms"] = {"EC": ec_terms}
-			genes_with_ec += 1
+                        genes_with_ec += 1
                     if ec and ec in self.ec_to_sso:
                         sso_list = self.ec_to_sso[ec]
                         sso_terms = {}
