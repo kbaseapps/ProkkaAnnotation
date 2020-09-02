@@ -354,7 +354,7 @@ class ProkkaUtils:
                         ec_terms = {}
                         ec_terms[ec] = {"id": ec,
                                         "evidence": [evidence],
-                                        "term_name": self.ec_lookup_dictionary[ec],
+                                        "term_name": "EC:" + self.ec_lookup_dictionary[ec],
                                         "term_lineage": []}
                         feature["ontology_terms"] = {"EC": ec_terms}
                         genes_with_ec += 1
@@ -506,11 +506,13 @@ class ProkkaUtils:
             datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
         yml_text = open('/kb/module/kbase.yml').read()
         version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
-
+        description = "ProkkaAnnotation:" + version + ":EC:" + time_string
+        
         return {
             "method": "Prokka Annotation (Evidence)",
             "method_version": version,
             "timestamp": time_string,
+            "description": description,
         }
 
     def create_genome_ontology_fields(self, genome_data):
