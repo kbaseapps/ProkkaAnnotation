@@ -109,7 +109,7 @@ class ProkkaUtils:
         ec_data = json.loads(ec_file_contents)
 #        terms = ec_data["term_hash"].keys()
 #        print("EC DATA Terms Length: " + str(len(terms)))
-        for term in ec_data["term_hash"]:
+        for term in ec_data["term_hash"].keys():
             self.ec_lookup_dictionary[term] = term["name"]
         return 1
 
