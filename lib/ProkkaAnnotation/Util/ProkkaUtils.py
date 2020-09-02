@@ -114,7 +114,7 @@ class ProkkaUtils:
             self.ec_lookup_dictionary[term] = ec_data["term_hash"][term]["name"]
             i += 1
         print("EC LOOKUP DICTIONARY Length: " + str(i))
-        print("EC DICT:" + str(ec_lookup_dictionary))
+        print("EC DICT:" + str(self.ec_lookup_dictionary))
         return 1
 
     def download_seed_data(self):
@@ -436,7 +436,7 @@ class ProkkaUtils:
 #                                ec_terms = {}
 #                                ec_terms[ec] = {"id": ec,
 #                                                "evidence": [evidence],
-#                                                "term_name": ec_lookup_dictionary[ec],
+#                                                "term_name": self.ec_lookup_dictionary[ec],
 #                                                "term_lineage": []}
 #                                feature["ontology_terms"] = {"EC": ec_terms}
 #                                genes_with_ec += 1
