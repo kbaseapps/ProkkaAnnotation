@@ -109,8 +109,11 @@ class ProkkaUtils:
         ec_data = json.loads(ec_file_contents)
 #        terms = ec_data["term_hash"].keys()
 #        print("EC DATA Terms Length: " + str(len(terms)))
+        i  = 0
         for term in ec_data["term_hash"].keys():
             self.ec_lookup_dictionary[term] = ec_data["term_hash"][term]["name"]
+            i += 1
+        print("EC LOOKUP DICTIONARY Length: " + str(i))
         return 1
 
     def download_seed_data(self):
