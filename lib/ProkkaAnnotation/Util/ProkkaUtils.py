@@ -352,10 +352,10 @@ class ProkkaUtils:
                             non_hypothetical += 1
                     if ec and ec in self.ec_lookup_dictionary:
                         ec_terms = {}
-                        ec_terms[ec] = {"id": ec,
-                                        "evidence": [evidence],
-                                        "term_name": "EC:" + self.ec_lookup_dictionary[ec],
-                                        "term_lineage": []}
+                        ec_terms["EC:" + ec] = {"id": "EC:" + ec,
+                                                "evidence": [evidence],
+                                                "term_name": self.ec_lookup_dictionary[ec],
+                                                "term_lineage": []}
                         feature["ontology_terms"] = {"EC": ec_terms}
                         genes_with_ec += 1
                     if ec and ec in self.ec_to_sso:
