@@ -650,11 +650,14 @@ class ProkkaUtils:
         new_genome = False
         if 'feature_counts' in genome_data['data']:
             new_genome = True
+
+            #genome_obj_modified = self.create_genome_ontology_fields(genome_data)
+            #ontology_event_index = genome_obj_modified.ontology_event_index
+
             genome_obj_modified = self.create_genome_EC_ontology_fields(genome_data)
-            genome_obj_modified = self.create_genome_ontology_fields(genome_data)
-            genome_data = genome_obj_modified.genome_data
-            ontology_event_index = genome_obj_modified.ontology_event_index
             ec_ontology_event_index = genome_obj_modified.ec_ontology_event_index
+            
+            genome_data = genome_obj_modified.genome_data
 
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
