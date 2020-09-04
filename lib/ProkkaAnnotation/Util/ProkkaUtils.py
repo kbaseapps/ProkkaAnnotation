@@ -496,6 +496,24 @@ class ProkkaUtils:
             "ontology_ref": self.sso_ref
         }
 
+    def make_EC_ontology_event(self):
+        """
+        :param sso_ref: Reference to the annotation library set
+        :return: Ontology_event to be appended to the list of genome ontology events
+        """
+        time_string = str(
+            datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
+        yml_text = open('/kb/module/kbase.yml').read()
+        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+        description = "ProkkaAnnotation:" + version + ":EC:" + time_string
+        return {
+            "method": "Prokka Annotation",
+            "method_version": version,
+            "timestamp": time_string,
+            "id": "EC",
+            "description": description,
+        }
+            
     def make_annotation_evidence(self):
         """
         Create a dict for the evidence field for the genome
@@ -515,6 +533,25 @@ class ProkkaUtils:
             "description": description,
         }
 
+    def create_genome_EC_ontology_fields(self, genome_data):
+        """
+        Create ontology event fields for a genome object
+        :param genome_data:  A genome object's data filed
+        :return: a named tuple containg the modified genome object and a new ontology event index
+        """
+        # Make sure ontologies_events exist
+        ec_event = self.make_ec_ontology_event()
+        ec_ontology_event_index = 0
+
+        if 'ontology_events' in genome_data['data']:
+            genome_data['data']['ontology_events'].append(sso_event)
+            ec_ontology_event_index += len(genome_data['data']['ontology_events']) - 1
+        else:
+            genome_data['data']['ontology_events'] = [ec_event]
+
+        genome_obj_modified = namedtuple('genome_obj_modified', 'genome_data ontology_event_index')
+        return genome_obj_modified(genome_data, ec_ontology_event_index)
+    
     def create_genome_ontology_fields(self, genome_data):
         """
         Create ontology event fields for a genome object
@@ -527,7 +564,7 @@ class ProkkaUtils:
 
         """
         THIS BLOCK IS BEING COMMENTED OUT FOR NOW.
-        SINCE THERE IS NO SS) EVENT TO BE SAVED.
+        SINCE THERE IS NO SSO EVENT TO BE SAVED.
         HOWEVER something like this will need to be added when 
         EC Numbers are added to ontology events
         
@@ -557,6 +594,28 @@ class ProkkaUtils:
             feature["ontology_terms"]["SSO"][key] = new_ontology[key]
         return feature
 
+    @staticmethod
+    def new_genome_EC_ontologies(feature, new_ontology, ec_ontology_event_index):
+        """
+        Update the feature's ontologies for a new genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :param ontology_event_index: Ontology index to update the feature with
+        :return: the updated feature
+        """
+        if "ontology_terms" not in feature:
+            feature["ontology_terms"] = {"EC": {}}
+        if "EC" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["EC"] = {}
+
+        for key in new_ontology.keys():
+            id = new_ontology[key]["id"]
+            if id in feature["ontology_terms"]["EC"]:
+                feature["ontology_terms"]["EC"][id].append(ec_ontology_event_index)
+            else:
+                feature["ontology_terms"]["EC"][id] = [ec_ontology_event_index]
+        return feature
+    
     @staticmethod
     def new_genome_ontologies(feature, new_ontology, ontology_event_index):
         """
@@ -591,9 +650,11 @@ class ProkkaUtils:
         new_genome = False
         if 'feature_counts' in genome_data['data']:
             new_genome = True
+            genome_obj_modified = self.create_genome_EC_ontology_fields(genome_data)
             genome_obj_modified = self.create_genome_ontology_fields(genome_data)
             genome_data = genome_obj_modified.genome_data
             ontology_event_index = genome_obj_modified.ontology_event_index
+            ec_ontology_event_index = genome_obj_modified.ec_ontology_event_index
 
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
@@ -629,10 +690,13 @@ class ProkkaUtils:
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
+                        genome_data["data"]["features"][i] = self. \
+                            new_genome_EC_ontologies(feature, new_ontology, ec_ontology_event_index)
                         # New style
                         genome_data["data"]["features"][i] = self. \
                             new_genome_ontologies(feature, new_ontology, ontology_event_index)
 
+                        
                         # Add to ontologies Present
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
