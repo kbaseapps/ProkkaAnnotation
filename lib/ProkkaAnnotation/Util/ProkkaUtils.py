@@ -549,8 +549,8 @@ class ProkkaUtils:
         else:
             genome_data['data']['ontology_events'] = [ec_event]
 
-        genome_obj_modified = namedtuple('genome_obj_modified', 'genome_data ontology_event_index')
-        return genome_obj_modified(genome_data, ec_ontology_event_index)
+        genome_obj_modified = namedtuple('genome_obj_modified', 'genome_data ec_ontology_event_index')
+        return (genome_obj_modified(genome_data, ec_ontology_event_index),ec_ontology_event_index)
     
     def create_genome_ontology_fields(self, genome_data):
         """
