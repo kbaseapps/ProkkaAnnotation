@@ -693,12 +693,11 @@ class ProkkaUtils:
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
+                        # New style
+#                        genome_data["data"]["features"][i] = self. \
+#                            new_genome_ontologies(feature, new_ontology, ontology_event_index)
                         genome_data["data"]["features"][i] = self. \
                             new_genome_EC_ontologies(feature, new_ontology, ec_ontology_event_index)
-                        # New style
-                        genome_data["data"]["features"][i] = self. \
-                            new_genome_ontologies(feature, new_ontology, ontology_event_index)
-
                         
                         # Add to ontologies Present
                         for key in new_ontology.keys():
