@@ -540,7 +540,7 @@ class ProkkaUtils:
         :return: a named tuple containg the modified genome object and a new ontology event index
         """
         # Make sure ontologies_events exist
-        ec_event = self.make_ec_ontology_event()
+        ec_event = self.make_EC_ontology_event()
         ec_ontology_event_index = 0
 
         if 'ontology_events' in genome_data['data']:
