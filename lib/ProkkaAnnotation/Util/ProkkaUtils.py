@@ -350,7 +350,10 @@ class ProkkaUtils:
                         feature["function"] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
+                    if ec:
+                        print("EC present : " + str(ec))
                     if ec and ec in self.ec_lookup_dictionary:
+                        print("EC present and dict : " + str(ec) +  "::" + str(ec_lookup_dictionary[ec]))
                         ec_terms = {}
                         ec_terms["EC:" + ec] = {"id": "EC:" + ec,
                                                 "evidence": [evidence],
@@ -672,7 +675,8 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
-        ontologies_present = {"SSO": {}}
+        ontologies_present = {"EC": {}}
+#        ontologies_present = {"SSO": {}}
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
@@ -693,6 +697,7 @@ class ProkkaUtils:
 
                 # Set Ontologies
                 new_ontology = new_annotations[fid].get("ontology_terms", None)
+                print("NEW ONTOLOGY : LINE 697 : " + str(new_ontology))
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
@@ -706,7 +711,11 @@ class ProkkaUtils:
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
                             name = new_ontology[key].get("name", "Unknown")
-                            ontologies_present["SSO"][oid] = name
+                            ontologies_present["EC"][oid] = name
+#                        for key in new_ontology.keys():
+#                            oid = new_ontology[key]["id"]
+#                            name = new_ontology[key].get("name", "Unknown")
+#                            ontologies_present["SSO"][oid] = name
 
                     else:
                         genome_data["data"]["features"][i] = self. \
