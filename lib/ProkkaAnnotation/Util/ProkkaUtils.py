@@ -358,20 +358,20 @@ class ProkkaUtils:
                                                 "term_lineage": []}
                         feature["ontology_terms"] = {"EC": ec_terms}
                         genes_with_ec += 1
-"""
-                     #COMMENTED OUT SO SSO DOES NOT INTERFERE WITH EC
-                     if ec and ec in self.ec_to_sso:
-                        sso_list = self.ec_to_sso[ec]
-                        sso_terms = {}
-                        for sso_item in sso_list:
-                            sso_terms[sso_item["id"]] = {"id": sso_item["id"],
-                                                         "evidence": [evidence],
-                                                         "term_name": sso_item["name"],
-                                                         "ontology_ref": self.sso_ref,
-                                                         "term_lineage": []}
-                        feature["ontology_terms"] = {"SSO": sso_terms}
-                        genes_with_sso += 1
-"""
+
+#                     #COMMENTED OUT SO SSO DOES NOT INTERFERE WITH EC
+#                     if ec and ec in self.ec_to_sso:
+#                        sso_list = self.ec_to_sso[ec]
+#                        sso_terms = {}
+#                        for sso_item in sso_list:
+#                            sso_terms[sso_item["id"]] = {"id": sso_item["id"],
+#                                                         "evidence": [evidence],
+#                                                         "term_name": sso_item["name"],
+#                                                         "ontology_ref": self.sso_ref,
+#                                                         "term_lineage": []}
+#                        feature["ontology_terms"] = {"SSO": sso_terms}
+#                        genes_with_sso += 1
+
                     cds = None
                     mrna = None
                     prot = cds_to_prot.get(generated_id)
