@@ -272,6 +272,7 @@ class ProkkaUtils:
                         continue
                     name = self._get_qualifier_value(qualifiers.get("Name"))
                     ec = self._get_qualifier_value(qualifiers.get("eC_number"))
+                    print("EC from get qualifier : " + str(ec))
                     gene = self._get_qualifier_value(qualifiers.get("gene"))
                     product = self._get_qualifier_value(qualifiers.get("product"))
                     fid = generated_id
