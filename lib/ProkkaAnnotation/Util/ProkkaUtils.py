@@ -113,8 +113,8 @@ class ProkkaUtils:
         for term in ec_data["term_hash"].keys():
             self.ec_lookup_dictionary[term] = ec_data["term_hash"][term]["name"]
             i += 1
-        print("EC LOOKUP DICTIONARY Length: " + str(i))
-        print("EC DICT:" + str(self.ec_lookup_dictionary))
+#        print("EC LOOKUP DICTIONARY Length: " + str(i))
+#        print("EC DICT:" + str(self.ec_lookup_dictionary))
         return 1
 
     def download_seed_data(self):
@@ -330,6 +330,7 @@ class ProkkaUtils:
                         continue
                     name = self._get_qualifier_value(qualifiers.get("Name"))
                     ec = self._get_qualifier_value(qualifiers.get("eC_number"))
+                    print("EC from get qualifier : " + str(ec))
                     gene = self._get_qualifier_value(qualifiers.get("gene"))
                     product = self._get_qualifier_value(qualifiers.get("product"))
                     fid = generated_id
