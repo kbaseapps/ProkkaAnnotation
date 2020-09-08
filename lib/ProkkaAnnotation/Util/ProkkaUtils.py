@@ -236,6 +236,7 @@ class ProkkaUtils:
         :param prokka_parse_parameters: gff_filepath, mappings
         :return: A tuple with Genome:features Genome:cdss  Genome:mrnas report_message of genes discovered
         """
+        print("IN PARSE PROKKA RESULTS")
         gff_filepath = prokka_parse_parameters["gff_filepath"]
         cds_to_dna = prokka_parse_parameters["cds_to_dna"]
         cds_to_prot = prokka_parse_parameters["cds_to_prot"]
@@ -294,6 +295,7 @@ class ProkkaUtils:
                         if product != "hypothetical protein":
                             non_hypothetical += 1
                     if ec and ec in self.ec_to_sso:
+                        print("EC in ec to sso : " + str(ec) + "::ECTOSSO: " + str(self.ec_to_sso[ec]))
                         sso_list = self.ec_to_sso[ec]
                         sso_terms = {}
                         for sso_item in sso_list:
