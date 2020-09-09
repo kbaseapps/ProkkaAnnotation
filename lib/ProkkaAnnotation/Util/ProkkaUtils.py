@@ -461,7 +461,7 @@ class ProkkaUtils:
 #                                                             "ontology_ref": self.sso_ref,
 #                                                             "term_lineage": []}
 #
-                        gene_features["ontology_terms"] = sso_terms
+#                        gene_features["ontology_terms"] = sso_terms
                 genome[gid] = gene_features
         return genome
 
