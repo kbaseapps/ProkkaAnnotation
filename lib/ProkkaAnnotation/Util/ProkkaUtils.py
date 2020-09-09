@@ -434,10 +434,9 @@ class ProkkaUtils:
                     if "product" in qualifiers:
                         gene_features["function"] = " ".join(qualifiers["product"])
 
-                    if "eC_number" in qualifiers:
-                        
+                    if "eC_number" in qualifiers:                        
                         ec_numbers = qualifiers["eC_number"]
-#                        sso_terms = dict()
+
                         ec_terms = dict()
                         for ec in ec_numbers:
                             if ec:
@@ -448,9 +447,11 @@ class ProkkaUtils:
                                                         "evidence": [evidence],
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
-#                            feature["ontology_terms"] = {"EC": ec_terms}
-                            feature["ontology_terms"]["EC"] = ec_terms
-                            genes_with_ec += 1
+                            print("GeneFeature: " + str(gene_features))
+                        gene_feature["ontology_terms"]["EC"] = ec_terms
+                        genes_with_ec += 1
+#                        feature["ontology_terms"] = {"EC": ec_terms}
+#                        sso_terms = dict()
 #                            sso_list = self.ec_to_sso.get(ec, [])
 #                            for sso_item in sso_list:
 #                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
