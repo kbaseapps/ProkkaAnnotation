@@ -450,7 +450,7 @@ class ProkkaUtils:
                             print("GeneFeature: " + str(gene_features))
 #                        gene_features["ontology_terms"]["EC"] = ec_terms
                         gene_features["ontology_terms"] = ec_terms
-                        genes_with_ec += 1
+#                        genes_with_ec += 1
 #                        feature["ontology_terms"] = {"EC": ec_terms}
 #                        sso_terms = dict()
 #                            sso_list = self.ec_to_sso.get(ec, [])
