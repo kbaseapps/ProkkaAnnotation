@@ -448,7 +448,7 @@ class ProkkaUtils:
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
                             print("GeneFeature: " + str(gene_features))
-                        gene_feature["ontology_terms"]["EC"] = ec_terms
+                        gene_features["ontology_terms"]["EC"] = ec_terms
                         genes_with_ec += 1
 #                        feature["ontology_terms"] = {"EC": ec_terms}
 #                        sso_terms = dict()
