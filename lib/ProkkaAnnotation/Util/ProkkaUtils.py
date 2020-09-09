@@ -448,8 +448,9 @@ class ProkkaUtils:
                                                         "evidence": [evidence],
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
-                                feature["ontology_terms"] = {"EC": ec_terms}
-                                genes_with_ec += 1
+#                            feature["ontology_terms"] = {"EC": ec_terms}
+                            feature["ontology_terms"]["EC"] = ec_terms
+                            genes_with_ec += 1
 #                            sso_list = self.ec_to_sso.get(ec, [])
 #                            for sso_item in sso_list:
 #                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
