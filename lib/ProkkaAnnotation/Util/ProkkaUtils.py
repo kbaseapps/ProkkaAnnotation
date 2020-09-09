@@ -716,7 +716,8 @@ class ProkkaUtils:
                         # Add to ontologies Present
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
-                            name = new_ontology[key].get("name", "Unknown")
+                            name = self.ec_lookup_dictionary.get("oid", "Unknown")
+#                            name = new_ontology[key].get("name", "Unknown")
                             ontologies_present["EC"][oid] = name
 #                        for key in new_ontology.keys():
 #                            oid = new_ontology[key]["id"]
