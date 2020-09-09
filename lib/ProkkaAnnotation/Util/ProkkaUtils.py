@@ -351,8 +351,6 @@ class ProkkaUtils:
                         feature["function"] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
-                    if ec:
-                        print("EC present : " + str(ec))
                     if ec and ec in self.ec_lookup_dictionary:
                         print("EC present and dict : " + str(ec) +  "::" + str(ec_lookup_dictionary[ec]))
                         ec_terms = {}
@@ -423,6 +421,7 @@ class ProkkaUtils:
         :param gff_filepath: A dictionary of ids with products and ec numbers
         :return:
         """
+        print("IN GET NEW ANNOTATIONS")
         evidence = self.make_annotation_evidence()
         genome = {}
         with open(gff_filepath, "r") as f:
@@ -436,26 +435,30 @@ class ProkkaUtils:
                         gene_features["function"] = " ".join(qualifiers["product"])
 
                     if "eC_number" in qualifiers:
+                        
                         ec_numbers = qualifiers["eC_number"]
-                        sso_terms = dict()
+#                        sso_terms = dict()
+                        ec_terms = dict()
                         for ec in ec_numbers:
+                            if ec:
+                                print("EC: " + str(ec))
                             if ec and ec in self.ec_lookup_dictionary:
-                                ec_terms = {}
+                                print("EC lookuo : " + str(self.ec_lookup_dictionary[ec]))
                                 ec_terms["EC:" + ec] = {"id": "EC:" + ec,
                                                         "evidence": [evidence],
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
-#                                feature["ontology_terms"] = {"EC": ec_terms}
-#                                genes_with_ec += 1
-                            sso_list = self.ec_to_sso.get(ec, [])
-                            for sso_item in sso_list:
-                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
-                                                             "evidence": [evidence],
-                                                             "term_name": sso_item["name"],
-                                                             "ontology_ref": self.sso_ref,
-                                                             "term_lineage": []}
-
-                        gene_features["ontology_terms"] = sso_terms
+                                feature["ontology_terms"] = {"EC": ec_terms}
+                                genes_with_ec += 1
+#                            sso_list = self.ec_to_sso.get(ec, [])
+#                            for sso_item in sso_list:
+#                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
+#                                                             "evidence": [evidence],
+#                                                             "term_name": sso_item["name"],
+#                                                             "ontology_ref": self.sso_ref,
+#                                                             "term_lineage": []}
+#
+#                        gene_features["ontology_terms"] = sso_terms
                 genome[gid] = gene_features
 
         return genome
