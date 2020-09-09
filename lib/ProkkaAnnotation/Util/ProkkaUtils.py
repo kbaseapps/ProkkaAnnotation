@@ -448,7 +448,8 @@ class ProkkaUtils:
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
                             print("GeneFeature: " + str(gene_features))
-                        gene_features["ontology_terms"]["EC"] = ec_terms
+#                        gene_features["ontology_terms"]["EC"] = ec_terms
+                        gene_features["ontology_terms"] = ec_terms
                         genes_with_ec += 1
 #                        feature["ontology_terms"] = {"EC": ec_terms}
 #                        sso_terms = dict()
@@ -460,9 +461,8 @@ class ProkkaUtils:
 #                                                             "ontology_ref": self.sso_ref,
 #                                                             "term_lineage": []}
 #
-#                        gene_features["ontology_terms"] = sso_terms
+                        gene_features["ontology_terms"] = sso_terms
                 genome[gid] = gene_features
-
         return genome
 
     def write_genome_to_fasta(self, genome_data):
