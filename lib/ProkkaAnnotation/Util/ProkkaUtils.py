@@ -26,20 +26,26 @@ class ProkkaUtils:
 
     """Major function paths through this code:
     annotate_genome
+    ->self.get_EC_ontologies
     ->self.run_prokka
     ->self.retrieve_prokka_results
     ->self.get_new_annotations
       ->self.make_annotation_evidence
     ->self.annotate_genome_with_new_annotations
+      ->self.create_genome_EC_ontology_fields
+        ->self.make_eC_ontology_event
       ->self.create_genome_ontology_fields
         ->self.make_sso_ontology_event
       if new ontologies:
+        ->self.new_genome_EC_ontologies
         ->self.new_genome_ontologies
       else:
+        -->self.old_genome_EC_ontologies
         -->self.old_genome_ontologies
       ->self.gfu.save_one_genome
 
     annotate_assembly
+    ->self.get_EC_ontologies
     ->run_prokka
     ->If metagenome:
       ->_rename_and_separate_gff
@@ -592,6 +598,23 @@ class ProkkaUtils:
         return genome_obj_modified(genome_data, ontology_event_index)
 
     @staticmethod
+    def old_genome_EC_ontologies(feature, new_ontology):
+        """
+        Update the feature's ontologies for an old genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :return: The feature with the ontology updated, in the old style
+        """
+        if "ontology_terms" not in feature:
+            feature["ontology_terms"] = {"EC": {}}
+        if "EC" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["EC"] = {}
+        for key in new_ontology.keys():
+            feature["ontology_terms"]["EC"][key] = new_ontology[key]
+        return feature
+
+    
+    @staticmethod
     def old_genome_ontologies(feature, new_ontology):
         """
         Update the feature's ontologies for an old genome
@@ -728,7 +751,9 @@ class ProkkaUtils:
 
                     else:
                         genome_data["data"]["features"][i] = self. \
-                            old_genome_ontologies(feature, new_ontology)
+                            old_genome_EC_ontologies(feature, new_ontology)
+#                        genome_data["data"]["features"][i] = self. \
+#                            old_genome_ontologies(feature, new_ontology)
 
             if current_function:
                 func_r.write(json.dumps([fid, [current_function], [new_function]]) + "\n")
