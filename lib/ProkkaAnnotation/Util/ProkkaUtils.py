@@ -388,7 +388,8 @@ class ProkkaUtils:
                         feature["mrnas"] = [mrna_id]
                         cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid,
                                "parent_mrna": mrna_id, "function": (product if product else ""),
-                               "ontology_terms": {}, "protein_translation": prot,
+                               #"ontology_terms": {},
+                               "protein_translation": prot,
                                "protein_translation_length": prot_len, "aliases": aliases}
                         mrna = {"id": mrna_id, "location": location, "md5": md5,
                                 "parent_gene": fid, "cds": cds_id}
