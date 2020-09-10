@@ -557,7 +557,7 @@ class ProkkaUtils:
         ec_ontology_event_index = 0
 
         if 'ontology_events' in genome_data['data']:
-            genome_data['data']['ontology_events'].append(sso_event)
+            genome_data['data']['ontology_events'].append(ec_event)
             ec_ontology_event_index += len(genome_data['data']['ontology_events']) - 1
         else:
             genome_data['data']['ontology_events'] = [ec_event]
