@@ -352,7 +352,7 @@ class ProkkaUtils:
                         if product != "hypothetical protein":
                             non_hypothetical += 1
                     if ec and ec in self.ec_lookup_dictionary:
-                        print("EC present and dict : " + str(ec) +  "::" + str(ec_lookup_dictionary[ec]))
+                        print("EC present and dict : " + str(ec) +  "::" + str(self.ec_lookup_dictionary[ec]))
                         ec_terms = {}
                         ec_terms["EC:" + ec] = {"id": "EC:" + ec,
                                                 "evidence": [evidence],
