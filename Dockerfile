@@ -19,7 +19,7 @@ RUN apt-get update -qq && \
 
 # clone prokka
 WORKDIR /kb
-RUN git clone -b "v1.14.6" https://github.com/tseemann/prokka && \
+RUN git clone -b "v1.14.5" https://github.com/tseemann/prokka && \
     prokka/bin/prokka --setupdb
 
 # set links to /usr/bin
