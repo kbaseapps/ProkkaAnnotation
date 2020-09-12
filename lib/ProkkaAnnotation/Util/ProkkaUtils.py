@@ -25,6 +25,8 @@ from installed_clients.WorkspaceClient import Workspace as workspaceService
 class ProkkaUtils:
 
     """Major function paths through this code:
+#   NOTE SSO specifc code is not called
+
     annotate_genome
     ->self.get_EC_ontologies
     ->self.run_prokka
@@ -34,14 +36,14 @@ class ProkkaUtils:
     ->self.annotate_genome_with_new_annotations
       ->self.create_genome_EC_ontology_fields
         ->self.make_eC_ontology_event
-      ->self.create_genome_ontology_fields
-        ->self.make_sso_ontology_event
+#      ->self.create_genome_ontology_fields
+#        ->self.make_sso_ontology_event
       if new ontologies:
         ->self.new_genome_EC_ontologies
-        ->self.new_genome_ontologies
+#        ->self.new_genome_ontologies
       else:
         -->self.old_genome_EC_ontologies
-        -->self.old_genome_ontologies
+#        -->self.old_genome_ontologies
       ->self.gfu.save_one_genome
 
     annotate_assembly
@@ -113,14 +115,10 @@ class ProkkaUtils:
         file.close()
         # convert JSON
         ec_data = json.loads(ec_file_contents)
-#        terms = ec_data["term_hash"].keys()
-#        print("EC DATA Terms Length: " + str(len(terms)))
         i  = 0
         for term in ec_data["term_hash"].keys():
             self.ec_lookup_dictionary[term] = ec_data["term_hash"][term]["name"]
             i += 1
-#        print("EC LOOKUP DICTIONARY Length: " + str(i))
-#        print("EC DICT:" + str(self.ec_lookup_dictionary))
         return 1
 
     def download_seed_data(self):
@@ -345,6 +343,7 @@ class ProkkaUtils:
                         aliases.append(name)
                     if gene:
                         aliases.append(gene)
+# Taken out as Chris wanted EC as ontologies and not aliases
 #                    if ec:
 #                        aliases.append(ec)
 #                        genes_with_ec += 1
@@ -455,9 +454,8 @@ class ProkkaUtils:
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
                             print("GeneFeature: " + str(gene_features))
-#                        gene_features["ontology_terms"]["EC"] = ec_terms
                         gene_features["ontology_terms"] = ec_terms
-#                        genes_with_ec += 1
+#                       self.genes_with_ec += 1
 #                        feature["ontology_terms"] = {"EC": ec_terms}
 #                        sso_terms = dict()
 #                            sso_list = self.ec_to_sso.get(ec, [])
