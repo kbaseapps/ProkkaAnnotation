@@ -1,3 +1,6 @@
+### Version 3.1
+- Updated the backend Prokka to 1.14.5
+
 ### Version 2.1.5
 - Adding in RE taxonomy dropdown for scientific_name field.
 - Removing output viewer for AnnotatedMetagenomeAssembly

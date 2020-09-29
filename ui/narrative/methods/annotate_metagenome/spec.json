@@ -3,7 +3,7 @@
     "authors": [
         "slebras"
     ],
-    "contact": "help@kbase.us",
+    "contact": "https://www.kbase.us/support/",
     "categories": ["active", "annotation"],
     "widgets": {
         "input": "kbaseNarrativeMethodInput",
