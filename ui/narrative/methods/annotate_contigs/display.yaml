@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: Annotate Assembly and Re-annotate Genomes with Prokka(v1.12)
+name: Annotate Assembly and Re-annotate Genomes with Prokka(v1.14.5)
 tooltip: |
     Annotate Assembly and Re-annotate Genomes with Prokka annotation pipeline.
 screenshots: []
@@ -111,7 +111,7 @@ description : |
     See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
     </p>
 
-    <p>Prokka version: 1.12</p>
+    <p>Prokka version: 1.14.5</p>
     <p>Barrnap version: 0.8</p>
 
 
