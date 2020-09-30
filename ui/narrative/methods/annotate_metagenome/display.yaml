@@ -31,7 +31,7 @@ parameters :
         ui-name : |
             Assembly or Annotated Metagenome Assembly
         short-hint : |
-            Assembly object (set of dna contigs) or Annotated Metagenome Assembly object (set of features with Ontology and Function to reannotate)
+            Assembly object (set of dna contigs) or Annotated Metagenome Assembly object (set of features with EC numbers and Function to reannotate)
     output_metagenome_name :
         ui-name : |
             Output metagenome name

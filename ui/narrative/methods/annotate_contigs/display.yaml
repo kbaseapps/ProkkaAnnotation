@@ -31,7 +31,7 @@ parameters :
         ui-name : |
             Assembly or Genome
         short-hint : |
-            Assembly object (set of dna contigs) or Genome object (set of features with Ontology and Function to reannotate)
+            Assembly object (set of dna contigs) or Genome object (set of features with EC numbers and Function to reannotate)
     scientific_name :
         ui-name : |
             Scientific name
