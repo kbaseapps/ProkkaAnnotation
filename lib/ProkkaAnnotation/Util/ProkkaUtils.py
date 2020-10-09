@@ -765,7 +765,7 @@ class ProkkaUtils:
 
         if ontologies_present:
             if "ontologies_present" in genome_data["data"]:
-                if "SSO" in genome_data["data"]["ontologies_present"]:
+                if "EC" in genome_data["data"]["ontologies_present"]:
                     for key, value in ontologies_present["EC"].items():
                         genome_data["data"]["ontologies_present"]["EC"][key] = value
                 else:
