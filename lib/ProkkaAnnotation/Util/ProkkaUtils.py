@@ -334,7 +334,7 @@ class ProkkaUtils:
                         continue
                     name = self._get_qualifier_value(qualifiers.get("Name"))
                     ec = self._get_qualifier_value(qualifiers.get("eC_number"))
-                    print("EC from get qualifier : " + str(ec))
+                    #print("EC from get qualifier : " + str(ec))
                     gene = self._get_qualifier_value(qualifiers.get("gene"))
                     product = self._get_qualifier_value(qualifiers.get("product"))
                     fid = generated_id
@@ -359,11 +359,11 @@ class ProkkaUtils:
                     if ec and ec in self.ec_lookup_dictionary:
                         print("EC present and dict : " + str(ec) +  "::" + str(self.ec_lookup_dictionary[ec]))
                         ec_terms = {}
-                        ec_terms["EC:" + ec] = {"id": "EC:" + ec,
+                        ec_terms["ec:" + ec] = {"id": "ec:" + ec,
                                                 "evidence": [evidence],
                                                 "term_name": self.ec_lookup_dictionary[ec],
                                                 "term_lineage": []}
-                        feature["ontology_terms"] = {"EC": ec_terms}
+                        feature["ontology_terms"] = {"ec": ec_terms}
                         genes_with_ec += 1
 
 #                     #COMMENTED OUT SO SSO DOES NOT INTERFERE WITH EC
@@ -446,10 +446,10 @@ class ProkkaUtils:
                         ec_terms = dict()
                         for ec in ec_numbers:
                             if ec:
-                                print("EC: " + str(ec))
+                                print("ec: " + str(ec))
                             if ec and ec in self.ec_lookup_dictionary:
                                 print("EC lookuo : " + str(self.ec_lookup_dictionary[ec]))
-                                ec_terms["EC:" + ec] = {"id": "EC:" + ec,
+                                ec_terms["ec:" + ec] = {"id": "ec:" + ec,
                                                         "evidence": [evidence],
                                                         "term_name": self.ec_lookup_dictionary[ec],
                                                         "term_lineage": []}
@@ -527,7 +527,7 @@ class ProkkaUtils:
             "method": "Prokka Annotation",
             "method_version": version,
             "timestamp": time_string,
-            "id": "EC",
+            "id": "ec",
             "description": description,
         }
             
@@ -604,11 +604,11 @@ class ProkkaUtils:
         :return: The feature with the ontology updated, in the old style
         """
         if "ontology_terms" not in feature:
-            feature["ontology_terms"] = {"EC": {}}
-        if "EC" not in feature["ontology_terms"]:
-            feature["ontology_terms"]["EC"] = {}
+            feature["ontology_terms"] = {"ec": {}}
+        if "ec" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["ec"] = {}
         for key in new_ontology.keys():
-            feature["ontology_terms"]["EC"][key] = new_ontology[key]
+            feature["ontology_terms"]["ec"][key] = new_ontology[key]
         return feature
 
     
@@ -638,16 +638,16 @@ class ProkkaUtils:
         :return: the updated feature
         """
         if "ontology_terms" not in feature:
-            feature["ontology_terms"] = {"EC": {}}
-        if "EC" not in feature["ontology_terms"]:
-            feature["ontology_terms"]["EC"] = {}
+            feature["ontology_terms"] = {"ec": {}}
+        if "ec" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["ec"] = {}
 
         for key in new_ontology.keys():
             id = new_ontology[key]["id"]
-            if id in feature["ontology_terms"]["EC"]:
-                feature["ontology_terms"]["EC"][id].append(ec_ontology_event_index)
+            if id in feature["ontology_terms"]["ec"]:
+                feature["ontology_terms"]["ec"][id].append(ec_ontology_event_index)
             else:
-                feature["ontology_terms"]["EC"][id] = [ec_ontology_event_index]
+                feature["ontology_terms"]["ec"][id] = [ec_ontology_event_index]
         return feature
     
     @staticmethod
@@ -703,7 +703,7 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
-        ontologies_present = {"EC": {}}
+        ontologies_present = {"ec": {}}
 #        ontologies_present = {"SSO": {}}
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
@@ -741,7 +741,7 @@ class ProkkaUtils:
                             (dummy,id_only) = oid.split(":")
                             name = self.ec_lookup_dictionary.get(id_only, "Unknown")
 #                            name = new_ontology[key].get("name", "Unknown")
-                            ontologies_present["EC"][oid] = name
+                            ontologies_present["ec"][oid] = name
 #                        for key in new_ontology.keys():
 #                            oid = new_ontology[key]["id"]
 #                            name = new_ontology[key].get("name", "Unknown")
@@ -765,11 +765,11 @@ class ProkkaUtils:
 
         if ontologies_present:
             if "ontologies_present" in genome_data["data"]:
-                if "EC" in genome_data["data"]["ontologies_present"]:
-                    for key, value in ontologies_present["EC"].items():
-                        genome_data["data"]["ontologies_present"]["EC"][key] = value
+                if "ec" in genome_data["data"]["ontologies_present"]:
+                    for key, value in ontologies_present["ec"].items():
+                        genome_data["data"]["ontologies_present"]["ec"][key] = value
                 else:
-                    genome_data["data"]["ontologies_present"]["EC"] = ontologies_present["EC"]
+                    genome_data["data"]["ontologies_present"]["ec"] = ontologies_present["ec"]
 #                if "SSO" in genome_data["data"]["ontologies_present"]:
 #                    for key, value in ontologies_present["SSO"].items():
 #                        genome_data["data"]["ontologies_present"]["SSO"][key] = value
