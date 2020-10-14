@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka(v1.14.5)
+name: Annotate Metagenome Assembly with Prokka - v1.14.5
 tooltip: |
-    Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka annotation pipeline.
+    Annotate Metagenome Assembly with Prokka annotation pipeline.
 screenshots: []
 
 icon: prokka.png
