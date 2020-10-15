@@ -1,7 +1,7 @@
 #
 # define display information
 #
-name: Annotate Assembly and Re-annotate Genomes with Prokka(v1.14.5)
+name: Annotate Assembly and Re-annotate Genomes with Prokka - v1.14.5
 tooltip: |
     Annotate Assembly and Re-annotate Genomes with Prokka annotation pipeline.
 screenshots: []
