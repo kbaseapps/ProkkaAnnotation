@@ -3,8 +3,8 @@
     "authors": [
         "slebras"
     ],
-    "contact": "help@kbase.us",
-    "categories": ["active", "annotation"],
+    "contact": "https://www.kbase.us/support/",
+    "categories": ["active", "annotation", "communities"],
     "widgets": {
         "input": "kbaseNarrativeMethodInput",
         "output": "no-display"
@@ -18,7 +18,7 @@
             "default_values": [ "" ],
             "field_type": "text",
             "text_options": {
-                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly", "KBaseMetagenomes.AnnotatedMetagenomeAssembly"]
+                "valid_ws_types": ["KBaseGenomeAnnotations.Assembly"]
             }
         },
         {
