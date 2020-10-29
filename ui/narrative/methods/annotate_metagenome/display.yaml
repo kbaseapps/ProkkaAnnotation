@@ -1,9 +1,9 @@
 #
 # define display information
 #
-name: Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka(v1.12)
+name: Annotate Metagenome Assembly with Prokka - v1.14.5
 tooltip: |
-    Annotate Metagenome Assembly and Re-annotate Metagenomes with Prokka annotation pipeline.
+    Annotate Metagenome Assembly with Prokka annotation pipeline.
 screenshots: []
 
 icon: prokka.png
@@ -29,9 +29,9 @@ suggestions:
 parameters :
     object_ref :
         ui-name : |
-            Assembly or Annotated Metagenome Assembly
+            Metagenome Assembly
         short-hint : |
-            Assembly object (set of dna contigs) or Annotated Metagenome Assembly object (set of features with Ontology and Function to reannotate)
+            Assembly object (set of contigs from assembly of shotgun metagenome reads)
     output_metagenome_name :
         ui-name : |
             Output metagenome name
@@ -106,7 +106,7 @@ description : |
     See more information at https://github.com/kbaseapps/ProkkaAnnotation/blob/master/README.rst
     </p>
 
-    <p>Prokka version: 1.12</p>
+    <p>Prokka version: 1.14.5</p>
     <p>Barrnap version: 0.8</p>
 
 

@@ -5,6 +5,7 @@ import os
 import re
 import time
 import uuid
+import os
 from collections import namedtuple
 from pprint import pprint
 from subprocess import check_output, CalledProcessError
@@ -23,6 +24,42 @@ from installed_clients.WorkspaceClient import Workspace as workspaceService
 
 class ProkkaUtils:
 
+    """Major function paths through this code:
+#   NOTE SSO specifc code is not called
+
+    annotate_genome
+    ->self.get_EC_ontologies
+    ->self.run_prokka
+    ->self.retrieve_prokka_results
+    ->self.get_new_annotations
+      ->self.make_annotation_evidence
+    ->self.annotate_genome_with_new_annotations
+      ->self.create_genome_EC_ontology_fields
+        ->self.make_eC_ontology_event
+#      ->self.create_genome_ontology_fields
+#        ->self.make_sso_ontology_event
+      if new ontologies:
+        ->self.new_genome_EC_ontologies
+#        ->self.new_genome_ontologies
+      else:
+        -->self.old_genome_EC_ontologies
+#        -->self.old_genome_ontologies
+      ->self.gfu.save_one_genome
+
+    annotate_assembly
+    ->self.get_EC_ontologies
+    ->run_prokka
+    ->If metagenome:
+      ->_rename_and_separate_gff
+        ->_replace_id
+      ->save_metagenome
+    ->Else:
+      ->retrieve_prokka_results
+      ->save_genome
+        ->parse_prokka_results
+          ->self.make_annotation_evidence
+    """
+    
     def __init__(self, config):
         self.scratch = config["scratch"]
         self.ctx = config['ctx'];
@@ -38,6 +75,7 @@ class ProkkaUtils:
         self.sso_ref = None
         self.sso_event = None
         self.ec_to_sso = {}
+        self.ec_lookup_dictionary = dict()
         self.output_workspace = None
 
     @staticmethod
@@ -62,9 +100,33 @@ class ProkkaUtils:
         """
         return qualifier[0] if (qualifier and len(qualifier) > 0) else None
 
+    def get_EC_ontologies(self):
+        """
+        CURRENTLY THIS IS STORED LOCALLY. 
+        DOWN THE LINE WE NEED TO PUT THIS INTO THE ONTOLOGY REFERENCE DB
+
+        Returns a dictionary of EC term to EC description
+        """
+        # read EC ontology file
+        file = open('lib/ProkkaAnnotation/Util/EBI_EC_ontologyDictionary.json',mode='r')
+        # read all lines at once
+        ec_file_contents = file.read()
+        # close the file
+        file.close()
+        # convert JSON
+        ec_data = json.loads(ec_file_contents)
+        i  = 0
+        for term in ec_data["term_hash"].keys():
+            self.ec_lookup_dictionary[term] = ec_data["term_hash"][term]["name"]
+            i += 1
+        return 1
+
     def download_seed_data(self):
         """Download Seed Data Ontology, and set the gene_ontology reference (sso_ref) and
         the create a table from ec numbers to sso (ec_to_sso)
+
+        NOTE THIS CODE IS CURRENTLY NOT BEING CALLED, but Chris wanted me(Jason) to 
+        keep the code in place if we fix the mappings in the future.  PTV-1539
 
         :return: None
         """
@@ -272,6 +334,7 @@ class ProkkaUtils:
                         continue
                     name = self._get_qualifier_value(qualifiers.get("Name"))
                     ec = self._get_qualifier_value(qualifiers.get("eC_number"))
+                    #print("EC from get qualifier : " + str(ec))
                     gene = self._get_qualifier_value(qualifiers.get("gene"))
                     product = self._get_qualifier_value(qualifiers.get("product"))
                     fid = generated_id
@@ -280,9 +343,10 @@ class ProkkaUtils:
                         aliases.append(name)
                     if gene:
                         aliases.append(gene)
-                    if ec:
-                        aliases.append(ec)
-                        genes_with_ec += 1
+# Taken out as Chris wanted EC as ontologies and not aliases
+#                    if ec:
+#                        aliases.append(ec)
+#                        genes_with_ec += 1
                     md5 = hashlib.md5(dna.encode()).hexdigest()
                     feature = {"id": fid, "location": location, "type": "gene",
                                "aliases": aliases, "md5": md5, "dna_sequence": dna,
@@ -292,17 +356,29 @@ class ProkkaUtils:
                         feature["function"] = product
                         if product != "hypothetical protein":
                             non_hypothetical += 1
-                    if ec and ec in self.ec_to_sso:
-                        sso_list = self.ec_to_sso[ec]
-                        sso_terms = {}
-                        for sso_item in sso_list:
-                            sso_terms[sso_item["id"]] = {"id": sso_item["id"],
-                                                         "evidence": [evidence],
-                                                         "term_name": sso_item["name"],
-                                                         "ontology_ref": self.sso_ref,
-                                                         "term_lineage": []}
-                        feature["ontology_terms"] = {"SSO": sso_terms}
-                        genes_with_sso += 1
+                    if ec and ec in self.ec_lookup_dictionary:
+                        print("EC present and dict : " + str(ec) +  "::" + str(self.ec_lookup_dictionary[ec]))
+                        ec_terms = {}
+                        ec_terms["ec:" + ec] = {"id": "ec:" + ec,
+                                                "evidence": [evidence],
+                                                "term_name": self.ec_lookup_dictionary[ec],
+                                                "term_lineage": []}
+                        feature["ontology_terms"] = {"ec": ec_terms}
+                        genes_with_ec += 1
+
+#                     #COMMENTED OUT SO SSO DOES NOT INTERFERE WITH EC
+#                     if ec and ec in self.ec_to_sso:
+#                        sso_list = self.ec_to_sso[ec]
+#                        sso_terms = {}
+#                        for sso_item in sso_list:
+#                            sso_terms[sso_item["id"]] = {"id": sso_item["id"],
+#                                                         "evidence": [evidence],
+#                                                         "term_name": sso_item["name"],
+#                                                         "ontology_ref": self.sso_ref,
+#                                                         "term_lineage": []}
+#                        feature["ontology_terms"] = {"SSO": sso_terms}
+#                        genes_with_sso += 1
+
                     cds = None
                     mrna = None
                     prot = cds_to_prot.get(generated_id)
@@ -317,7 +393,8 @@ class ProkkaUtils:
                         feature["mrnas"] = [mrna_id]
                         cds = {"id": cds_id, "location": location, "md5": md5, "parent_gene": fid,
                                "parent_mrna": mrna_id, "function": (product if product else ""),
-                               "ontology_terms": {}, "protein_translation": prot,
+                               #"ontology_terms": {},
+                               "protein_translation": prot,
                                "protein_translation_length": prot_len, "aliases": aliases}
                         mrna = {"id": mrna_id, "location": location, "md5": md5,
                                 "parent_gene": fid, "cds": cds_id}
@@ -350,6 +427,7 @@ class ProkkaUtils:
         :param gff_filepath: A dictionary of ids with products and ec numbers
         :return:
         """
+        print("IN GET NEW ANNOTATIONS")
         evidence = self.make_annotation_evidence()
         genome = {}
         with open(gff_filepath, "r") as f:
@@ -362,21 +440,34 @@ class ProkkaUtils:
                     if "product" in qualifiers:
                         gene_features["function"] = " ".join(qualifiers["product"])
 
-                    if "eC_number" in qualifiers:
+                    if "eC_number" in qualifiers:                        
                         ec_numbers = qualifiers["eC_number"]
-                        sso_terms = dict()
+
+                        ec_terms = dict()
                         for ec in ec_numbers:
-                            sso_list = self.ec_to_sso.get(ec, [])
-                            for sso_item in sso_list:
-                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
-                                                             "evidence": [evidence],
-                                                             "term_name": sso_item["name"],
-                                                             "ontology_ref": self.sso_ref,
-                                                             "term_lineage": []}
-
-                        gene_features["ontology_terms"] = sso_terms
+                            if ec:
+                                print("ec: " + str(ec))
+                            if ec and ec in self.ec_lookup_dictionary:
+                                print("EC lookuo : " + str(self.ec_lookup_dictionary[ec]))
+                                ec_terms["ec:" + ec] = {"id": "ec:" + ec,
+                                                        "evidence": [evidence],
+                                                        "term_name": self.ec_lookup_dictionary[ec],
+                                                        "term_lineage": []}
+                            print("GeneFeature: " + str(gene_features))
+                        gene_features["ontology_terms"] = ec_terms
+#                       self.genes_with_ec += 1
+#                        feature["ontology_terms"] = {"EC": ec_terms}
+#                        sso_terms = dict()
+#                            sso_list = self.ec_to_sso.get(ec, [])
+#                            for sso_item in sso_list:
+#                                sso_terms[sso_item["id"]] = {"id": sso_item["id"],
+#                                                             "evidence": [evidence],
+#                                                             "term_name": sso_item["name"],
+#                                                             "ontology_ref": self.sso_ref,
+#                                                             "term_lineage": []}
+#
+#                        gene_features["ontology_terms"] = sso_terms
                 genome[gid] = gene_features
-
         return genome
 
     def write_genome_to_fasta(self, genome_data):
@@ -422,6 +513,24 @@ class ProkkaUtils:
             "ontology_ref": self.sso_ref
         }
 
+    def make_EC_ontology_event(self):
+        """
+        :param sso_ref: Reference to the annotation library set
+        :return: Ontology_event to be appended to the list of genome ontology events
+        """
+        time_string = str(
+            datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
+        yml_text = open('/kb/module/kbase.yml').read()
+        version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
+        description = "ProkkaAnnotation:" + version + ":EC:" + time_string
+        return {
+            "method": "Prokka Annotation",
+            "method_version": version,
+            "timestamp": time_string,
+            "id": "ec",
+            "description": description,
+        }
+            
     def make_annotation_evidence(self):
         """
         Create a dict for the evidence field for the genome
@@ -432,13 +541,34 @@ class ProkkaUtils:
             datetime.datetime.fromtimestamp(time.time()).strftime('%Y_%m_%d_%H_%M_%S'))
         yml_text = open('/kb/module/kbase.yml').read()
         version = re.search("module-version:\n\W+(.+)\n", yml_text).group(1)
-
+        description = "ProkkaAnnotation:" + version + ":EC:" + time_string
+        
         return {
             "method": "Prokka Annotation (Evidence)",
             "method_version": version,
             "timestamp": time_string,
+            "description": description,
         }
 
+    def create_genome_EC_ontology_fields(self, genome_data):
+        """
+        Create ontology event fields for a genome object
+        :param genome_data:  A genome object's data filed
+        :return: a named tuple containg the modified genome object and a new ontology event index
+        """
+        # Make sure ontologies_events exist
+        ec_event = self.make_EC_ontology_event()
+        ec_ontology_event_index = 0
+
+        if 'ontology_events' in genome_data['data']:
+            genome_data['data']['ontology_events'].append(ec_event)
+            ec_ontology_event_index += len(genome_data['data']['ontology_events']) - 1
+        else:
+            genome_data['data']['ontology_events'] = [ec_event]
+
+        genome_obj_modified = namedtuple('genome_obj_modified', 'genome_data ec_ontology_event_index')
+        return genome_obj_modified(genome_data, ec_ontology_event_index)
+    
     def create_genome_ontology_fields(self, genome_data):
         """
         Create ontology event fields for a genome object
@@ -449,15 +579,39 @@ class ProkkaUtils:
         sso_event = self.make_sso_ontology_event()
         ontology_event_index = 0
 
+        """
+        THIS BLOCK IS BEING COMMENTED OUT FOR NOW.
+        SINCE THERE IS NO SSO EVENT TO BE SAVED.
+        HOWEVER something like this will need to be added when 
+        EC Numbers are added to ontology events
+        
         if 'ontology_events' in genome_data['data']:
             genome_data['data']['ontology_events'].append(sso_event)
             ontology_event_index += len(genome_data['data']['ontology_events']) - 1
         else:
             genome_data['data']['ontology_events'] = [sso_event]
+        """
 
         genome_obj_modified = namedtuple('genome_obj_modified', 'genome_data ontology_event_index')
         return genome_obj_modified(genome_data, ontology_event_index)
 
+    @staticmethod
+    def old_genome_EC_ontologies(feature, new_ontology):
+        """
+        Update the feature's ontologies for an old genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :return: The feature with the ontology updated, in the old style
+        """
+        if "ontology_terms" not in feature:
+            feature["ontology_terms"] = {"ec": {}}
+        if "ec" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["ec"] = {}
+        for key in new_ontology.keys():
+            feature["ontology_terms"]["ec"][key] = new_ontology[key]
+        return feature
+
+    
     @staticmethod
     def old_genome_ontologies(feature, new_ontology):
         """
@@ -474,6 +628,28 @@ class ProkkaUtils:
             feature["ontology_terms"]["SSO"][key] = new_ontology[key]
         return feature
 
+    @staticmethod
+    def new_genome_EC_ontologies(feature, new_ontology, ec_ontology_event_index):
+        """
+        Update the feature's ontologies for a new genome
+        :param feature: Feature to update
+        :param new_ontology: New Ontology to update with
+        :param ontology_event_index: Ontology index to update the feature with
+        :return: the updated feature
+        """
+        if "ontology_terms" not in feature:
+            feature["ontology_terms"] = {"ec": {}}
+        if "ec" not in feature["ontology_terms"]:
+            feature["ontology_terms"]["ec"] = {}
+
+        for key in new_ontology.keys():
+            id = new_ontology[key]["id"]
+            if id in feature["ontology_terms"]["ec"]:
+                feature["ontology_terms"]["ec"][id].append(ec_ontology_event_index)
+            else:
+                feature["ontology_terms"]["ec"][id] = [ec_ontology_event_index]
+        return feature
+    
     @staticmethod
     def new_genome_ontologies(feature, new_ontology, ontology_event_index):
         """
@@ -508,9 +684,14 @@ class ProkkaUtils:
         new_genome = False
         if 'feature_counts' in genome_data['data']:
             new_genome = True
-            genome_obj_modified = self.create_genome_ontology_fields(genome_data)
+
+            #genome_obj_modified = self.create_genome_ontology_fields(genome_data)
+            #ontology_event_index = genome_obj_modified.ontology_event_index
+
+            genome_obj_modified = self.create_genome_EC_ontology_fields(genome_data)
+            ec_ontology_event_index = genome_obj_modified.ec_ontology_event_index
+            
             genome_data = genome_obj_modified.genome_data
-            ontology_event_index = genome_obj_modified.ontology_event_index
 
         stats = {"current_functions": len(genome_data["data"]["features"]), "new_functions": 0,
                  "found_functions": 0, "new_ontologies": 0}
@@ -522,7 +703,8 @@ class ProkkaUtils:
         func_r.write("function_id current_function new_function\n")
         onto_r.write("function_id current_ontology new_ontology\n")
 
-        ontologies_present = {"SSO": {}}
+        ontologies_present = {"ec": {}}
+#        ontologies_present = {"SSO": {}}
         for i, feature in enumerate(genome_data["data"]["features"]):
             fid = feature["id"]
             current_function = feature.get("function", "")
@@ -543,22 +725,33 @@ class ProkkaUtils:
 
                 # Set Ontologies
                 new_ontology = new_annotations[fid].get("ontology_terms", None)
+                print("NEW ONTOLOGY : LINE 697 : " + str(new_ontology))
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
                         # New style
+#                        genome_data["data"]["features"][i] = self. \
+#                            new_genome_ontologies(feature, new_ontology, ontology_event_index)
                         genome_data["data"]["features"][i] = self. \
-                            new_genome_ontologies(feature, new_ontology, ontology_event_index)
-
+                            new_genome_EC_ontologies(feature, new_ontology, ec_ontology_event_index)
+                        
                         # Add to ontologies Present
                         for key in new_ontology.keys():
                             oid = new_ontology[key]["id"]
-                            name = new_ontology[key].get("name", "Unknown")
-                            ontologies_present["SSO"][oid] = name
+                            (dummy,id_only) = oid.split(":")
+                            name = self.ec_lookup_dictionary.get(id_only, "Unknown")
+#                            name = new_ontology[key].get("name", "Unknown")
+                            ontologies_present["ec"][oid] = name
+#                        for key in new_ontology.keys():
+#                            oid = new_ontology[key]["id"]
+#                            name = new_ontology[key].get("name", "Unknown")
+#                            ontologies_present["SSO"][oid] = name
 
                     else:
                         genome_data["data"]["features"][i] = self. \
-                            old_genome_ontologies(feature, new_ontology)
+                            old_genome_EC_ontologies(feature, new_ontology)
+#                        genome_data["data"]["features"][i] = self. \
+#                            old_genome_ontologies(feature, new_ontology)
 
             if current_function:
                 func_r.write(json.dumps([fid, [current_function], [new_function]]) + "\n")
@@ -572,11 +765,16 @@ class ProkkaUtils:
 
         if ontologies_present:
             if "ontologies_present" in genome_data["data"]:
-                if "SSO" in genome_data["data"]["ontologies_present"]:
-                    for key, value in ontologies_present["SSO"].items():
-                        genome_data["data"]["ontologies_present"]["SSO"][key] = value
+                if "ec" in genome_data["data"]["ontologies_present"]:
+                    for key, value in ontologies_present["ec"].items():
+                        genome_data["data"]["ontologies_present"]["ec"][key] = value
                 else:
-                    genome_data["data"]["ontologies_present"]["SSO"] = ontologies_present["SSO"]
+                    genome_data["data"]["ontologies_present"]["ec"] = ontologies_present["ec"]
+#                if "SSO" in genome_data["data"]["ontologies_present"]:
+#                    for key, value in ontologies_present["SSO"].items():
+#                        genome_data["data"]["ontologies_present"]["SSO"][key] = value
+#                else:
+#                    genome_data["data"]["ontologies_present"]["SSO"] = ontologies_present["SSO"]
 
             else:
                 genome_data["data"]["ontologies_present"] = ontologies_present
@@ -643,7 +841,10 @@ class ProkkaUtils:
         :param params: Reference to the genome, Output File Name, UI Parameters
         :return: Report with Reannotated Genome and Stats about it
         """
-        self.download_seed_data()
+        # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
+        # We can reactivate this code.
+        #self.download_seed_data()
+        self.get_EC_ontologies()
         self.output_workspace = params["output_workspace"]
 
         genome_ref = self._get_input_value(params, "object_ref")
@@ -846,8 +1047,10 @@ class ProkkaUtils:
         :param assembly_info: Information used to determine if the assembly is too big
         :return: Report with newly annotated assembly as a genome, and stats about it
         """
-        self.download_seed_data()
-
+        # THIS IS COMMENTED OUT FOR NOW. IF WE FIX THE EC TO SSO translations
+	# We can reactivate this code.
+        #self.download_seed_data()
+        self.get_EC_ontologies()
         output_workspace = params["output_workspace"]
         if params.get('metagenome'):
             save_type = "Annotated Metagenome Assembly"
