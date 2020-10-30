@@ -1,9 +1,14 @@
 # -*- coding: utf-8 -*-
 #BEGIN_HEADER
 import os
+import requests
 from pprint import pformat
 from ProkkaAnnotation.Util.ProkkaUtils import ProkkaUtils
 from installed_clients.WorkspaceClient import Workspace as workspaceService
+
+# silence whining
+import requests
+requests.packages.urllib3.disable_warnings()
 
 #END_HEADER
 
@@ -23,9 +28,9 @@ class ProkkaAnnotation:
     # state. A method could easily clobber the state set by another while
     # the latter method is running.
     ######################################### noqa
-    VERSION = "2.1.1"
-    GIT_URL = "https://github.com/slebras/ProkkaAnnotation.git"
-    GIT_COMMIT_HASH = "85491b1794f1181f52b33f174990e9a7388ebd1e"
+    VERSION = "3.2.1"
+    GIT_URL = "https://github.com/kbaseapps/ProkkaAnnotation"
+    GIT_COMMIT_HASH = "76ec2621ca5068144d8e63f3f2cd143bbe14ee6b"
 
     #BEGIN_CLASS_HEADER
     #END_CLASS_HEADER
@@ -76,7 +81,7 @@ class ProkkaAnnotation:
            boolean. 0 = false, anything else = true.), parameter "notrna" of
            type "boolean" (A boolean. 0 = false, anything else = true.)
         :returns: instance of type "AnnotateOutput" -> structure: parameter
-           "output_genome_ref" of type "genome_ref" (Reference to an Genome
+           "output_genome_ref" of type "genome_ref" (Reference to a Genome
            object in the workspace @id ws KBaseGenomes.Genome), parameter
            "report_name" of String, parameter "report_ref" of String
         """
@@ -109,24 +114,26 @@ class ProkkaAnnotation:
 
     def annotate_metagenome(self, ctx, params):
         """
-        :param params: instance of type "MetagenomeAnnotateParams" (params:
-           optional params:) -> structure: parameter "object_ref" of type
-           "data_obj_ref" (Reference to an Assembly or Genome object in the
-           workspace @id ws KBaseGenomeAnnotations.Assembly @id ws
-           KBaseGenomes.Genome), parameter "output_workspace" of String,
-           parameter "output_genome_name" of String, parameter "kingdom" of
-           String, parameter "genus" of String, parameter "gcode" of Long,
-           parameter "rawproduct" of type "boolean" (A boolean. 0 = false,
-           anything else = true.), parameter "fast" of type "boolean" (A
-           boolean. 0 = false, anything else = true.), parameter
-           "mincontiglen" of Long, parameter "evalue" of String, parameter
-           "rfam" of type "boolean" (A boolean. 0 = false, anything else =
-           true.), parameter "norrna" of type "boolean" (A boolean. 0 =
-           false, anything else = true.), parameter "notrna" of type
-           "boolean" (A boolean. 0 = false, anything else = true.)
+        :param params: instance of type "MetagenomeAnnotateParams" (params: *
+           same as above optional params: * same as above) -> structure:
+           parameter "object_ref" of type "data_obj_ref" (Reference to an
+           Assembly or Genome object in the workspace @id ws
+           KBaseGenomeAnnotations.Assembly @id ws KBaseGenomes.Genome),
+           parameter "output_workspace" of String, parameter
+           "output_metagenome_name" of String, parameter "kingdom" of String,
+           parameter "genus" of String, parameter "gcode" of Long, parameter
+           "rawproduct" of type "boolean" (A boolean. 0 = false, anything
+           else = true.), parameter "fast" of type "boolean" (A boolean. 0 =
+           false, anything else = true.), parameter "mincontiglen" of Long,
+           parameter "evalue" of String, parameter "rfam" of type "boolean"
+           (A boolean. 0 = false, anything else = true.), parameter "norrna"
+           of type "boolean" (A boolean. 0 = false, anything else = true.),
+           parameter "notrna" of type "boolean" (A boolean. 0 = false,
+           anything else = true.)
         :returns: instance of type "MetagenomeAnnotateOutput" -> structure:
-           parameter "metagenome_ref" of type "genome_ref" (Reference to an
-           Genome object in the workspace @id ws KBaseGenomes.Genome),
+           parameter "output_metagenome_ref" of type "metagenome_ref"
+           (Reference to a Annotated Metagenome Assembly object in the
+           workspace @id ws KBaseMetagenomes.AnnotatedMetagenomeAssembly),
            parameter "report_name" of String, parameter "report_ref" of String
         """
         # ctx is the context object
@@ -163,7 +170,6 @@ class ProkkaAnnotation:
                              'output is not type dict as required.')
         # return the results
         return [output]
-
     def status(self, ctx):
         #BEGIN_STATUS
         returnVal = {"state": "OK",
