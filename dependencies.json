@@ -13,7 +13,7 @@
 }, {
   "module_name" : "GenomeFileUtil",
   "type" : "sdk",
-  "version_tag" : "dev"
+  "version_tag" : "beta"
 }, {
   "module_name" : "KBaseFeatureValues",
   "type" : "sdk",

@@ -1,11 +1,15 @@
-### Version 3.2
+### Version 3.2.1
+- Added warning to error when Feature IDs > 32 chars
+- Made metagenome unit test data much smaller
+
+### Version 3.2.0
 - Per Chris Henry's request deactiving SEED Subsystem Ontologies
 - The EC numbers are no longer made into aliases and instead are made into ontologies
 - The EC is currently going from a file in the Repo, down the line we need to move that to an ontology object
 - TODO Chris would like COGs captured as well as ontologgies from PROKKA output.
 - Note this needs to be done carefully because another ontology event needs to be made and kept track of appropriately
 
-### Version 3.1
+### Version 3.1.0
 - Updated the backend Prokka to 1.14.5
 
 ### Version 2.1.5

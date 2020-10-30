@@ -6,6 +6,7 @@ import re
 import time
 import uuid
 import os
+import requests
 from collections import namedtuple
 from pprint import pprint
 from subprocess import check_output, CalledProcessError
@@ -21,6 +22,9 @@ from installed_clients.GenomeFileUtilClient import GenomeFileUtil
 from installed_clients.KBaseReportClient import KBaseReport
 from installed_clients.WorkspaceClient import Workspace as workspaceService
 
+# silence whining
+import requests
+requests.packages.urllib3.disable_warnings()
 
 class ProkkaUtils:
 
@@ -108,11 +112,12 @@ class ProkkaUtils:
         Returns a dictionary of EC term to EC description
         """
         # read EC ontology file
-        file = open('lib/ProkkaAnnotation/Util/EBI_EC_ontologyDictionary.json',mode='r')
+        ec_ontology_path = os.path.join(os.sep, 'kb', 'module', 'data', 'EBI_EC_ontologyDictionary.json')
+        file_handle = open(ec_ontology_path,mode='r')
         # read all lines at once
-        ec_file_contents = file.read()
+        ec_file_contents = file_handle.read()
         # close the file
-        file.close()
+        file_handle.close()
         # convert JSON
         ec_data = json.loads(ec_file_contents)
         i  = 0
@@ -478,15 +483,25 @@ class ProkkaUtils:
         """
         fasta_for_prokka_filepath = os.path.join(self.scratch,
                                                  "features_" + str(uuid.uuid4()) + ".fasta")
+        MAX_FEATURE_ID_LEN = 32
         count = 0
+        features_all_pass = True
         with open(fasta_for_prokka_filepath, "w") as f:
             for item in genome_data["data"]["features"]:
-                if "id" not in item or "dna_sequence" not in item:
-                    print("This feature does not have a valid dna sequence.")
+                if "id" not in item:
+                    print("Feature missing a valid ID.")
+                    features_all_pass = False
+                elif len(item["id"]) > MAX_FEATURE_ID_LEN:
+                    print("Feature '"+str(item["id"])+"' has ID that exceeds limit of "+str(MAX_FEATURE_ID_LEN))
+                    features_all_pass = False
+                elif "dna_sequence" not in item:
+                    print("Feature '"+str(item["id"])+"' does not have a valid dna sequence.")
                 else:
                     f.write(">" + item["id"] + "\n" + item["dna_sequence"] + "\n")
                     count += 1
 
+        if not features_all_pass:
+            raise ValueError ("Some Features could not be written to file.  Exiting...")
         print("Finished printing to" + fasta_for_prokka_filepath)
         if os.stat(fasta_for_prokka_filepath).st_size == 0:
             raise Exception(
@@ -725,7 +740,7 @@ class ProkkaUtils:
 
                 # Set Ontologies
                 new_ontology = new_annotations[fid].get("ontology_terms", None)
-                print("NEW ONTOLOGY : LINE 697 : " + str(new_ontology))
+                #print("NEW ONTOLOGY : LINE 697 : " + str(new_ontology))  # DEBUG
                 if new_ontology:
                     stats['new_ontologies'] += 1
                     if new_genome:
